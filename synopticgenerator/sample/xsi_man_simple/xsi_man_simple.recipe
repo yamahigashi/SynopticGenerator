@@ -1,0 +1,119 @@
+global:
+    log_level: "DEBUG"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    color_table:
+        "white": "255, 255, 255"
+
+        "ik_center":  "233, 127, 237"
+        "fk_center":  "172,  86, 221"
+
+        "ik_left":    "236, 157,  91"
+        "fk_left":    "221,  65,  66"
+
+        "ik_right":   " 91, 175, 235"
+        "fk_right":   " 65,  80, 221"
+
+        "mos_green":  "113, 168,  85"
+        "light_blue": "115, 146, 210"
+        "red":        "188,  72,  73"
+
+        "hilight":    "195, 175, 185, 240"
+
+
+pipeline:
+    prepare:
+        - module: image.set_transparent_by_color
+          config:
+            input: "../src_model.png"
+            output: "_model_transparent.png"
+            color: "white"
+
+        - module: image.paste_with_transparent
+          config:
+            base: "../src_background.png"
+            paste: "_model_transparent.png"
+            output: "_base.png"
+
+
+    recognize:
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_simple.png"
+            store: "regions"
+            color: "ik_center"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                    region_name: "regions"
+                    skip_named: true
+                    controls:
+                         - Head
+                         - RShoulder
+                         - LShoulder
+                         - Chest
+                         - ChestDepth
+                         - RArmUpV
+                         - LArmUpV
+                         - HipDepth
+                         - Hip
+                         - RArmEff
+                         - LArmEff
+                         - UpperBody
+                         - LeftRoll
+                         - RightRoll
+                         - LToeOffset1
+                         - RToeOffset1
+                         - LeftFoot
+                         - RightFoot
+                         - GlobalSRT
+
+
+        - module: utility.dump_region
+          config:
+              region_name: "regions"
+
+
+    filter:
+        - module: filter.copy_region
+          config:
+              src: "regions"
+              dst: "hilight_regions"
+
+
+    publisher:
+        - module: drawer.draw_by_its_type
+          config:
+            canvas: "_base.png"
+            output: "xsi_man_simple.png"
+            outline: true
+            outline_color: "111, 112, 113"
+
+        - module: drawer.draw_by_its_type
+          config:
+            canvas: "xsi_man_simple.png"
+            output: "xsi_man_simple_h.png"
+            target: "hilight_regions"
+            color: "hilight"
+            thickness: 3
+            outline: false
+
+        - module: writer.SoftimageHTML
+          config:
+            template: "../softimage_cdk.yaml"
+            output: "xsi_man_simple.htm"
+            language: "VBScript"
+            version: "1"
+
+
+    finalizer:
+        - module: utility.html_character
+          config:
+              file: "xsi_man_simple.htm"
+              mode: "unescape"
+
+        - module: utility.remove_file
+          config:
+              file:
+                  - "_base.png"
+                  - "_model_transparent.png"
+# vim:set ft=yaml:

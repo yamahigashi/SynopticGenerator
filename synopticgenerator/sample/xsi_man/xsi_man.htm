@@ -1,0 +1,565 @@
+<html>
+  <body version="1">
+    <script language="VBScript">
+
+'------------------------------------------------------
+' Tools
+'-------------------------------------------------------
+sub sel_all_onClick(in_obj)
+	SynopticSelect2 in_obj, "globalSRT"
+end sub
+
+sub key_sel_onClick(in_obj)
+	dim sel
+	Set sel = GetValue("SelectionList")
+	if Selection.count > 0 then
+		SelectChildNodes	
+		SaveKeyOnKeyable
+		SelectObj sel
+	else
+		logmessage "Key Selection Canceled: Nothing Selected"
+	end if 
+end sub
+sub key_all_onClick(in_obj)
+	
+	dim sel
+	Set sel = GetValue("SelectionList")
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	
+	SelectObj myObj.model & ".globalSRT", "BRANCH"
+	SelectChildNodes
+	
+	SaveKeyOnKeyable
+	SelectObj sel
+end sub
+sub plot_all(in_obj)
+
+	dim myname, sel
+
+	Set sel = GetValue("SelectionList")
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	if IsComponent(myObj.model & ".globalSRT") = False then exit sub 	
+	
+    ' select all the children
+	SelectObj myObj.model & ".globalSRT", "BRANCH", true
+	SelectChildNodes null, null, null
+
+	GetInputAndPlotKeyableToAction
+		
+	SelectObj sel
+	
+end sub
+
+
+sub plot_sel(in_obj)
+
+	dim myname, sel
+	Set sel = GetValue("SelectionList")
+	if Selection.count > 0 then
+		SelectChildNodes
+
+		GetInputAndPlotKeyableToAction 		
+	
+		SelectObj sel
+	else
+		logmessage "Plot Selection Canceled: Nothing Selected"	
+	end if
+	
+end sub
+
+sub store_all(in_obj)
+
+	dim myname, sel
+
+
+	Set sel = GetValue("SelectionList")
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	if IsComponent(myObj.model & ".globalSRT") = False then exit sub 	
+	
+	SelectObj myObj.model & ".globalSRT", "BRANCH"
+	SelectChildNodes
+	
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+
+	GetInputAndStoreActionProc myObj.model.name, 7, inout_Name, inout_Remove, inout_ClipIn, inout_ClipOut, inout_bConsiderTime, inout_bRipple
+
+
+	SelectObj sel	
+end sub
+
+sub store_sel(in_obj)
+
+	dim myname, sel
+	Set sel = GetValue("SelectionList")
+	if Selection.count > 0 then
+		set collection = SelectChildNodes
+	
+		set oRoot = Application.ActiveProject.ActiveScene.Root
+		set myObj = oRoot.FindChild(in_obj)
+
+		GetInputAndStoreActionProc myObj.model.name, 7, inout_Name, inout_Remove, inout_ClipIn, inout_ClipOut, inout_bConsiderTime, inout_bRipple
+
+		SelectObj sel
+	else
+		logmessage "Store Selection Canceled: Nothing Selected"	
+	end if
+	
+end sub
+
+sub pose_all(in_obj)
+
+	dim myname, sel
+
+	Set sel = GetValue("SelectionList")
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	if IsComponent(myObj.model & ".globalSRT") = False then exit sub 	
+	
+	SelectObj myObj.model & ".globalSRT", "BRANCH"
+	SelectChildNodes
+	
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+
+	GetInputAndStoreActionProc myObj.model.name, 6, inout_Name, inout_Remove, inout_ClipIn, inout_ClipOut, inout_bConsiderTime, inout_bRipple
+
+	SelectObj sel
+	
+end sub
+
+sub pose_sel(in_obj)
+
+	dim myname, sel
+	Set sel = GetValue("SelectionList")
+	if Selection.count > 0 then
+		set collection = SelectChildNodes
+
+		set oRoot = Application.ActiveProject.ActiveScene.Root
+		set myObj = oRoot.FindChild(in_obj)
+	
+		GetInputAndStoreActionProc myObj.model.name, 6, inout_Name, inout_Remove, inout_ClipIn, inout_ClipOut, inout_bConsiderTime, inout_bRipple
+
+		SelectObj sel
+	else
+		logmessage "Pose Selection Canceled: Nothing Selected"	
+	end if
+	
+end sub
+
+
+
+
+'------------------------------------------------------------------
+' Helper Functions
+'------------------------------------------------------------------
+
+'---------------------------------------------
+' Synoptic Select
+'---------------------------------------------
+function SynopticSelect(in_obj, inName)
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	if IsComponent(myObj.model & "." & inName) = False then 
+		logmessage "RigSynoptic: " & inName & " not found"
+		SynopticSelect = False
+	else	
+
+	GetKeyboardState , modKey
+
+	select case CByte(modKey)
+	
+		case 0 ' "Nothing Selected"
+			SelectObj myObj.model & "." & inName	
+		case 1 logmessage "Shift"		
+			'check the object isn't already selected
+			if checkCollision(myObj.model.FindChild(inName)) = False then	
+				AddToSelection myObj.model & "." & inName	
+			end if
+			
+		case 2 ' "Ctrl"
+			ToggleSelection myObj.model & "." & inName	
+		case 3 ' "Shift/Ctrl"	
+			RemoveFromSelection myObj.model & "." & inName				
+		case 4 ' "Alt"
+			SelectObj myObj.model & "." & inName, "BRANCH", True
+		case 5 ' "Alt/Shift"
+			'check the object isn't already selected
+			if checkCollision(myObj.model.FindChild(inName)) = False then
+				AddToSelection myObj.model & "." & inName, "BRANCH", True
+			end if
+		case 6 ' "Alt/Ctrl"
+			ToggleSelection myObj.model & "." & inName, "BRANCH", True
+		case 7 ' "Alt/Shift/Ctrl"
+			RemoveFromSelection myObj.model & "." & inName
+	end select
+
+
+	end if
+end function
+
+'---------------------------------------------
+' Synoptic Select 2
+'---------------------------------------------
+function SynopticSelect2(in_obj, inName)
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	if IsComponent(myObj.model & "." & inName) = False then 
+		logmessage "RigSynoptic: " & inName & " not found"
+		SynopticSelect2 = False
+	else	
+		SelectObj myObj.model & "." & inName, "BRANCH", True
+	end if
+end function
+'--------------------------------------
+'--------------------------------------
+' Check Selection Collision	
+'--------------------------------------
+function checkCollision(inObj)
+	
+	dim sel, elem
+	set sel = GetValue("SelectionList")
+	
+	SelectChildNodes
+	
+	for each elem in Selection
+		if elem = inObj then 
+			checkCollision = True
+			SelectObj sel
+			exit function
+		end if
+	next
+	
+	checkCollision = False
+	SelectObj sel
+	
+end function
+'--------------------------------------
+
+' Is Component 
+'--------------------------------------
+function IsComponent(in_string)
+	
+	dim oRoot
+	IsComponent = True
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	if typename(oRoot.FindChild(in_string)) = "Nothing" then IsComponent = False
+	
+end function
+'---------------------------------------------
+sub GetInputAndPlotToActionProc ()
+
+	Dim l_start, l_end, l_step, l_SceneRoot, l_CustomParam, l_CPList, l_PSetType
+
+	' Get the default start, end and step times from the play control.
+	l_start = GetValue("Project.Data.PlayControl.In")
+	l_end	= GetValue("Project.Data.PlayControl.Out")
+	l_step	= GetValue("Project.Data.PlayControl.Step")
+
+	' Get the scene root.
+	Set l_SceneRoot = ActiveSceneRoot
+	
+	' Build the Dialog to collect user input
+
+	Set l_CPList = SIAddProp( "PlotToActionWizard", l_SceneRoot , , "PlotToAction").value("Value")
+	l_CustomParam = l_SceneRoot & "." & l_CPList
+
+	SetValue l_CustomParam & ".Start", l_Start
+	SetValue l_CustomParam & ".End", l_End
+	SetValue l_CustomParam & ".Step", l_Step
+	SetValue l_CustomParam & ".ActionName", "plot"
+
+
+
+	'Launch the dialog and wait for OK or Cancel to be pressed.
+	If FWizardDialog(l_CustomParam,in_Title) = vbOk Then
+
+		'Read the parameters of the property page
+		in_StartFrame	= GetValue( l_CustomParam & ".Start" )
+		in_EndFrame		= GetValue( l_CustomParam & ".End" )
+		in_Step			= GetValue( l_CustomParam & ".Step" )
+		in_Name			= GetValue( l_CustomParam & ".ActionName" )
+		
+		dim l_FCurveKind
+		l_FCurveKind	= GetValue( l_CustomParam & ".FCurveKind" )
+
+		select case l_FCurveKind
+			case 0		' Boolean fcurve
+				in_FCurveKind  = 10
+			case 1		' Integer fcurve
+				in_FCurveKind  = 15
+			case 2		' Standard fcurve
+				in_FCurveKind  = 20
+			case 3		' Raw data fcurve
+				in_FCurveKind  = 30
+		end select
+		
+		dim l_Interpolation
+		l_Interpolation = GetValue( l_CustomParam & ".Interpolation" )
+
+		select case l_Interpolation
+			case 0		' Constant interpolation
+				in_Interpolation  = 1
+			case 1		' Linear interpolation
+				in_Interpolation  = 2
+			case 2		' Spline interpolation
+				in_Interpolation  = 3
+		end select
+
+		in_FitFCurve	= GetValue( l_CustomParam & ".FitFCurve" )
+		in_FitTolerance	= GetValue( l_CustomParam & ".FitTolerance" )
+
+		' Call the PlotToAction task
+		set l_action = PlotToAction( in_Model, in_InputObjs, in_Name, in_StartFrame, in_EndFrame, in_Step, in_FCurveKind, in_Interpolation, in_FitFCurve, in_FitTolerance )
+
+		Dim l_ApplyAction, l_DeleteAction
+		l_ApplyAction	= GetValue( l_CustomParam & ".ApplyAction" )
+		l_DeleteAction	= GetValue( l_CustomParam & ".DeleteAction" )
+				
+		if l_ApplyAction then
+			ApplyAction l_action
+
+			if l_DeleteAction then
+				DeleteObj l_action
+			end if
+		end if
+
+		DeleteObj l_CustomParam
+	Else
+		DeleteObj l_CustomParam
+	End If
+
+end sub
+
+'-----------------------------------
+
+function FWizardDialog(in_customparam, in_title)
+	On Error Resume Next
+	InspectObj in_customparam,,in_title, siModal
+
+	if Err.Number <> 0 then
+		FWizardDialog = vbCancel
+	else
+		FWizardDialog = vbOk
+	end if
+end function
+
+'-----------------------------------
+
+sub GetInputAndStoreActionProc(in_ModelName, in_Mode, inout_Name, inout_Remove, inout_ClipIn, inout_ClipOut, inout_bConsiderTime, inout_bRipple )
+
+	GetInputAndStoreAction2 in_ModelName, ,in_Mode, inout_Name, inout_Remove, inout_ClipIn, inout_ClipOut, inout_bConsiderTime, inout_bRipple 
+
+end sub
+
+'-------------------------------------------------------
+' Reset All
+'-------------------------------------------------------
+sub reset_all(in_obj)
+
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+ 	set myObj = oRoot.FindChild(in_obj)
+
+	logmessage  "Rig: Reset All"
+ 	ApplyAction myObj.model & ".Mixer.DefaultPose"
+
+end sub
+'---------------------------------------------
+' Synoptic Reset
+'---------------------------------------------
+function SynopticReset(in_obj, inName)
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+	set myObj = oRoot.FindChild(in_obj)
+	if IsComponent(myObj.model & "." & inName) = False then 
+		logmessage "SynopticReset: " & inName & " not found"
+		SynopticSelect = False
+	else	
+
+
+		GetKeyboardState , modKey
+
+		dim k
+		k = CByte(modKey)	
+
+		if k=4 or k=5 or k=6 or k=7 then
+			dim sel
+			set sel = GetValue("SelectionList")
+			SelectObj myObj.model & "." & inName, "BRANCH"
+			reset_sel(in_obj)
+			SelectObj sel
+		else
+			String_reset in_obj, inName
+		end if
+	end if
+	
+end function
+'---------------------------------------------
+' String Reset
+'---------------------------------------------
+function String_reset(in_obj, in_string)
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+ 	set myObj = oRoot.FindChild(in_obj)
+	set in_model = myObj.model
+
+	' get the actionsource from the model
+	set oActionSource = in_model.Sources("DefaultPose")
+
+	'mute everything but in_string
+
+	for each oSourceItem in oActionSource.SourceItems
+		if instr(1,CStr(oSourceItem.Target),in_string ,vbTextCompare)=0 then
+			oSourceItem.Active = False
+		end if
+	next
+
+	' apply muted actionsource 
+	ApplyAction oActionSource, oNull
+	
+	set oActionSource = in_model.Sources("DefaultPose")
+	for each oSourceItem in oActionSource.SourceItems
+		oSourceItem.Active = True
+	next	
+	
+end function
+'-------------------------------------------------------
+' Reset Selection
+'-------------------------------------------------------
+sub reset_sel(in_obj)
+
+	if Selection.count < 1 then 
+		logmessage "SynopticReset Canceled: Nothing Selected"
+	end if
+
+	dim match, sel
+	set sel = GetValue("SelectionList")
+
+	set oRoot = Application.ActiveProject.ActiveScene.Root
+ 	set myObj = oRoot.FindChild(in_obj)
+
+	SelectChildNodes
+
+	' get the actionsource from the model
+	set oActionSource = myObj.model.Sources("DefaultPose")
+
+	for each oSourceItem in oActionSource.SourceItems
+	
+		match = False	
+		
+		for each elem in Selection
+			if instr(1,CStr(oSourceItem.Target),elem.name ,1)<>0 then
+				match = True
+			end if 
+		next
+		
+		if match = False then
+			oSourceItem.Active = False		
+		end if		
+		
+	next
+
+	' apply muted actionsource 
+	ApplyAction oActionSource, oNull
+	
+	set oActionSource = myObj.model.Sources("DefaultPose")
+	for each oSourceItem in oActionSource.SourceItems
+		oSourceItem.Active = True
+	next	
+
+	SelectObj sel
+ 
+end sub
+sub LeftFoot_onClick(in_obj)
+    SynopticSelect in_obj, "LeftFoot"
+end sub
+sub LArmEff_onClick(in_obj)
+    SynopticSelect in_obj, "LArmEff"
+end sub
+sub LArmUpV_onClick(in_obj)
+    SynopticSelect in_obj, "LArmUpV"
+end sub
+sub RightFoot_onClick(in_obj)
+    SynopticSelect in_obj, "RightFoot"
+end sub
+sub RArmEff_onClick(in_obj)
+    SynopticSelect in_obj, "RArmEff"
+end sub
+sub RArmUpV_onClick(in_obj)
+    SynopticSelect in_obj, "RArmUpV"
+end sub
+sub GlobalSRT_onClick(in_obj)
+    SynopticSelect in_obj, "GlobalSRT"
+end sub
+sub UpperBody_onClick(in_obj)
+    SynopticSelect in_obj, "UpperBody"
+end sub
+sub Chest_onClick(in_obj)
+    SynopticSelect in_obj, "Chest"
+end sub
+sub HipDepth_onClick(in_obj)
+    SynopticSelect in_obj, "HipDepth"
+end sub
+sub ChestDepth_onClick(in_obj)
+    SynopticSelect in_obj, "ChestDepth"
+end sub
+sub Hip_onClick(in_obj)
+    SynopticSelect in_obj, "Hip"
+end sub
+sub Head_onClick(in_obj)
+    SynopticSelect in_obj, "Head"
+end sub
+sub RToeOffset1_onClick(in_obj)
+    SynopticSelect in_obj, "RToeOffset1"
+end sub
+sub RightRoll_onClick(in_obj)
+    SynopticSelect in_obj, "RightRoll"
+end sub
+sub RShoulder_onClick(in_obj)
+    SynopticSelect in_obj, "RShoulder"
+end sub
+sub LToeOffset1_onClick(in_obj)
+    SynopticSelect in_obj, "LToeOffset1"
+end sub
+sub LeftRoll_onClick(in_obj)
+    SynopticSelect in_obj, "LeftRoll"
+end sub
+sub LShoulder_onClick(in_obj)
+    SynopticSelect in_obj, "LShoulder"
+end sub
+</script>
+    <map name="SynopticMap">
+      <area shape="rect" coords="215,469,241,517" title="" NOHREF="true" onClick="LeftFoot_onClick"></area>
+      <area shape="poly" coords="254,271,245,243,276,233,285,260" title="" NOHREF="true" onClick="LArmEff_onClick"></area>
+      <area shape="rect" coords="275,160,289,178" title="" NOHREF="true" onClick="LArmUpV_onClick"></area>
+      <area shape="rect" coords="117,469,143,517" title="" NOHREF="true" onClick="RightFoot_onClick"></area>
+      <area shape="poly" coords="103,270,70,261,78,233,111,242" title="" NOHREF="true" onClick="RArmEff_onClick"></area>
+      <area shape="rect" coords="56,160,70,178" title="" NOHREF="true" onClick="RArmUpV_onClick"></area>
+      <area shape="rect" coords="164,478,194,509" title="" NOHREF="true" onClick="GlobalSRT_onClick"></area>
+      <area shape="rect" coords="107,258,250,275" title="" NOHREF="true" onClick="UpperBody_onClick"></area>
+      <area shape="rect" coords="125,125,232,142" title="" NOHREF="true" onClick="Chest_onClick"></area>
+      <area shape="rect" coords="161,208,197,220" title="" NOHREF="true" onClick="HipDepth_onClick"></area>
+      <area shape="rect" coords="161,175,197,187" title="" NOHREF="true" onClick="ChestDepth_onClick"></area>
+      <area shape="rect" coords="126,219,231,232" title="" NOHREF="true" onClick="Hip_onClick"></area>
+      <area shape="rect" coords="158,20,199,73" title="" NOHREF="true" onClick="Head_onClick"></area>
+      <area shape="rect" coords="64,477,82,510" title="" NOHREF="true" onClick="RToeOffset1_onClick"></area>
+      <area shape="rect" coords="87,452,111,502" title="" NOHREF="true" onClick="RightRoll_onClick"></area>
+      <area shape="rect" coords="134,99,167,119" title="" NOHREF="true" onClick="RShoulder_onClick"></area>
+      <area shape="rect" coords="276,477,293,510" title="" NOHREF="true" onClick="LToeOffset1_onClick"></area>
+      <area shape="rect" coords="246,453,270,503" title="" NOHREF="true" onClick="LeftRoll_onClick"></area>
+      <area shape="rect" coords="190,100,223,119" title="" NOHREF="true" onClick="LShoulder_onClick"></area>
+      <area shape="rect" coords="2,26,64,56" title="" NOHREF="true" onClick="sel_all"></area>
+      <area shape="rect" coords="2,56,64,85" title="" NOHREF="true" onClick="key_sel"></area>
+      <area shape="rect" coords="2,85,64,114" title="" NOHREF="true" onClick="key_all"></area>
+    </map>
+    <img src="xsi_man.png" usemap="#SynopticMap"></img>
+  </body>
+</html>
