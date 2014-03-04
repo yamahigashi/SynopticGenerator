@@ -2,7 +2,7 @@
 [Japanese](https://github.com/yamahigashi/SynopticGenerator/blob/master/README.md)
 
 
-これは何？
+What is this?
 ======================
 
 DCCツール(
@@ -21,23 +21,7 @@ generate synoptic for dcc tool.
 
 from Base image and Controllers image, config file to synoptic files (synthesised image and synoptic define text e.g. html)
 
-
-Dependencies
-------------
-### 必須 ###
-+ python
-
-+ opencv
-+ numpy
-+ Pillow
-+ six
-
-### 任意 ###
-+ matplotlib(optional)
-+ pyparsing(optional)
-+ pytz(optional)
-
-使い方
+How to use?
 ------
 より具体的な説明はサンプルの解説を参照してください。
 
