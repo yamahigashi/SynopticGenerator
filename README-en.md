@@ -5,59 +5,52 @@
 What is this?
 ======================
 
-DCCツール(
-[Autodesk Maya](http://www.autodesk.co.jp/products/autodesk-maya/overview) や 
-[Autodesk Softimage](http://www.autodesk.co.jp/products/autodesk-softimage/overview))用
-にシノプティックビューを作成するスクリプトです。  
-複数の画像ファイル（下地、モデル、コントローラ）と設定ファイルからコントローラ領域を
-抽出しシノプティック（イメージファイル、定義ファイル）に仕立て上げます。現在は
-Softimage 用の書き出しに対応しています。
+For DCC tool(
+[Autodesk maya](http://www.autodesk.co.jp/products/autodesk-maya/overview)  or
+[Autodesk Softimage](http://www.autodesk.co.jp/products/autodesk-softimage/overview)),
+generate synoptic image and view. From some image file (background, model and controllers)
+and config file, detect controller's contours, synthesize them. Currently worknig for softimage.
 
-各種操作は python module として独立して実装しているので、機能の改変や追加、入れ替えを
-容易に行うことができます。
-
-generate synoptic for dcc tool.
-
-
-from Base image and Controllers image, config file to synoptic files (synthesised image and synoptic define text e.g. html)
+Each operation is separated for python module, you can easyly modify, add new features.
 
 How to use?
 ------
-より具体的な説明はサンプルの解説を参照してください。
+See sample for more informations.
 
-## 画像の準備 ##
-まずはDCCツールなどから画像を用意しましょう。
+## Preparation ##
+from 
 
-1. 下地画像を用意します
-2. モデル画像を用意します（任意）
-3. コントローラ画像を用意します
+1. background image
+2. model view image
+3. controllers images
 
-## 設定ファイルの編集 ##
-記述例は sample.recipe を参照してください。
+## Edit Configuration ##
+See `sample/xsi_man/xsi_man.recipe` for more informations.
 
-#### global ブロック ####
-各種操作プラグインを横断し、参照するための設定を記述します。  
-ログの設定や色名と色数値の対応表定義などができます
 
-#### pipeline ブロック ####
-具体的な処理内容を、処理順に記述してください
+#### global block ####
+You can set here configuration over modules,
+for example, logging level and color table.
 
-+ prepare: 画像の加工、準備
-+ recognize: 画像からの領域抽出
-+ filter: 領域データの加工
-+ publish: 領域データからの最終画像描画、定義ファイル出力
-+ finalize: 中間データ削除などの掃除処理
+#### pipeline block ####
+You descript here, each operations sequencially.
 
-を一連の流れとして記述します。pipeline 名は任意です
++ prepare: preparation for images
++ recognize: detect contours into region data
++ filter: filter regions data
++ publish: output synthesized image, view text file.
++ finalize: clean up
 
-## 作成スクリプト実行 ##
-以下の python コードを実行
+You can name pipeline's name as you want.
+
+## Execution your script ##
+Simply run this python code
 
     import synopticgenerator
     synopticgenerator.create("sample.recipe")
 
 
-プラグイン解説
+Plugin manual
 ----------------
 
 ### image ###
