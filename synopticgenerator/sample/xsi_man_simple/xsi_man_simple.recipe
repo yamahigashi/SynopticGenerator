@@ -1,5 +1,6 @@
 global:
-    log_level: "DEBUG"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    log_level: "WARN"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    #log_level: "DEBUG"  # "INFO", "WARN", "ERROR", "CRITICAL"
     color_table:
         "white": "255, 255, 255"
 

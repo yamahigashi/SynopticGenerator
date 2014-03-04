@@ -18,7 +18,7 @@ critical
 
 def start(filename=None, level=logging.INFO, formatter=DEFAULT_FORMATTER):
 
-    logging.basicConfig(level=logging.DEBUG, format=formatter)
+    logging.basicConfig(level=level, format=formatter)
     '''
     global _logger
     _logger = logging.getLogger("SynopticGeneratorLogger")
