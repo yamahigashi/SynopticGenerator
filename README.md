@@ -16,26 +16,35 @@ Softimage 用の書き出しに対応しています。
 各種操作は python module として独立して実装しているので、機能の改変や追加、入れ替えを
 容易に行うことができます。
 
-generate synoptic for dcc tool.
-
-
-from Base image and Controllers image, config file to synoptic files (synthesised image and synoptic define text e.g. html)
-
 
 Dependencies
 ------------
-### 必須 ###
+まず
 + python
 
+が必要です。さらに以下を自前で用意するか
+[Unoffcial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/ )
+などからインストールしてください
+
+### 必須 ###
 + opencv
 + numpy
 + Pillow
 + six
 
 ### 任意 ###
+以下は必須ではないですがあると便利です。認識した輪郭線の確認などに使用できます。
 + matplotlib(optional)
 + pyparsing(optional)
 + pytz(optional)
+
+導入
+----
+上記 Python 及びモジュール群をインストール後、SynopticGenerator をローカルに
+クローンし、`synopticgenerator` フォルダを `PYTHON_PATH` の通った場所に配置すれば準備完了です。
+`softimage_plugin` ォルダには下準備に必要な素材を用意する際、ビューポートキャプチャを
+撮影＆ログに必要な情報を流すプラグインが入っています。
+
 
 使い方
 ------
