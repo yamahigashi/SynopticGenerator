@@ -26,9 +26,14 @@ class SearchContours(object):
     def __init__(self, config, environ):
         self.config = config
         self.environ = environ
+
+        self.sub_modules = []
         self.store = config.setdefault("store", "regions")
         self.color_table = environ.setdefault("color_table", None)
         self.cutoff = environ.setdefault("cutoff_area", 9)
+
+    def set_submodules(self, sub_modules):
+        self.sub_modules = sub_modules
 
     def get_contours(self, image_path):
         self.image_path = image_path
@@ -90,18 +95,25 @@ class SearchContours(object):
         return regions
 
     def execute(self, content):
-        res = []
+        regions = []
         for image in self.config["image"]:
             x = self.search_bounding_boxies(image)
             if self.config.get("color"):
                 for r in x:
                     r.color = util.color(self.config["color"], self.color_table)
-            res.extend(x)
+            regions.extend(x)
 
         if content.get(self.store):
-            content[self.store].extend(res)
+            content[self.store].extend(regions)
         else:
-            content[self.store] = res
+            content[self.store] = regions
+
+        for smod in self.sub_modules:
+            sub_res = smod.execute(content)
+            if not isinstance(sub_res, list):
+                content.append(sub_res)
+            else:
+                content.extend(sub_res)
 
         return content
 
