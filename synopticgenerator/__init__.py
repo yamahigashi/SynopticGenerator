@@ -89,11 +89,11 @@ class SynopticGenerator(object):
         config = line.setdefault("config", {})
         obj = module.create(config, self.environ)
 
-        # TODO:
-        #if hasattr(obj, "setSubModules"):
-        #    subModules = lineModule.get("sub-modules", [])
-        #    subModuleObj = [self.instanciate(module) for module in subModules]
-        #    obj.setSubModules(subModuleObj)
+        if hasattr(obj, "set_submodules"):
+            sub_modules = line.get("sub-modules", [])
+            sub_module_instances = [
+                self.instantiate(smod) for smod in sub_modules]
+            obj.set_submodules(sub_module_instances)
 
         return obj
 
@@ -103,12 +103,3 @@ def create(config_path):
     with open(config_path) as c:
         sc.load(c)
     sc.run_all()
-
-
-class InvalidColorConfig(Exception):
-    def __init__(self, value=None):
-        self.value = value
-
-    def __str__(self):
-        return "config 'color' not supplied on \
-                region nor drawer.rectangle:{}".format(repr(self.value))
