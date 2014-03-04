@@ -11,7 +11,7 @@ __maintainer__ = "MATSUMOTO Takayoshi"
 __email__ = "yamahigashi+git@gmail.com"
 __status__ = "Prototype"
 
-
+import os
 import cv2
 
 import synopticgenerator.region as region
@@ -97,6 +97,10 @@ class SearchContours(object):
     def execute(self, content):
         regions = []
         for image in self.config["image"]:
+            if not os.path.exists(image):
+                logging.error("file not found: {}".format(image))
+                continue
+
             x = self.search_bounding_boxies(image)
             if self.config.get("color"):
                 for r in x:
@@ -110,7 +114,9 @@ class SearchContours(object):
 
         for smod in self.sub_modules:
             sub_res = smod.execute(content)
-            if not isinstance(sub_res, list):
+            if isinstance(sub_res, dict):
+                content.update(sub_res)
+            elif not isinstance(sub_res, list):
                 content.append(sub_res)
             else:
                 content.extend(sub_res)

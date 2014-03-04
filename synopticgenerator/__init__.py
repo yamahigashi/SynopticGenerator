@@ -90,6 +90,7 @@ class SynopticGenerator(object):
         obj = module.create(config, self.environ)
 
         if hasattr(obj, "set_submodules"):
+            logging.info("{} has sub modules".format(obj.__module__))
             sub_modules = line.get("sub-modules", [])
             sub_module_instances = [
                 self.instantiate(smod) for smod in sub_modules]

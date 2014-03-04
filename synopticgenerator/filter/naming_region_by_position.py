@@ -1,6 +1,6 @@
 """ coding: utf-8 """
 
-import synopticgenerator.log as log
+import logging
 
 
 class NamingRegion(object):
@@ -22,9 +22,10 @@ class NamingRegion(object):
 
         empty_name = [x for x in sorted_region if not x.name]
         if len(empty_name) != len(self.controls):
-            print("all: {} / empty: {} / apply: {}".format(
+            logging.debug("all: {} / empty: {} / apply: {}".format(
                 len(sorted_region), len(empty_name), len(self.controls)))
-            logging.warn("does not match empty region count with apply names count")
+            logging.warn(
+                "does not match empty region count with apply names count")
         for i, x in enumerate(empty_name):
             if self.skip_named and x.name:
                 continue
