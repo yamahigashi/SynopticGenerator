@@ -43,7 +43,9 @@ Dependencies
 上記 Python 及びモジュール群をインストール後、SynopticGenerator をローカルに
 クローンし、`synopticgenerator` フォルダを `PYTHON_PATH` の通った場所に配置すれば準備完了です。
 `softimage_plugin` ォルダには下準備に必要な素材を用意する際、ビューポートキャプチャを
-撮影＆ログに必要な情報を流すプラグインが入っています。
+撮影＆ログに必要な情報を流すプラグインが入っています。 `synopticgenerator/sample` 以下には
+xsi man を使用してのサンプルファイルがあります。`python make.py` を実行すると xsi man 用の
+シノプティックファイルが生成されます。
 
 
 使い方
