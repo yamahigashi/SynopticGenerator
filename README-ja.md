@@ -2,9 +2,8 @@
 [Japanese](https://github.com/yamahigashi/SynopticGenerator/blob/master/README-ja.md)
 
 
-What is this?
+これは何？
 ======================
-
 DCCツール(
 [Autodesk Maya](http://www.autodesk.co.jp/products/autodesk-maya/overview) や 
 [Autodesk Softimage](http://www.autodesk.co.jp/products/autodesk-softimage/overview))用
@@ -16,15 +15,8 @@ Softimage 用の書き出しに対応しています。
 各種操作は python module として独立して実装しているので、機能の改変や追加、入れ替えを
 容易に行うことができます。
 
-generate synoptic for dcc tool.
-
-
-from Base image and Controllers image, config file to synoptic files (synthesised image and synoptic define text e.g. html)
-
-How to use?
+使い方
 ------
-より具体的な説明はサンプルの解説を参照してください。
-
 ## 画像の準備 ##
 まずはDCCツールなどから画像を用意しましょう。
 
