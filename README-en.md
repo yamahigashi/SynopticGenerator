@@ -13,6 +13,36 @@ and config file, detect controller's contours, synthesize them. Currently workni
 
 Each operation is separated for python module, you can easyly modify, add new features.
 
+Dependencies
+------------
+At first
++ python
+
+addition, prepare below modules by youself or you can download binaries from
+[Unoffcial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/ )
+
+
+### require ###
++ opencv
++ numpy
++ Pillow
++ six
+
+### optional ###
+Useful modules, you can check contours with this.
++ matplotlib(optional)
++ pyparsing(optional)
++ pytz(optional)
+
+install
+-------
+After preparation of Python and some modulesÅAyou clone this SynopticGenerator repositry,
+deploy `synopticgenerator` folder into `PYTHON_PATH` environment variable.
+in `softimage_plugin` folder, you can see some plugin for softimage, that enable ViewPort Capture
+at hand and logging useful info. `synopticgenerator/sample` you can found two samples using XSI-man.
+in sample folder run `python make.py` you get xsi man's synoptic files.
+
+
 How to use?
 ------
 See sample for more informations.
