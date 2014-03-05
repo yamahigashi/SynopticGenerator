@@ -1,5 +1,6 @@
 global:
-    log_level: "WARN"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    #log_level: "WARN"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    log_level: "INFO"  # "INFO", "WARN", "ERROR", "CRITICAL"
     #log_level: "DEBUG"  # "INFO", "WARN", "ERROR", "CRITICAL"
     color_table:
         "white": "255, 255, 255"
@@ -182,14 +183,14 @@ pipeline:
         - module: drawer.draw_by_its_type
           config:
             canvas: "_base.png"
-            output: "xsi_man.png"
+            output: "output/xsi_man.png"
             outline: true
             outline_color: "111, 112, 113"
 
         - module: drawer.draw_by_its_type
           config:
-            canvas: "xsi_man.png"
-            output: "xsi_man_h.png"
+            canvas: "output/xsi_man.png"
+            output: "output/xsi_man_h.png"
             target: "hilight_regions"
             color: "hilight"
             thickness: 3
@@ -198,7 +199,7 @@ pipeline:
         - module: writer.SoftimageHTML
           config:
             template: "../softimage_cdk.yaml"
-            output: "xsi_man.htm"
+            output: "output/xsi_man.htm"
             language: "VBScript"
             version: "1"
 
@@ -206,7 +207,7 @@ pipeline:
     finalizer:
         - module: utility.html_character
           config:
-              file: "xsi_man.htm"
+              file: "output/xsi_man.htm"
               mode: "unescape"
 
         - module: utility.remove_file
