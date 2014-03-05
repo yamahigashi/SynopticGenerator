@@ -55,6 +55,8 @@ class DrawByType(ObjectDrawer):
                 image = self.draw(image, r, self.color)
             else:
                 image = self.draw(image, r, r.color)
+
+        util.ensure_folder(self.config["output"])
         cv2.imwrite(self.config["output"], image)
 
         return content
