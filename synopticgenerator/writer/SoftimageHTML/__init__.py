@@ -17,6 +17,7 @@ import yaml
 import logging
 
 import synopticgenerator.region as region
+import synopticgenerator.util as util
 
 ##############################################################################
 
@@ -124,6 +125,7 @@ class Writer(object):
         img.text = ""
         tree = ET.ElementTree(root)
 
+        util.ensure_folder(self.output_filename)
         if self.has_lxml:
             tree.write(self.output_filename, pretty_print=True)
         else:

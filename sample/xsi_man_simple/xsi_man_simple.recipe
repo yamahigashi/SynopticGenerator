@@ -85,14 +85,14 @@ pipeline:
         - module: drawer.draw_by_its_type
           config:
             canvas: "_base.png"
-            output: "xsi_man_simple.png"
+            output: "output/xsi_man_simple.png"
             outline: true
             outline_color: "111, 112, 113"
 
         - module: drawer.draw_by_its_type
           config:
-            canvas: "xsi_man_simple.png"
-            output: "xsi_man_simple_h.png"
+            canvas: "output/xsi_man_simple.png"
+            output: "output/xsi_man_simple_h.png"
             target: "hilight_regions"
             color: "hilight"
             thickness: 3
@@ -101,7 +101,7 @@ pipeline:
         - module: writer.SoftimageHTML
           config:
             template: "../softimage_cdk.yaml"
-            output: "xsi_man_simple.htm"
+            output: "output/xsi_man_simple.htm"
             language: "VBScript"
             version: "1"
 
@@ -109,7 +109,7 @@ pipeline:
     finalizer:
         - module: utility.html_character
           config:
-              file: "xsi_man_simple.htm"
+              file: "output/xsi_man_simple.htm"
               mode: "unescape"
 
         - module: utility.remove_file

@@ -2,7 +2,7 @@
 
 import imp
 import os
-
+import logging
 
 ##############################################################################
 _moduleFactories = {}
@@ -27,6 +27,16 @@ def load_module(module_name, plugin_base_path=[]):
     _moduleFactories[module_name] = mod
 
     return mod
+
+
+def ensure_folder(filename):
+    if not "/" in filename and not "\\" in filename:
+        return
+
+    dname = os.path.dirname(filename)
+    if not os.path.exists(dname):
+        logging.info("make folder {}".format(dname))
+        os.mkdir(dname)
 
 
 class Color(object):
