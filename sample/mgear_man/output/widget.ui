@@ -1,0 +1,433 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+  <class>mgear</class>
+  <widget class="QWidget" name="mgear">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>300</width>
+        <height>550</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Form</string>
+    </property>
+    <widget class="QLabel" name="img_background">
+      <property name="enabled">
+        <bool>true</bool>
+      </property>
+      <property name="geometry">
+        <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>300</width>
+          <height>550</height>
+        </rect>
+      </property>
+      <property name="windowTitle">
+        <string>Form</string>
+      </property>
+      <property name="pixmap">
+        <pixmap>background.png</pixmap>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_LeftFoot" native="true">
+      <property name="geometry">
+        <rect>
+          <x>215</x>
+          <y>462</y>
+          <width>26</width>
+          <height>48</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>LeftFoot</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_LArmEff" native="true">
+      <property name="geometry">
+        <rect>
+          <x>248</x>
+          <y>259</y>
+          <width>34</width>
+          <height>30</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>LArmEff</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_LArmUpV" native="true">
+      <property name="geometry">
+        <rect>
+          <x>272</x>
+          <y>156</y>
+          <width>19</width>
+          <height>25</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>LArmUpV</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_RightFoot" native="true">
+      <property name="geometry">
+        <rect>
+          <x>117</x>
+          <y>462</y>
+          <width>26</width>
+          <height>48</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>RightFoot</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_RArmEff" native="true">
+      <property name="geometry">
+        <rect>
+          <x>61</x>
+          <y>269</y>
+          <width>30</width>
+          <height>36</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>RArmEff</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_RArmUpV" native="true">
+      <property name="geometry">
+        <rect>
+          <x>67</x>
+          <y>156</y>
+          <width>19</width>
+          <height>25</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>RArmUpV</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_GlobalSRT" native="true">
+      <property name="geometry">
+        <rect>
+          <x>164</x>
+          <y>479</y>
+          <width>30</width>
+          <height>31</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>GlobalSRT</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_UpperBody" native="true">
+      <property name="geometry">
+        <rect>
+          <x>107</x>
+          <y>265</y>
+          <width>143</width>
+          <height>17</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>UpperBody</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_Chest" native="true">
+      <property name="geometry">
+        <rect>
+          <x>125</x>
+          <y>125</y>
+          <width>107</width>
+          <height>17</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>Chest</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_HipDepth" native="true">
+      <property name="geometry">
+        <rect>
+          <x>161</x>
+          <y>208</y>
+          <width>36</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>HipDepth</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_ChestDepth" native="true">
+      <property name="geometry">
+        <rect>
+          <x>161</x>
+          <y>175</y>
+          <width>36</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>ChestDepth</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_Hip" native="true">
+      <property name="geometry">
+        <rect>
+          <x>126</x>
+          <y>219</y>
+          <width>105</width>
+          <height>13</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>Hip</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_Head" native="true">
+      <property name="geometry">
+        <rect>
+          <x>158</x>
+          <y>20</y>
+          <width>41</width>
+          <height>53</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>Head</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_RToeOffset1" native="true">
+      <property name="geometry">
+        <rect>
+          <x>64</x>
+          <y>477</y>
+          <width>18</width>
+          <height>33</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>RToeOffset1</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_RightRoll" native="true">
+      <property name="geometry">
+        <rect>
+          <x>87</x>
+          <y>459</y>
+          <width>24</width>
+          <height>50</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>RightRoll</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_RShoulder" native="true">
+      <property name="geometry">
+        <rect>
+          <x>134</x>
+          <y>99</y>
+          <width>33</width>
+          <height>20</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>RShoulder</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_LToeOffset1" native="true">
+      <property name="geometry">
+        <rect>
+          <x>276</x>
+          <y>477</y>
+          <width>17</width>
+          <height>33</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>LToeOffset1</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_LeftRoll" native="true">
+      <property name="geometry">
+        <rect>
+          <x>246</x>
+          <y>459</y>
+          <width>24</width>
+          <height>50</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>LeftRoll</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_LShoulder" native="true">
+      <property name="geometry">
+        <rect>
+          <x>190</x>
+          <y>100</y>
+          <width>33</width>
+          <height>19</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>LShoulder</string>
+      </property>
+    </widget>
+  </widget>
+  <customwidgets>
+    <customwidget>
+      <class>QuickSelButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_RFkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_RIkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_CIkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_LFkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_LIkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_CFkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_RIkCircle</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_CIkCircle</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_LIkCircle</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>MirrorPoseButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>FlipPoseButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>resetBindPose</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>resetTransform</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>toggleCombo</class>
+      <extends>QComboBox</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>ikfkMatchButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+  </customwidgets>
+  <resources/>
+  <connections/>
+</ui>

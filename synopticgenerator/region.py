@@ -41,6 +41,7 @@ class rect(region):
 
     top_left = property(doc='top left point (x, y) of rect')
     bottom_right = property(doc='bottom right point(x, y) of rect')
+    bottom = property(doc='bottom point(y) of rect')
     center = property(doc='center of gravity of rect')
     area = property(doc='calc area')
 
@@ -62,6 +63,10 @@ class rect(region):
     def center(self):
         return map(int, (self.x + self.w / 2, self.y + self.h / 2))
 
+    @bottom.getter
+    def bottom(self):
+        return self.center[1] + (self.h / 2.)
+
     @area.getter
     def area(self):
         return self.w * self.h / 2.0
@@ -71,6 +76,10 @@ class rect(region):
         self.w, self.h = map(lambda x: int(x * ratio), [self.w, self.h])
         self.x = int(c[0] - (self.w / 2.0))
         self.y = int(c[1] - (self.h / 2.0))
+
+    def translate(self, xy):
+        self.x += int(xy[0])
+        self.y += int(xy[1])
 
 
 class rotated_rect(rect):
@@ -123,6 +132,7 @@ class circle(region):
 
     top_left = property(doc='top left point (x, y) of rect')
     bottom_right = property(doc='bottom right point(x, y) of rect')
+    bottom = property(doc='bottom point(y) of circle')
     area = property(doc='calc area')
 
     def __init__(self, center, radius):
@@ -137,6 +147,10 @@ class circle(region):
     def bottom_right(self):
         return map(lambda x: x + self.radius, self.center)
 
+    @bottom.getter
+    def bottom(self):
+        return self.center[1] + self.radius
+
     @area.getter
     def area(self):
         return self.radius * self.radius * math.pi
@@ -144,10 +158,15 @@ class circle(region):
     def scale(self, ratio):
         self.radius *= math.sqrt(ratio)
 
+    def translate(self, xy):
+        self.center[0] += int(xy[0])
+        self.center[1] += int(xy[1])
+
 
 class ellipse(region):
 
     area = property(doc='calc area')
+    bottom = property(doc='bottom point(y) of ellipse')
 
     # def __init__(self, center, radius):
     def __init__(self, cvrotated):
@@ -166,3 +185,11 @@ class ellipse(region):
     def scale(self, ratio):
         self.w *= math.sqrt(ratio)
         self.h *= math.sqrt(ratio)
+
+    @bottom.getter
+    def bottom(self):
+        return self.center[1] + (self.h / 2.)
+
+    def translate(self, xy):
+        self.x += int(xy[0])
+        self.y += int(xy[1])

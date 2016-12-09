@@ -1,0 +1,210 @@
+global:
+    # log_level: "WARN"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    # log_level: "INFO"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    log_level: "DEBUG"  # "INFO", "WARN", "ERROR", "CRITICAL"
+    color_table:
+        "white": "255, 255, 255"
+
+        "ik_center":  "233, 127, 237"
+        "fk_center":  "172,  86, 221"
+
+        "ik_left":    "236, 157,  91"
+        "fk_left":    "221,  65,  66"
+
+        "ik_right":   " 91, 175, 235"
+        "fk_right":   " 65,  80, 221"
+
+        "mos_green":  "113, 168,  85"
+        "light_blue": "115, 146, 210"
+        "red":        "188,  72,  73"
+
+        "hilight":    "195, 175, 185, 240"
+
+
+pipeline:
+    prepare:
+        - module: image.set_transparent_by_color
+          config:
+            input: "src_model.png"
+            output: "_model_transparent.png"
+            color: "white"
+
+        - module: image.paste_with_transparent
+          config:
+            base: "src_background.png"
+            paste: "_model_transparent.png"
+            output: "output/background.png"
+
+
+        - module: utility.set_size_from_image
+          config:
+            image: 
+                - "src_background.png"
+
+
+    recognize:
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_ik_left.png"
+            store: "regions"
+            color: "ik_left"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                    region_name: "regions"
+                    skip_named: true
+                    controls:
+                        - LArmUpV
+                        - LArmEff
+                        - LeftFoot
+
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_ik_right.png"
+            store: "regions"
+            color: "ik_right"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                    region_name: "regions"
+                    skip_named: true
+                    controls:
+                        - RArmUpV
+                        - RArmEff
+                        - RightFoot
+
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_ik_center.png"
+            store: "regions"
+            color: "ik_center"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                    region_name: "regions"
+                    skip_named: true
+                    controls:
+                        - Chest
+                        - UpperBody
+                        - GlobalSRT
+
+
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_ik_center2.png"
+            store: "regions"
+            color: "fk_center"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                    region_name: "regions"
+                    skip_named: true
+                    controls:
+                        - ChestDepth
+                        - HipDepth
+
+
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_fk_center2.png"
+            store: "regions"
+            color: "fk_center"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                    region_name: "regions"
+                    skip_named: true
+                    controls:
+                        - Head
+                        - Hip
+
+
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_fk_right1.png"
+            store: "regions"
+            color: "fk_right"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                        region_name: "regions"
+                        skip_named: true
+                        controls:
+                            - RShoulder
+                            - RightRoll
+                            - RToeOffset1
+
+        - module: recognizer.image_to_regions
+          config:
+            image: 
+                - "src_controller_fk_left1.png"
+            store: "regions"
+            color: "fk_left"
+          sub-modules:
+                - module: filter.naming_region_by_position
+                  config:
+                        region_name: "regions"
+                        skip_named: true
+                        controls:
+                            - LShoulder
+                            - LeftRoll
+                            - LToeOffset1
+
+
+        - module: utility.dump_region
+          config:
+              region_name: "regions"
+
+
+    filter:
+        - module: filter.rotatedrect_to_rect
+
+        - module: filter.round_up_smaller_region
+          config:
+            baseline: 175
+
+        - module: filter.round_down_bigger_region
+          config:
+            baseline: 1750
+
+        - module: filter.set_location_attribute_by_naming_convention
+          config:
+              target:
+                - "regions"
+              convention:
+                left: "^(L|Left)"
+                right: "^(R|Right)"
+                center: "^(C|Center)"
+                default: "center"
+
+        - module: filter.realignment_position
+          config:
+            target:
+              -"regions"
+
+    publisher:
+        - module: writer.mgear
+          config:
+            output: "output/widget.ui"
+            background: "background.png"
+            version: "1"
+
+
+    finalizer:
+        - module: utility.html_character
+          config:
+              file: "output/widget.ui"
+              mode: "unescape"
+
+        - module: utility.remove_file
+          config:
+              file:
+                  - "_model_transparent.png"
+
+# vim:set ft=yaml:

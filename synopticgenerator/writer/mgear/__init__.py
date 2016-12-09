@@ -5,6 +5,7 @@
 
 # import os
 import logging
+import math
 
 import synopticgenerator.region as region
 import synopticgenerator.util as util
@@ -90,6 +91,8 @@ class Writer(object):
         self.postprocess_write_area(widget)
 
         self.write_custom_widgets(root)
+        ET.SubElement(root, "resources")
+        ET.SubElement(root, "connections")
 
         tree = ET.ElementTree(root)
         util.ensure_folder(self.output_filename)
@@ -111,7 +114,8 @@ class Writer(object):
 
         return widget
 
-    def write_background_image(self, parent, img_path="xsi_man.png"):
+    def write_background_image(self, parent):
+
         widget = ET.SubElement(parent, 'widget')
         widget.set("class", "QLabel")
         widget.set("name", "img_background")
@@ -130,6 +134,7 @@ class Writer(object):
         prop3 = ET.SubElement(widget, "property")
         prop3.set("name", "pixmap")
         str = ET.SubElement(prop3, "pixmap")
+        img_path = self.config.get("background")
         str.text = img_path
 
         return widget
@@ -139,8 +144,9 @@ class Writer(object):
         if type(bound) is region.rect:
             shape_name, coords = self.write_rect(parent, bound, name)
         elif type(bound) is region.rotated_rect:
-            shape_name, coords = self.write_poly(parent, bound, name)
-        elif type(bound) is region.rotated_rect:
+            return
+            # shape_name, coords = self.write_rotated_rect(parent, bound, name)
+        elif type(bound) is region.circle:
             shape_name, coords = self.write_circle(parent, bound, name)
 
         else:
@@ -169,7 +175,7 @@ class Writer(object):
         y = control.top_left[1]
         x2 = control.bottom_right[0] - x
         y2 = control.bottom_right[1] - y
-        coords = (x, y, x2, y2)
+        coords = map(int, [x, y, x2, y2])
 
         return self.get_selector_button_class(control, "Box"), coords
 
@@ -241,7 +247,11 @@ class Writer(object):
 
         for widiget_entry in widgets:
             widget = ET.SubElement(container, "customwidget")
-            for k, v in widiget_entry.iteritems():
+            # for k, v in widiget_entry.iteritems():
+            for k in ["class", "extends", "header", "container"]:
+                v = widiget_entry.get(k, None)
+                if not v:
+                    continue
                 prop = ET.SubElement(widget, k)
                 prop.text = v
 
