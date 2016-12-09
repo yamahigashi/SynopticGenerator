@@ -21,7 +21,7 @@ __status__ = "Prototype"
 
 
 class SearchContours(object):
-    color = (172, 86, 221)
+    # color = (172, 86, 221)
 
     def __init__(self, config, environ):
         self.config = config
@@ -56,6 +56,8 @@ class SearchContours(object):
         return [c for c in contours if cv2.contourArea(c) > self.cutoff]
 
     def choose_region_by_area(self, cir, box, rot):
+        ''' fuzzy finder for deternime shape type by its area.'''
+
         if cir.area < box.area and cir.area < rot.area:
             return cir
 
