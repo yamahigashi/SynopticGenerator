@@ -1,5 +1,5 @@
 ﻿""" coding: utf-8 """
-# Copyright 2014, MATSUMOTO Takayoshi
+# Copyright 2016, MATSUMOTO Takayoshi
 # All rights reserved.
 #
 ##############################################################################
