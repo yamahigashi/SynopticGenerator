@@ -1,105 +1,107 @@
-[English](https://github.com/yamahigashi/SynopticGenerator/blob/master/README-en.md) / 
+﻿[English](https://github.com/yamahigashi/SynopticGenerator/blob/master/README-en.md) / 
 [Japanese](https://github.com/yamahigashi/SynopticGenerator/blob/master/README.md)
 
 
-����͉��H
+これは何？
 ======================
 
-DCC�c�[��(
-[Autodesk Maya](http://www.autodesk.co.jp/products/autodesk-maya/overview) �� 
-[Autodesk Softimage](http://www.autodesk.co.jp/products/autodesk-softimage/overview))�p
-�ɃV�m�v�e�B�b�N�r���[���쐬����X�N���v�g�ł��B  
-�����̉摜�t�@�C���i���n�A���f���A�R���g���[���j�Ɛݒ�t�@�C������R���g���[���̈��
-���o���V�m�v�e�B�b�N�i�C���[�W�t�@�C���A��`�t�@�C���j�Ɏd���ďグ�܂��B���݂�
-Softimage �p�̏����o���ɑΉ����Ă��܂��B
+DCCツール(
+[Autodesk Maya](http://www.autodesk.co.jp/products/autodesk-maya/overview) や 
+[Autodesk Softimage](http://www.autodesk.co.jp/products/autodesk-softimage/overview))用
+にシノプティックビューを作成するスクリプトです。  
+複数の画像ファイル（下地、モデル、コントローラ）と設定ファイルからコントローラ領域を
+抽出しシノプティック（イメージファイル、定義ファイル）に仕立て上げます。現在は
+Softimage 用の書き出しに対応しています。
 
-�e�푀��� python module �Ƃ��ēƗ����Ď������Ă���̂ŁA�@�\�̉��ς�ǉ��A����ւ���
-�e�Ղɍs�����Ƃ��ł��܂��B
+各種操作は python module として独立して実装しているので、機能の改変や追加、入れ替えを
+容易に行うことができます。
 
 
 Dependencies
 ------------
-�܂�
+まず
 + python
 
-���K�v�ł��B����Ɉȉ������O�ŗp�ӂ��邩
+が必要です。さらに以下を自前で用意するか
 [Unoffcial Windows Binaries for Python Extension Packages](http://www.lfd.uci.edu/~gohlke/pythonlibs/ )
-�Ȃǂ���C���X�g�[�����Ă�������
+などからインストールしてください
 
-### �K�{ ###
+### 必須 ###
 + opencv
 + numpy
 + Pillow
 + six
++ enum34
++ PyYAML
 
-### �C�� ###
-�ȉ��͕K�{�ł͂Ȃ��ł�������ƕ֗��ł��B�F�������֊s���̊m�F�ȂǂɎg�p�ł��܂��B
+### 任意 ###
+以下は必須ではないですがあると便利です。認識した輪郭線の確認などに使用できます。
 + matplotlib(optional)
 + pyparsing(optional)
 + pytz(optional)
 
-����
+導入
 ----
-��L Python �y�у��W���[���Q���C���X�g�[����ASynopticGenerator �����[�J����
-�N���[�����A`synopticgenerator` �t�H���_�� `PYTHON_PATH` �̒ʂ����ꏊ�ɔz�u����Ώ��������ł��B
-`softimage_plugin` �H���_�ɂ͉������ɕK�v�ȑf�ނ�p�ӂ���ہA�r���[�|�[�g�L���v�`����
-�B�e�����O�ɕK�v�ȏ��𗬂��v���O�C���������Ă��܂��B `synopticgenerator/sample` �ȉ��ɂ�
-xsi man ���g�p���ẴT���v���t�@�C��������܂��B`python make.py` �����s����� xsi man �p��
-�V�m�v�e�B�b�N�t�@�C������������܂��B
+上記 Python 及びモジュール群をインストール後、SynopticGenerator をローカルに
+クローンし、`synopticgenerator` フォルダを `PYTHON_PATH` の通った場所に配置すれば準備完了です。
+`softimage_plugin` ォルダには下準備に必要な素材を用意する際、ビューポートキャプチャを
+撮影＆ログに必要な情報を流すプラグインが入っています。 `synopticgenerator/sample` 以下には
+xsi man を使用してのサンプルファイルがあります。`python make.py` を実行すると xsi man 用の
+シノプティックファイルが生成されます。
 
 
-�g����
+使い方
 ------
-����̓I�Ȑ����̓T���v���̉�����Q�Ƃ��Ă��������B
+より具体的な説明はサンプルの解説を参照してください。
 
-## �摜�̏��� ##
-�܂���DCC�c�[���Ȃǂ���摜��p�ӂ��܂��傤�B
+## 画像の準備 ##
+まずはDCCツールなどから画像を用意しましょう。
 
-1. ���n�摜��p�ӂ��܂�
-2. ���f���摜��p�ӂ��܂��i�C�Ӂj
-3. �R���g���[���摜��p�ӂ��܂�
+1. 下地画像を用意します
+2. モデル画像を用意します（任意）
+3. コントローラ画像を用意します
 
-## �ݒ�t�@�C���̕ҏW ##
-�L�q��� sample.recipe ���Q�Ƃ��Ă��������B
+## 設定ファイルの編集 ##
+記述例は sample.recipe を参照してください。
 
-#### global �u���b�N ####
-�e�푀��v���O�C�������f���A�Q�Ƃ��邽�߂̐ݒ���L�q���܂��B  
-���O�̐ݒ��F���ƐF���l�̑Ή��\��`�Ȃǂ��ł��܂�
+#### global ブロック ####
+各種操作プラグインを横断し、参照するための設定を記述します。  
+ログの設定や色名と色数値の対応表定義などができます
 
-#### pipeline �u���b�N ####
-��̓I�ȏ������e���A�������ɋL�q���Ă�������
+#### pipeline ブロック ####
+具体的な処理内容を、処理順に記述してください
 
-+ prepare: �摜�̉��H�A����
-+ recognize: �摜����̗̈撊�o
-+ filter: �̈�f�[�^�̉��H
-+ publish: �̈�f�[�^����̍ŏI�摜�`��A��`�t�@�C���o��
-+ finalize: ���ԃf�[�^�폜�Ȃǂ̑|������
++ prepare: 画像の加工、準備
++ recognize: 画像からの領域抽出
++ filter: 領域データの加工
++ publish: 領域データからの最終画像描画、定義ファイル出力
++ finalize: 中間データ削除などの掃除処理
 
-����A�̗���Ƃ��ċL�q���܂��Bpipeline ���͔C�ӂł�
+を一連の流れとして記述します。pipeline 名は任意です
 
-## �쐬�X�N���v�g���s ##
-�ȉ��� python �R�[�h�����s
+## 作成スクリプト実行 ##
+以下の python コードを実行
 
     import synopticgenerator
     synopticgenerator.create("sample.recipe")
 
 
-�v���O�C�����
+プラグイン解説
 ----------------
 
 ### image ###
-�摜�t�@�C���𑀍삷�邽�߂̃N���X�ł�
+画像ファイルを操作するためのクラスです
 
 + `image.set_transparent_by_color`
 + `image.paste_with_transparent`
 
 ### recognizer ###
-�摜�t�@�C������̈�f�[�^�𒊏o���邽�߂̃N���X�ł�
+画像ファイルから領域データを抽出するためのクラスです
 
 + `recognizer.image_to_regions`
 
 ### filter ###
-�̈�f�[�^�𑀍삷�邽�߂̃N���X�ł�
+領域データを操作するためのクラスです
 
 + `filter.uniq_region`
 + `filter.set_color_region`
@@ -108,7 +110,7 @@ xsi man ���g�p���ẴT���v���t�@�C��������܂��B`python make.py` �����s����� xs
 + `filter.concatenate_region`
 
 ### drawer ###
-�̈�f�[�^����摜��`�悷�邽�߂̃N���X�ł�
+領域データから画像を描画するためのクラスです
 
 + `drawer.draw_by_its_type`
 + `drawer.rectangle`
@@ -116,12 +118,12 @@ xsi man ���g�p���ẴT���v���t�@�C��������܂��B`python make.py` �����s����� xs
 + `drawer.circle`
 
 ### writer ###
-�̈�f�[�^�����`�t�@�C�����o�͂��邽�߂̃N���X�ł�
+領域データから定義ファイルを出力するためのクラスです
 
 + `writer.SoftimageHTML`
 
 ### utility ###
-�֗��p�ł�
+便利用です
 
 + `utility.remove_file`
 + `utility.html_character`
@@ -129,7 +131,7 @@ xsi man ���g�p���ẴT���v���t�@�C��������܂��B`python make.py` �����s����� xs
 
 Enjoy!!
 
-���C�Z���X
+ライセンス
 ----------
 Copyright &copy; 2014 yamahigashi
 Distributed under the [MIT License][mit].  
