@@ -44,32 +44,36 @@ class rect(region):
     center = property(doc='center of gravity of rect')
     area = property(doc='calc area')
 
-    @top_left.getter
-    def top_left(self):
-        return (self.x, self.y)
-
-    @bottom_right.getter
-    def bottom_right(self):
-        return (self.x + self.w, self.y + self.h)
-
-    @center.getter
-    def center(self):
-        return (self.x + self.w / 2, self.y + self.h / 2)
-
-    @area.getter
-    def area(self):
-        return self.w * self.h / 2.0
-
     def __init__(self, cvrect):
         self.x = cvrect[0]
         self.y = cvrect[1]
         self.w = cvrect[2]
         self.h = cvrect[3]
 
-        # self.drawer = drawer.rectangle
+    @top_left.getter
+    def top_left(self):
+        return map(int, (self.x, self.y))
+
+    @bottom_right.getter
+    def bottom_right(self):
+        return map(int, (self.x + self.w, self.y + self.h))
+
+    @center.getter
+    def center(self):
+        return map(int, (self.x + self.w / 2, self.y + self.h / 2))
+
+    @area.getter
+    def area(self):
+        return self.w * self.h / 2.0
+
+    def scale(self, ratio):
+        c = self.center
+        self.w, self.h = map(lambda x: int(x * ratio), [self.w, self.h])
+        self.x = int(c[0] - (self.w / 2.0))
+        self.y = int(c[1] - (self.h / 2.0))
 
 
-class rotated_rect(region):
+class rotated_rect(rect):
 
     x = 0
     y = 0
@@ -108,6 +112,12 @@ class rotated_rect(region):
     def area(self):
         return self.w * self.h / 2.0
 
+    def scale(self, ratio):
+        c = self.center
+        self.w, self.h = map(lambda x: int(x * ratio), [self.w, self.h])
+        self.x = int(c[0] - (self.w / 2.0))
+        self.y = int(c[1] - (self.h / 2.0))
+
 
 class circle(region):
 
@@ -131,6 +141,9 @@ class circle(region):
     def area(self):
         return self.radius * self.radius * math.pi
 
+    def scale(self, ratio):
+        self.radius *= math.sqrt(ratio)
+
 
 class ellipse(region):
 
@@ -149,3 +162,7 @@ class ellipse(region):
     @area.getter
     def area(self):
         return self.w / 2 * self.h / 2 * math.pi
+
+    def scale(self, ratio):
+        self.w *= math.sqrt(ratio)
+        self.h *= math.sqrt(ratio)
