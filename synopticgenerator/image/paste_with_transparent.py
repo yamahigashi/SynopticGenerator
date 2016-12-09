@@ -31,6 +31,7 @@ def paste(image1, image2):
 
 
 class Paster(object):
+
     def __init__(self, config, environ):
         self.config = config
         self.environ = environ

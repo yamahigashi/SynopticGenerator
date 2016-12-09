@@ -1,7 +1,6 @@
 """ coding: utf-8 """
 
 
-#import synopticgenerator.log as log
 import xml.sax.saxutils as saxutils
 import logging
 

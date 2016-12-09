@@ -3,14 +3,6 @@
 # All rights reserved.
 #
 ##############################################################################
-__author__ = "MATSUMOTO Takayoshi"
-__credits__ = ["MATSUMOTO Takayoshi", ]
-__license__ = "Modified BSD license"
-__version__ = "0.0.1"
-__maintainer__ = "MATSUMOTO Takayoshi"
-__email__ = "yamahigashi+git@gmail.com"
-__status__ = "Prototype"
-##############################################################################
 
 import os
 import yaml
@@ -22,9 +14,18 @@ import logging
 
 CURRENT_PATH = os.path.dirname(__file__)
 ##############################################################################
+__author__ = "MATSUMOTO Takayoshi"
+__credits__ = ["MATSUMOTO Takayoshi", ]
+__license__ = "Modified BSD license"
+__version__ = "0.0.1"
+__maintainer__ = "MATSUMOTO Takayoshi"
+__email__ = "yamahigashi+git@gmail.com"
+__status__ = "Prototype"
+##############################################################################
 
 
 class SynopticGenerator(object):
+
     def __init__(self):
         self.environ = None
         self.pipelines = None

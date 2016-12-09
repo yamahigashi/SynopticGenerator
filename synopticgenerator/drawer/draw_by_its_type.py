@@ -3,11 +3,7 @@
 import cv2
 import logging
 
-#import numpy
-#from PIL import Image
-
 import synopticgenerator.util as util
-#import synopticgenerator.log as log
 import synopticgenerator.region as region
 
 from synopticgenerator.drawer import ObjectDrawer

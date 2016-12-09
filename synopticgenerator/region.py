@@ -1,35 +1,36 @@
 """ coding: utf-8 """
-# Copyright 2014, MATSUMOTO Takayoshi
+# Copyright 2016, MATSUMOTO Takayoshi
 # All rights reserved.
-#
+
+# import enum
+import cv2
+import numpy
+import math
+
+# import synopticcreater.drawer as drawer
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
 __license__ = "Modified BSD license"
 __version__ = "0.0.1"
 __maintainer__ = "MATSUMOTO Takayoshi"
-__email__ = "yamahigashi+git@gmail.com"
+__email__ = "yamahigashi@gmail.com"
 __status__ = "Prototype"
 __all__ = ["region"]
-
-import enum
-import cv2
-import numpy
-import math
-
-#import synopticcreater.drawer as drawer
 ##############################################################################
 
 
-RegionType = enum.Enum("rect", "poly", "circle")
+# RegionType = enum.Enum("rect", "poly", "circle")
+# LocationType = enum.Enum("center", "left", "right")
 
 
 class region(object):
     name = ""
     region_type = None
     color = None
-    #cog = None
     radius = None
+    location = None  # LocationType
+    # cog = None
 
 
 class rect(region):
@@ -53,7 +54,7 @@ class rect(region):
 
     @center.getter
     def center(self):
-        return (self.x + self.w/2, self.y + self.h/2)
+        return (self.x + self.w / 2, self.y + self.h / 2)
 
     @area.getter
     def area(self):
@@ -65,7 +66,7 @@ class rect(region):
         self.w = cvrect[2]
         self.h = cvrect[3]
 
-        #self.drawer = drawer.rectangle
+        # self.drawer = drawer.rectangle
 
 
 class rotated_rect(region):
@@ -90,8 +91,8 @@ class rotated_rect(region):
         p = cv2.cv.BoxPoints(cvrotatedrect)
         p = numpy.int0(p)
         self.points = [(x[0], x[1]) for x in p]
-        #self.drawer = drawer.polygon
-        #print self.points
+        # self.drawer = drawer.polygon
+        # print self.points
 
     @center.getter
     def center(self):
@@ -125,7 +126,7 @@ class ellipse(region):
 
     area = property(doc='calc area')
 
-    #def __init__(self, center, radius):
+    # def __init__(self, center, radius):
     def __init__(self, cvrotated):
         self.cvrotated = cvrotated
         self.x = cvrotated[0][0]
@@ -137,4 +138,4 @@ class ellipse(region):
 
     @area.getter
     def area(self):
-        return self.w/2 * self.h/2 * math.pi
+        return self.w / 2 * self.h / 2 * math.pi

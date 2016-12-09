@@ -3,6 +3,9 @@
 # All rights reserved.
 #
 ##############################################################################
+from setuptools import setup, find_packages
+
+
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
 __license__ = "Modified BSD license"
@@ -11,7 +14,6 @@ __maintainer__ = "MATSUMOTO Takayoshi"
 __email__ = "yamahigashi+git@gmail.com"
 __status__ = "Prototype"
 
-from setuptools import setup, find_packages
 
 setup(
     name="synopticgenerator",

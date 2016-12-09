@@ -6,7 +6,7 @@ from PIL import Image
 
 from synopticgenerator.drawer import ObjectDrawer
 import synopticgenerator.util as util
-#import synopticgenerator
+# import synopticgenerator
 from synopticgenerator.error import InvalidColorConfig
 
 
@@ -32,8 +32,8 @@ class Drawer(ObjectDrawer):
             color_table)
 
     def drawpoly(self, canvas, bound, color, thickness, linetype=4, shift=0):
-        #b1 = bound.top_left
-        #b2 = bound.bottom_right
+        # b1 = bound.top_left
+        # b2 = bound.bottom_right
 
         # cv2.rectangel not support alpha blend, then draw on empty image
         # next blend tmp image on canvas with alpha
@@ -41,10 +41,10 @@ class Drawer(ObjectDrawer):
             # prepare temporary cv2 image
             h, w, d = canvas.shape
             tmp = numpy.zeros((h, w, 3), dtype=numpy.uint8)
-            #cv2.rectangle(tmp, b1, b2, color, thickness, linetype, shift)
+            # cv2.rectangle(tmp, b1, b2, color, thickness, linetype, shift)
             for i in range(len(bound.points)):
                 pt1 = bound.points[i]
-                pt2 = bound.points[i+1] if i < len(bound.points) -1 else bound.points[0]
+                pt2 = bound.points[i + 1] if i < len(bound.points) - 1 else bound.points[0]
                 cv2.line(
                     tmp, pt1, pt2, color.get_gbr(), thickness, linetype, shift)
 
@@ -71,7 +71,7 @@ class Drawer(ObjectDrawer):
             # simply, draw on canvas
             for i in range(len(bound.points)):
                 pt1 = bound.points[i]
-                pt2 = bound.points[i+1] if i < len(bound.points) -1 else bound.points[0]
+                pt2 = bound.points[i + 1] if i < len(bound.points) - 1 else bound.points[0]
                 cv2.line(
                     canvas, pt1, pt2, color.get_gbr(), thickness, linetype, shift)
             return canvas

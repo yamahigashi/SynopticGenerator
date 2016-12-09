@@ -2,7 +2,6 @@
 
 
 import logging
-#import synopticgenerator.log as log
 
 
 class FileRemover(object):

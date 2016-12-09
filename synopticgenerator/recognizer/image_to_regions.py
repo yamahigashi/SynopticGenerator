@@ -3,6 +3,13 @@
 # All rights reserved.
 #
 ##############################################################################
+import os
+import cv2
+
+import synopticgenerator.region as region
+import synopticgenerator.util as util
+import logging
+##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
 __license__ = "Modified BSD license"
@@ -10,13 +17,6 @@ __version__ = "0.0.1"
 __maintainer__ = "MATSUMOTO Takayoshi"
 __email__ = "yamahigashi+git@gmail.com"
 __status__ = "Prototype"
-
-import os
-import cv2
-
-import synopticgenerator.region as region
-import synopticgenerator.util as util
-import logging
 ##############################################################################
 
 
@@ -39,18 +39,18 @@ class SearchContours(object):
         self.image_path = image_path
         target_image = cv2.imread(self.image_path)
 
-        #グレースケール
+        # グレースケール
         im_gray = cv2.cvtColor(target_image, cv2.COLOR_BGR2GRAY)
 
-        #2値化
+        # 2値化
         th1 = cv2.adaptiveThreshold(
             im_gray, 133, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 3, 0)
-        #ADAPTIVE_THRESH_MEAN_C
-        #ADAPTIVE_THRESH_GAUSSIAN_C
+        # ADAPTIVE_THRESH_MEAN_C
+        # ADAPTIVE_THRESH_GAUSSIAN_C
 
-        #輪郭検出
+        # 輪郭検出
         contours, hierarchy = cv2.findContours(
-            #th1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            # th1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
         return [c for c in contours if cv2.contourArea(c) > self.cutoff]
@@ -88,7 +88,7 @@ class SearchContours(object):
         regions = []
         for con in contours:
             cv2.approxPolyDP(con, 3, True)
-            #box = region.rect(cv2.boundingRect(con))
+            # box = region.rect(cv2.boundingRect(con))
             box = region.rotated_rect(cv2.minAreaRect(con))
             regions.append(box)
 
@@ -128,7 +128,7 @@ def create(config, environ):
     return SearchContours(config, environ)
 
 
-def do(path):
-    c = create()
-    #return c.search_bounding_boxies(path)
-    return c.search_min_area_rect(path)
+# def do(path):
+#     c = create()
+#     #return c.search_bounding_boxies(path)
+#     return c.search_min_area_rect(path)

@@ -7,7 +7,6 @@ from PIL import Image
 
 from synopticgenerator.drawer import ObjectDrawer
 import synopticgenerator.util as util
-#import synopticgenerator.log as log
 from synopticgenerator.error import InvalidColorConfig
 
 

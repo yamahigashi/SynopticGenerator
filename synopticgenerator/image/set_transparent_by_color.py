@@ -10,6 +10,7 @@ import synopticgenerator.util as util
 
 
 class Transparenter(object):
+
     def __init__(self, config, environ):
         self.config = config
         self.environ = environ

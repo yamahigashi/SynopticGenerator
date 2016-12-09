@@ -39,12 +39,12 @@ def start(filename=None, level=logging.INFO, formatter=DEFAULT_FORMATTER):
 
 
 def debug(*args, **kwds):
-    #global _logger
+    # global _logger
     logging.debug(*args)
 
 
 def info(*args, **kwds):
-    #global _logger
+    # global _logger
     logging.info(*args)
 
 
@@ -56,7 +56,6 @@ def warn(*args, **kwds):
 def error(*args, **kwds):
     global _logger
     logging.error(*args)
-
 
 
 def log(*args, **kwds):
