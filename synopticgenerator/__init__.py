@@ -34,6 +34,7 @@ class SynopticGenerator(object):
         config = yaml.load(yaml_stream, OrderedDictYAMLLoader)
         self.environ = config.setdefault("global", {})
         self.pipelines = config.setdefault("pipeline", [])
+        self.environ["recipe_name"] = os.path.splitext(yaml_stream.name)[0]
 
         self.start_logging(self.environ)
         self.load_after(config)

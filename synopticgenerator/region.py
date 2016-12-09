@@ -111,11 +111,21 @@ class rotated_rect(region):
 
 class circle(region):
 
+    top_left = property(doc='top left point (x, y) of rect')
+    bottom_right = property(doc='bottom right point(x, y) of rect')
     area = property(doc='calc area')
 
     def __init__(self, center, radius):
         self.center = center
         self.radius = radius
+
+    @top_left.getter
+    def top_left(self):
+        return map(lambda x: x - self.radius, self.center)
+
+    @bottom_right.getter
+    def bottom_right(self):
+        return map(lambda x: x + self.radius, self.center)
 
     @area.getter
     def area(self):
