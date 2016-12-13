@@ -50,7 +50,7 @@ class SetLocationAttributeByNamingConvention(object):
             if not convention:
                 continue
 
-            if convention['expr'].match(region.name):
+            if convention['expr'].search(region.name):
                 region.location = convention['attr']
                 logging.debug("setting location attribute for region: {}, location: {}".format(
                     region.name, region.location))
