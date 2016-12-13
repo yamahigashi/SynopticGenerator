@@ -40,10 +40,13 @@ class rect(region):
     h = 0
 
     top_left = property(doc='top left point (x, y) of rect')
+    top_right = property(doc='top right point (x, y) of rect')
+    bottom_left = property(doc='bottom left point(x, y) of rect')
     bottom_right = property(doc='bottom right point(x, y) of rect')
     bottom = property(doc='bottom point(y) of rect')
     center = property(doc='center of gravity of rect')
     area = property(doc='calc area')
+    points = property(doc='corner points')
 
     def __init__(self, cvrect):
         self.x = cvrect[0]
@@ -54,6 +57,14 @@ class rect(region):
     @top_left.getter
     def top_left(self):
         return map(int, (self.x, self.y))
+
+    @top_right.getter
+    def top_right(self):
+        return map(int, (self.x + self.w, self.y))
+
+    @bottom_left.getter
+    def bottom_left(self):
+        return map(int, (self.x, self.y + self.h))
 
     @bottom_right.getter
     def bottom_right(self):
@@ -71,15 +82,40 @@ class rect(region):
     def area(self):
         return self.w * self.h / 2.0
 
+    @points.getter
+    def points(self):
+        return (self.top_left, self.top_right, self.bottom_right, self.bottom_left)
+
     def scale(self, ratio):
         c = self.center
         self.w, self.h = map(lambda x: int(x * ratio), [self.w, self.h])
         self.x = int(c[0] - (self.w / 2.0))
         self.y = int(c[1] - (self.h / 2.0))
 
+    def scale_x(self, ratio):
+        c = self.center
+        self.w = int(self.w * ratio)
+        self.x = int(c[0] - (self.w / 2.0))
+
+    def scale_y(self, ratio):
+        c = self.center
+        self.h = int(self.h * ratio)
+        self.y = int(c[1] - (self.h / 2.0))
+
     def translate(self, xy):
         self.x += int(xy[0])
         self.y += int(xy[1])
+
+    def scatter_points(self, seed):
+
+        # divide rect into two triangles and scatter points on each surface
+        if numpy.random.rand(1) < 0.5:
+            triangle = (self.top_left, self.top_right, self.bottom_left)
+
+        else:
+            triangle = (self.top_right, self.bottom_left, self.bottom_right)
+
+        return uniform_on_triangle(triangle, seed)
 
 
 class rotated_rect(rect):
@@ -162,6 +198,10 @@ class circle(region):
         self.center[0] += int(xy[0])
         self.center[1] += int(xy[1])
 
+    def scatter_points(self, seed):
+        # TODO:
+        return self.center
+
 
 class ellipse(region):
 
@@ -193,3 +233,28 @@ class ellipse(region):
     def translate(self, xy):
         self.x += int(xy[0])
         self.y += int(xy[1])
+
+    def scatter_points(self, seed):
+        # TODO:
+        return self.center
+
+
+def uniform_on_triangle(triangle, seed):
+    numpy.random.seed(seed=seed)
+    eps1, eps2 = numpy.random.rand(2)
+
+    sqrt_r1 = math.sqrt(eps1)
+
+    px = (
+        (1.0 - sqrt_r1) * triangle[0][0]
+        + sqrt_r1 * (1.0 - eps2) * triangle[1][0]
+        + sqrt_r1 * eps2 * triangle[2][0]
+    )
+
+    py = (
+        (1.0 - sqrt_r1) * triangle[0][1]
+        + sqrt_r1 * (1.0 - eps2) * triangle[1][1]
+        + sqrt_r1 * eps2 * triangle[2][1]
+    )
+
+    return (px, py)

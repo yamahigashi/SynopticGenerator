@@ -1,5 +1,6 @@
-""" coding: utf-8 """
+﻿""" coding: utf-8 """
 
+import bisect
 import cv2
 import numpy as np
 import synopticgenerator.mathutil as mathutil
@@ -23,16 +24,32 @@ class RealignmentPosition(object):
             raise RegionNotFound(self.region)
 
         shapes = content[self.region]
+        w = self.environ.get("width", 320)
+        h = self.environ.get("height", 550)
+
+        if w < h:
+            normal_ratio = h
+        else:
+            normal_ratio = w
 
         # gather cog points
         cog_points_list = np.array([x.center for x in shapes], np.float32)
+        # pointcloud_list = np.array([x.center for x in shapes], np.float32)
+        # pointcloud_list = np.array([x.scatter_points(16) for x in shapes], np.float32)
+        points = self.uniform_distribution(shapes, 500)
+        pointcloud_list = np.array(points, np.float32)
+
+        pointcloud_list = np.r_[pointcloud_list, cog_points_list]
+        pointcloud_list /= normal_ratio
 
         # calculate x-means
-        x_means = mathutil.XMeans(random_state=1).fit(cog_points_list)
+        # x_means = mathutil.XMeansCV2(random_state=1).fit(pointcloud_list)
+        x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
+        pointcloud_list *= normal_ratio
 
         for cluster in x_means.clusters:
-            x = np.std(cluster.data[0:, 0])
-            y = np.std(cluster.data[0:, 1])
+            x = np.std(cluster.data[0:, 0]) * normal_ratio
+            y = np.std(cluster.data[0:, 1]) * normal_ratio
 
             if x < y:
                 is_vertical_longer = True
@@ -55,13 +72,25 @@ class RealignmentPosition(object):
 
             else:
                 print "none of them", ratio
+                _x = np.array([x.center[0] for x in targets], np.float32)
+                # k_means_about_x = mathutil.XMeans(random_state=1).fit(_x)
+
+                '''
+                compactness, labels, centers = cv2.kmeans(
+                    data=_x, K=3, bestLabels=None,
+                    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10),
+                    attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
+                print labels
+                '''
 
         if self.config.get('draw_debug', True):
-            self.draw_debug(cog_points_list, x_means.labels)
+            self.draw_debug(pointcloud_list, x_means.labels)
 
         return content
 
     def draw_debug(self, points_input, classified_points):
+        import random
+
         # draw debug
         blank_image = np.zeros((800, 800, 3))
         blank_image_classified = np.zeros((800, 800, 3))
@@ -69,25 +98,20 @@ class RealignmentPosition(object):
         for point in points_input:
             cv2.circle(blank_image, (int(point[0]), int(point[1])), 1, (0, 255, 0), -1)
 
+        max_allocation = max(classified_points)
         for point, allocation in zip(points_input, classified_points):
-            if allocation == 0:
-                color = (255, 0, 0)
 
-            elif allocation == 1:
-                color = (0, 0, 255)
+            random.seed(allocation)
+            r = random.random()
+            g = 0.0
+            random.seed(max_allocation - allocation)
+            b = random.random()
 
-            elif allocation == 2:
-                color = (0, 255, 0)
+            color = map(lambda x: x, (b, g, r))
 
-            elif allocation == 3:
-                color = (255, 255, 0)
+            cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 3, color, 2)
 
-            else:
-                color = (255, 255, 255)
-
-            cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 3, color, -1)
-
-        cv2.imshow("Points", blank_image)
+        # cv2.imshow("Points", blank_image)
         cv2.imshow("Points Classified", blank_image_classified)
         cv2.waitKey()
 
@@ -118,6 +142,27 @@ class RealignmentPosition(object):
         for shape in targets:
             _y = y_mean - shape.bottom
             shape.translate((0, _y))
+
+    def uniform_distribution(self, shapes, point_count):
+
+        # 面積に応じてscatter, まずは累積面積のリスト作る
+        sum_area = 0.0
+        cumulative_areas = []
+        for x in shapes:
+            sum_area += x.area
+            cumulative_areas.append(sum_area)
+
+        def _choose(areas, end, i):
+            p = np.random.uniform(0.0, sum_area)
+            selected_index = bisect.bisect_left(areas, p)
+
+            return selected_index
+
+        points = []
+        for i in range(point_count):
+            points.append(shapes[_choose(cumulative_areas, sum_area, i)].scatter_points(i))
+
+        return points
 
 
 class RegionNotFound(Exception):
