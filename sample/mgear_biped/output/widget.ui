@@ -1,0 +1,1073 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<ui version="4.0">
+  <class>mgear</class>
+  <widget class="QWidget" name="mgear_biped">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>300</width>
+        <height>550</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Form</string>
+    </property>
+    <widget class="QLabel" name="img_background">
+      <property name="enabled">
+        <bool>true</bool>
+      </property>
+      <property name="geometry">
+        <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>300</width>
+          <height>550</height>
+        </rect>
+      </property>
+      <property name="windowTitle">
+        <string>Form</string>
+      </property>
+      <property name="pixmap">
+        <pixmap>background.png</pixmap>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_arm_L0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>192</x>
+          <y>154</y>
+          <width>18</width>
+          <height>64</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>arm_L0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_arm_L0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>233</x>
+          <y>195</y>
+          <width>18</width>
+          <height>66</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>arm_L0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_arm_L0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>264</x>
+          <y>243</y>
+          <width>18</width>
+          <height>32</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>arm_L0_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_arm_R0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>83</x>
+          <y>155</y>
+          <width>20</width>
+          <height>62</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>arm_R0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_arm_R0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>20</x>
+          <y>219</y>
+          <width>64</width>
+          <height>18</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>arm_R0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_arm_R0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>5</x>
+          <y>249</y>
+          <width>32</width>
+          <height>20</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>arm_R0_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>274</x>
+          <y>264</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>277</x>
+          <y>270</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>280</x>
+          <y>276</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L0_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L1_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>275</x>
+          <y>264</y>
+          <width>10</width>
+          <height>14</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L1_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L1_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>280</x>
+          <y>270</y>
+          <width>10</width>
+          <height>14</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L1_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L1_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>284</x>
+          <y>278</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L1_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L2_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>275</x>
+          <y>265</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L2_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L2_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>280</x>
+          <y>270</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L2_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L2_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>284</x>
+          <y>276</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L2_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L3_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>273</x>
+          <y>264</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L3_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L3_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>278</x>
+          <y>270</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L3_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_finger_L3_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>279</x>
+          <y>272</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_L3_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>10</x>
+          <y>264</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>7</x>
+          <y>272</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>5</x>
+          <y>276</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R0_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R1_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>8</x>
+          <y>265</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R1_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R1_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>4</x>
+          <y>271</y>
+          <width>10</width>
+          <height>12</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R1_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R1_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>1</x>
+          <y>278</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R1_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R2_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>8</x>
+          <y>266</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R2_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R2_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>5</x>
+          <y>271</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R2_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R2_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>1</x>
+          <y>276</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R2_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R3_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>10</x>
+          <y>265</y>
+          <width>12</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R3_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R3_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>7</x>
+          <y>269</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R3_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_finger_R3_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>5</x>
+          <y>272</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>finger_R3_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_foot_L0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>156</x>
+          <y>452</y>
+          <width>31</width>
+          <height>33</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>foot_L0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_foot_L0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>156</x>
+          <y>459</y>
+          <width>33</width>
+          <height>29</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>foot_L0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_foot_L0_roll_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>152</x>
+          <y>436</y>
+          <width>32</width>
+          <height>30</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>foot_L0_roll_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_foot_R0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>111</x>
+          <y>453</y>
+          <width>30</width>
+          <height>31</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>foot_R0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_foot_R0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>111</x>
+          <y>460</y>
+          <width>30</width>
+          <height>27</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>foot_R0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_foot_R0_roll_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>112</x>
+          <y>437</y>
+          <width>31</width>
+          <height>28</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>foot_R0_roll_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_leg_L0_ik_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>156</x>
+          <y>438</y>
+          <width>25</width>
+          <height>25</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>leg_L0_ik_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_leg_L0_upv_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>159</x>
+          <y>360</y>
+          <width>18</width>
+          <height>18</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>leg_L0_upv_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_leg_R0_ik_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>116</x>
+          <y>439</y>
+          <width>23</width>
+          <height>23</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>leg_R0_ik_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_leg_R0_upv_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>118</x>
+          <y>360</y>
+          <width>18</width>
+          <height>18</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>leg_R0_upv_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_neck_C0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>140</x>
+          <y>144</y>
+          <width>17</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>neck_C0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_neck_C0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>140</x>
+          <y>130</y>
+          <width>17</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>neck_C0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_neck_C0_head_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>129</x>
+          <y>79</y>
+          <width>38</width>
+          <height>41</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>neck_C0_head_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_neck_C0_ik_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>130</x>
+          <y>112</y>
+          <width>37</width>
+          <height>14</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>neck_C0_ik_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_shoulder_L0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>146</x>
+          <y>157</y>
+          <width>38</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>shoulder_L0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_shoulder_R0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>111</x>
+          <y>157</y>
+          <width>36</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>shoulder_R0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>121</x>
+          <y>227</y>
+          <width>52</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>121</x>
+          <y>215</y>
+          <width>52</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>122</x>
+          <y>203</y>
+          <width>52</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_ik0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>123</x>
+          <y>239</y>
+          <width>50</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_ik0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_ik1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>122</x>
+          <y>191</y>
+          <width>50</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_ik1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_tan0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>142</x>
+          <y>222</y>
+          <width>13</width>
+          <height>13</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_tan0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_CFkBox" name="w_spine_C0_tan1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>142</x>
+          <y>206</y>
+          <width>13</width>
+          <height>13</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>spine_C0_tan1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_thumb_L0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>262</x>
+          <y>254</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>thumb_L0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_thumb_L0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>262</x>
+          <y>260</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>thumb_L0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_LFkBox" name="w_thumb_L0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>262</x>
+          <y>266</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>thumb_L0_fk2_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_thumb_R0_fk0_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>24</x>
+          <y>254</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>thumb_R0_fk0_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_thumb_R0_fk1_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>23</x>
+          <y>260</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>thumb_R0_fk1_ctl</string>
+      </property>
+    </widget>
+    <widget class="SelectBtn_RFkBox" name="w_thumb_R0_fk2_ctl" native="true">
+      <property name="geometry">
+        <rect>
+          <x>22</x>
+          <y>266</y>
+          <width>10</width>
+          <height>10</height>
+        </rect>
+      </property>
+      <property name="autoFillBackground">
+        <bool>true</bool>
+      </property>
+      <property name="object" stdset="0">
+        <string>thumb_R0_fk2_ctl</string>
+      </property>
+    </widget>
+  </widget>
+  <customwidgets>
+    <customwidget>
+      <class>QuickSelButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_RFkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_RIkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_CIkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_LFkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_LIkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_CFkBox</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_RIkCircle</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_CIkCircle</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>SelectBtn_LIkCircle</class>
+      <extends>QWidget</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+      <container>1</container>
+    </customwidget>
+    <customwidget>
+      <class>MirrorPoseButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>FlipPoseButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>resetBindPose</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>resetTransform</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>toggleCombo</class>
+      <extends>QComboBox</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+    <customwidget>
+      <class>ikfkMatchButton</class>
+      <extends>QPushButton</extends>
+      <header>mgear.maya.synoptic.widgets</header>
+    </customwidget>
+  </customwidgets>
+  <resources/>
+  <connections/>
+</ui>
