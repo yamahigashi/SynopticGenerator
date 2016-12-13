@@ -31,7 +31,12 @@ class RotatedrectToRect(object):
         c = shape.center
         cos = math.cos
         sin = math.sin
-        theta = math.radians(shape.theta * -1)
+
+        if (90 - abs(shape.theta) < abs(shape.theta)):
+            theta = math.radians(shape.theta * -1 + 90)
+        else:
+            theta = math.radians(shape.theta * -1)
+        old_cog = shape.center
 
         def rotate(points, theta):
             ''' cancel rotation and treat as normal rect'''
@@ -60,8 +65,29 @@ class RotatedrectToRect(object):
         new_rect.color = shape.color
         new_rect.radius = shape.radius
         new_rect.location = shape.location
+        new_cog = new_rect.center
+        # match_position by old centeroid
+        new_rect.translate((old_cog[0] - new_cog[0], old_cog[1] - new_cog[1]))
 
+        # self.draw_debug(new_rect.points, (1, 0, 0))
         return new_rect
+
+    def draw_debug(self, points_input, color):
+        import cv2
+        import numpy as np
+        # draw debug
+        blank_image = np.zeros((800, 800, 3))
+
+        for point in points_input:
+            cv2.circle(blank_image, (int(point[0]), int(point[1])), 1, (0, 255, 0), -1)
+
+        for point in points_input:
+            _color = map(lambda x: int(x * 255), color)
+
+            cv2.circle(blank_image, (int(point[0]), int(point[1])), 3, _color, -1)
+
+        cv2.imshow("Points", blank_image)
+        cv2.waitKey()
 
 
 class RegionNotFound(Exception):
