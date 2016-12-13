@@ -4,7 +4,7 @@ import cv2
 import logging
 
 import synopticgenerator.util as util
-import synopticgenerator.region as region
+import synopticgenerator.shape as shape
 
 from synopticgenerator.drawer import ObjectDrawer
 import synopticgenerator.drawer.rectangle as rectangle
@@ -58,11 +58,11 @@ class DrawByType(ObjectDrawer):
         return content
 
     def draw(self, image, bound, color):
-        if type(bound) is region.rect:
+        if type(bound) is shape.Rect:
             return self.rect_drawer.draw(image, bound, color)
-        elif type(bound) is region.rotated_rect:
+        elif type(bound) is shape.RotatedRect:
             return self.poly_drawer.draw(image, bound, color)
-        elif type(bound) is region.rotated_rect:
+        elif type(bound) is shape.RotatedRect:
             return self.circle_drawer.draw(image, bound, color)
 
         else:

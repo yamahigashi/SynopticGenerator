@@ -3,7 +3,7 @@
 import math
 
 
-import synopticgenerator.region as region
+import synopticgenerator.shape as shape
 
 
 class RotatedrectToRect(object):
@@ -18,25 +18,25 @@ class RotatedrectToRect(object):
             raise RegionNotFound(self.region)
 
         news = []
-        for i, shape in enumerate(content[self.region]):
-            if type(shape) == region.rotated_rect:
-                news.append([i, self.convert(shape)])
+        for i, ctrl in enumerate(content[self.region]):
+            if type(ctrl) == shape.RotatedRect:
+                news.append([i, self.convert(ctrl)])
 
         for to_replace in news:
             content[self.region][to_replace[0]] = to_replace[1]
 
         return content
 
-    def convert(self, shape):
-        c = shape.center
+    def convert(self, ctrl):
+        c = ctrl.center
         cos = math.cos
         sin = math.sin
 
-        if (90 - abs(shape.theta) < abs(shape.theta)):
-            theta = math.radians(shape.theta * -1 + 90)
+        if (90 - abs(ctrl.theta) < abs(ctrl.theta)):
+            theta = math.radians(ctrl.theta * -1 + 90)
         else:
-            theta = math.radians(shape.theta * -1)
-        old_cog = shape.center
+            theta = math.radians(ctrl.theta * -1)
+        old_cog = ctrl.center
 
         def rotate(points, theta):
             ''' cancel rotation and treat as normal rect'''
@@ -50,7 +50,7 @@ class RotatedrectToRect(object):
 
             return int(round(x)), int(round(y))
 
-        diff = map(lambda x: (x[0] - c[0], x[1] - c[1]), shape.points)
+        diff = map(lambda x: (x[0] - c[0], x[1] - c[1]), ctrl.points)
         rot = map(lambda x: rotate(x, theta), diff)
         new = map(lambda x: (x[0] + c[0], x[1] + c[1]), rot)
 
@@ -60,11 +60,11 @@ class RotatedrectToRect(object):
         w = abs(rot[0][0]) * 2
         h = abs(rot[0][1]) * 2
 
-        new_rect = region.rect([x, y, w, h])
-        new_rect.name = shape.name
-        new_rect.color = shape.color
-        new_rect.radius = shape.radius
-        new_rect.location = shape.location
+        new_rect = shape.Rect([x, y, w, h])
+        new_rect.name = ctrl.name
+        new_rect.color = ctrl.color
+        new_rect.radius = ctrl.radius
+        new_rect.location = ctrl.location
         new_cog = new_rect.center
         # match_position by old centeroid
         new_rect.translate((old_cog[0] - new_cog[0], old_cog[1] - new_cog[1]))

@@ -16,7 +16,7 @@ __version__ = "0.0.1"
 __maintainer__ = "MATSUMOTO Takayoshi"
 __email__ = "yamahigashi@gmail.com"
 __status__ = "Prototype"
-__all__ = ["region"]
+__all__ = ["Shape"]
 ##############################################################################
 
 
@@ -24,7 +24,7 @@ __all__ = ["region"]
 # LocationType = enum.Enum("center", "left", "right")
 
 
-class region(object):
+class Shape(object):
     name = ""
     region_type = None
     color = None
@@ -33,7 +33,7 @@ class region(object):
     # cog = None
 
 
-class rect(region):
+class Rect(Shape):
     x = 0
     y = 0
     w = 0
@@ -118,7 +118,7 @@ class rect(region):
         return uniform_on_triangle(triangle, seed)
 
 
-class rotated_rect(rect):
+class RotatedRect(Rect):
 
     x = 0
     y = 0
@@ -164,7 +164,7 @@ class rotated_rect(rect):
         self.y = int(c[1] - (self.h / 2.0))
 
 
-class circle(region):
+class Circle(Shape):
 
     top_left = property(doc='top left point (x, y) of rect')
     bottom_right = property(doc='bottom right point(x, y) of rect')
@@ -203,7 +203,7 @@ class circle(region):
         return self.center
 
 
-class ellipse(region):
+class Ellipse(Shape):
 
     area = property(doc='calc area')
     bottom = property(doc='bottom point(y) of ellipse')

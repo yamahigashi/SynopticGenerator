@@ -16,7 +16,7 @@ import os
 import yaml
 import logging
 
-import synopticgenerator.region as region
+import synopticgenerator.shape as shape
 import synopticgenerator.util as util
 
 ##############################################################################
@@ -138,11 +138,11 @@ class Writer(object):
         except ImportError:
             import xml.etree.cElementTree as ET
 
-        if type(bound) is region.rect:
+        if type(bound) is shape.Rect:
             shape_name, coords = self.write_rect(parent, bound, name)
-        elif type(bound) is region.rotated_rect:
+        elif type(bound) is shape.RotatedRect:
             shape_name, coords = self.write_poly(parent, bound, name)
-        elif type(bound) is region.rotated_rect:
+        elif type(bound) is shape.RotatedRect:
             shape_name, coords = self.write_circle(parent, bound, name)
 
         else:

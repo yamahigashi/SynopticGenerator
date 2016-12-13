@@ -6,7 +6,7 @@
 import os
 import cv2
 
-import synopticgenerator.region as region
+import synopticgenerator.shape as shape
 import synopticgenerator.util as util
 import logging
 ##############################################################################
@@ -72,11 +72,11 @@ class SearchContours(object):
         for con in contours:
             cv2.approxPolyDP(con, 3, True)
             center, radius = cv2.minEnclosingCircle(con)
-            cir = region.circle(center, radius)
+            cir = shape.Circle(center, radius)
             cvrot = cv2.fitEllipse(con)
-            eli = region.ellipse(cvrot)
-            box = region.rect(cv2.boundingRect(con))
-            rot = region.rotated_rect(cv2.minAreaRect(con))
+            eli = shape.Ellipse(cvrot)
+            box = shape.Rect(cv2.boundingRect(con))
+            rot = shape.RotatedRect(cv2.minAreaRect(con))
 
             logging.debug("area: cir={}, box={}, rot={}, eli={}".format(
                 cir.area, box.area, rot.area, eli.area))
@@ -90,8 +90,8 @@ class SearchContours(object):
         regions = []
         for con in contours:
             cv2.approxPolyDP(con, 3, True)
-            # box = region.rect(cv2.boundingRect(con))
-            box = region.rotated_rect(cv2.minAreaRect(con))
+            # box = shape.Rect(cv2.boundingRect(con))
+            box = shape.RotatedRect(cv2.minAreaRect(con))
             regions.append(box)
 
         return regions

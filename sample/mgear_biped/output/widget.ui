@@ -131,9 +131,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L0_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>274</x>
+          <x>276</x>
           <y>264</y>
-          <width>10</width>
+          <width>6</width>
           <height>12</height>
         </rect>
       </property>
@@ -147,9 +147,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L0_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>277</x>
+          <x>280</x>
           <y>270</y>
-          <width>10</width>
+          <width>4</width>
           <height>12</height>
         </rect>
       </property>
@@ -163,10 +163,10 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L0_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>280</x>
-          <y>276</y>
-          <width>10</width>
-          <height>10</height>
+          <x>282</x>
+          <y>277</y>
+          <width>6</width>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -179,9 +179,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L1_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>275</x>
+          <x>278</x>
           <y>264</y>
-          <width>10</width>
+          <width>4</width>
           <height>14</height>
         </rect>
       </property>
@@ -195,9 +195,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L1_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>280</x>
+          <x>282</x>
           <y>270</y>
-          <width>10</width>
+          <width>6</width>
           <height>14</height>
         </rect>
       </property>
@@ -211,10 +211,10 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L1_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>284</x>
-          <y>278</y>
-          <width>10</width>
-          <height>10</height>
+          <x>286</x>
+          <y>279</y>
+          <width>6</width>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -227,9 +227,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L2_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>275</x>
+          <x>278</x>
           <y>265</y>
-          <width>10</width>
+          <width>4</width>
           <height>12</height>
         </rect>
       </property>
@@ -243,9 +243,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L2_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>280</x>
+          <x>282</x>
           <y>270</y>
-          <width>10</width>
+          <width>6</width>
           <height>12</height>
         </rect>
       </property>
@@ -259,9 +259,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L2_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>284</x>
+          <x>287</x>
           <y>276</y>
-          <width>10</width>
+          <width>4</width>
           <height>10</height>
         </rect>
       </property>
@@ -275,9 +275,9 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L3_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>273</x>
+          <x>276</x>
           <y>264</y>
-          <width>10</width>
+          <width>4</width>
           <height>12</height>
         </rect>
       </property>
@@ -291,10 +291,10 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L3_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>278</x>
-          <y>270</y>
-          <width>10</width>
-          <height>10</height>
+          <x>280</x>
+          <y>272</y>
+          <width>6</width>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -307,10 +307,10 @@
     <widget class="SelectBtn_LFkBox" name="w_finger_L3_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>279</x>
-          <y>272</y>
-          <width>10</width>
-          <height>10</height>
+          <x>282</x>
+          <y>274</y>
+          <width>4</width>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -323,9 +323,9 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R0_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>10</x>
+          <x>11</x>
           <y>264</y>
-          <width>10</width>
+          <width>8</width>
           <height>12</height>
         </rect>
       </property>
@@ -339,10 +339,10 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R0_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>7</x>
-          <y>272</y>
-          <width>10</width>
-          <height>10</height>
+          <x>9</x>
+          <y>273</y>
+          <width>6</width>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -355,10 +355,10 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R0_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>5</x>
-          <y>276</y>
-          <width>10</width>
-          <height>10</height>
+          <x>7</x>
+          <y>277</y>
+          <width>6</width>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -371,9 +371,9 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R1_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>8</x>
+          <x>10</x>
           <y>265</y>
-          <width>10</width>
+          <width>6</width>
           <height>12</height>
         </rect>
       </property>
@@ -387,9 +387,9 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R1_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>4</x>
+          <x>6</x>
           <y>271</y>
-          <width>10</width>
+          <width>6</width>
           <height>12</height>
         </rect>
       </property>
@@ -403,10 +403,10 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R1_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>1</x>
-          <y>278</y>
-          <width>10</width>
-          <height>10</height>
+          <x>3</x>
+          <y>280</y>
+          <width>6</width>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -420,9 +420,9 @@
       <property name="geometry">
         <rect>
           <x>8</x>
-          <y>266</y>
+          <y>267</y>
           <width>10</width>
-          <height>10</height>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -435,9 +435,9 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R2_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>5</x>
+          <x>7</x>
           <y>271</y>
-          <width>10</width>
+          <width>6</width>
           <height>10</height>
         </rect>
       </property>
@@ -451,10 +451,10 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R2_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>1</x>
-          <y>276</y>
-          <width>10</width>
-          <height>10</height>
+          <x>2</x>
+          <y>278</y>
+          <width>8</width>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -468,9 +468,9 @@
       <property name="geometry">
         <rect>
           <x>10</x>
-          <y>265</y>
+          <y>267</y>
           <width>12</width>
-          <height>10</height>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -483,10 +483,10 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R3_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>7</x>
-          <y>269</y>
-          <width>10</width>
-          <height>10</height>
+          <x>8</x>
+          <y>271</y>
+          <width>8</width>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -499,10 +499,10 @@
     <widget class="SelectBtn_RFkBox" name="w_finger_R3_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>5</x>
-          <y>272</y>
-          <width>10</width>
-          <height>10</height>
+          <x>7</x>
+          <y>274</y>
+          <width>6</width>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -563,7 +563,7 @@
     <widget class="SelectBtn_RFkBox" name="w_foot_R0_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>111</x>
+          <x>110</x>
           <y>453</y>
           <width>30</width>
           <height>31</height>
@@ -579,7 +579,7 @@
     <widget class="SelectBtn_RFkBox" name="w_foot_R0_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>111</x>
+          <x>109</x>
           <y>460</y>
           <width>30</width>
           <height>27</height>
@@ -595,7 +595,7 @@
     <widget class="SelectBtn_RFkBox" name="w_foot_R0_roll_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>112</x>
+          <x>113</x>
           <y>437</y>
           <width>31</width>
           <height>28</height>
@@ -643,7 +643,7 @@
     <widget class="SelectBtn_RFkBox" name="w_leg_R0_ik_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>116</x>
+          <x>117</x>
           <y>439</y>
           <width>23</width>
           <height>23</height>
@@ -676,9 +676,9 @@
       <property name="geometry">
         <rect>
           <x>140</x>
-          <y>144</y>
+          <y>145</y>
           <width>17</width>
-          <height>10</height>
+          <height>9</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -740,9 +740,9 @@
       <property name="geometry">
         <rect>
           <x>146</x>
-          <y>157</y>
+          <y>158</y>
           <width>38</width>
-          <height>10</height>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -756,9 +756,9 @@
       <property name="geometry">
         <rect>
           <x>111</x>
-          <y>157</y>
+          <y>158</y>
           <width>36</width>
-          <height>10</height>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -772,9 +772,9 @@
       <property name="geometry">
         <rect>
           <x>121</x>
-          <y>227</y>
+          <y>230</y>
           <width>52</width>
-          <height>10</height>
+          <height>4</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -788,9 +788,9 @@
       <property name="geometry">
         <rect>
           <x>121</x>
-          <y>215</y>
+          <y>218</y>
           <width>52</width>
-          <height>10</height>
+          <height>4</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -804,9 +804,9 @@
       <property name="geometry">
         <rect>
           <x>122</x>
-          <y>203</y>
+          <y>205</y>
           <width>52</width>
-          <height>10</height>
+          <height>6</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -820,9 +820,9 @@
       <property name="geometry">
         <rect>
           <x>123</x>
-          <y>239</y>
+          <y>243</y>
           <width>50</width>
-          <height>10</height>
+          <height>2</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -836,9 +836,9 @@
       <property name="geometry">
         <rect>
           <x>122</x>
-          <y>191</y>
+          <y>195</y>
           <width>50</width>
-          <height>10</height>
+          <height>2</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -883,9 +883,9 @@
     <widget class="SelectBtn_LFkBox" name="w_thumb_L0_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>262</x>
+          <x>263</x>
           <y>254</y>
-          <width>10</width>
+          <width>6</width>
           <height>10</height>
         </rect>
       </property>
@@ -899,9 +899,9 @@
     <widget class="SelectBtn_LFkBox" name="w_thumb_L0_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>262</x>
+          <x>264</x>
           <y>260</y>
-          <width>10</width>
+          <width>6</width>
           <height>10</height>
         </rect>
       </property>
@@ -915,10 +915,10 @@
     <widget class="SelectBtn_LFkBox" name="w_thumb_L0_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>262</x>
-          <y>266</y>
-          <width>10</width>
-          <height>10</height>
+          <x>265</x>
+          <y>267</y>
+          <width>6</width>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">
@@ -931,9 +931,9 @@
     <widget class="SelectBtn_RFkBox" name="w_thumb_R0_fk0_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>24</x>
+          <x>26</x>
           <y>254</y>
-          <width>10</width>
+          <width>6</width>
           <height>10</height>
         </rect>
       </property>
@@ -947,9 +947,9 @@
     <widget class="SelectBtn_RFkBox" name="w_thumb_R0_fk1_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>23</x>
+          <x>25</x>
           <y>260</y>
-          <width>10</width>
+          <width>6</width>
           <height>10</height>
         </rect>
       </property>
@@ -963,10 +963,10 @@
     <widget class="SelectBtn_RFkBox" name="w_thumb_R0_fk2_ctl" native="true">
       <property name="geometry">
         <rect>
-          <x>22</x>
-          <y>266</y>
-          <width>10</width>
-          <height>10</height>
+          <x>24</x>
+          <y>267</y>
+          <width>6</width>
+          <height>8</height>
         </rect>
       </property>
       <property name="autoFillBackground">

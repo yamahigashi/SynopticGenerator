@@ -35,7 +35,7 @@ pipeline:
 
 
     recognize:
-        - module: recognizer.images_to_region_from_filename
+        - module: recognizer.images_to_shape_from_filename
           config:
             image_pattern: "src_images/{{ controller_name }}.0000.png"
             store: "regions"

@@ -98,7 +98,7 @@ xsi man を使用してのサンプルファイルがあります。`python make
 ### recognizer ###
 画像ファイルから領域データを抽出するためのクラスです
 
-+ `recognizer.image_to_regions`
++ `recognizer.image_to_shapes`
 
 ### filter ###
 領域データを操作するためのクラスです

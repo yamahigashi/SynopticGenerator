@@ -36,7 +36,7 @@ pipeline:
 
 
     recognize:
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_simple.png"

@@ -45,22 +45,22 @@ class SetLocationAttributeByNamingConvention(object):
 
         return content
 
-    def apply_conventions(self, region):
+    def apply_conventions(self, ctrl):
         for convention in [self.convention_l, self.convention_r, self.convention_c]:
             if not convention:
                 continue
 
-            if convention['expr'].search(region.name):
-                region.location = convention['attr']
+            if convention['expr'].search(ctrl.name):
+                ctrl.location = convention['attr']
                 logging.debug("setting location attribute for region: {}, location: {}".format(
-                    region.name, region.location))
+                    ctrl.name, ctrl.location))
 
                 break
 
         else:
-            region.location = self.default
+            ctrl.location = self.default
             logging.debug("setting location attribute as default for region: {}, location: {}".format(
-                region.name, region.location))
+                ctrl.name, ctrl.location))
 
 
 class RegionNotFound(Exception):

@@ -37,7 +37,7 @@ pipeline:
 
 
     recognize:
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_ik_left.png"
@@ -53,7 +53,7 @@ pipeline:
                         - LArmEff
                         - LeftFoot
 
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_ik_right.png"
@@ -69,7 +69,7 @@ pipeline:
                         - RArmEff
                         - RightFoot
 
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_ik_center.png"
@@ -86,7 +86,7 @@ pipeline:
                         - GlobalSRT
 
 
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_ik_center2.png"
@@ -102,7 +102,7 @@ pipeline:
                         - HipDepth
 
 
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_fk_center2.png"
@@ -118,7 +118,7 @@ pipeline:
                         - Hip
 
 
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_fk_right1.png"
@@ -134,7 +134,7 @@ pipeline:
                             - RightRoll
                             - RToeOffset1
 
-        #- module: recognizer.image_to_regions
+        #- module: recognizer.image_to_shapes
         #  config:
         #    image: 
         #        - "src_controller_fk_right2.png"
@@ -150,7 +150,7 @@ pipeline:
         #                    - RForearm
 
 
-        - module: recognizer.image_to_regions
+        - module: recognizer.image_to_shapes
           config:
             image: 
                 - "src_controller_fk_left1.png"

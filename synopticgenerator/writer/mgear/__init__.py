@@ -7,7 +7,7 @@
 import logging
 import math
 
-import synopticgenerator.region as region
+import synopticgenerator.shape as shape
 import synopticgenerator.util as util
 
 try:
@@ -141,12 +141,12 @@ class Writer(object):
 
     def write_shape(self, parent, bound, name):
 
-        if type(bound) is region.rect:
+        if type(bound) is shape.Rect:
             shape_name, coords = self.write_rect(parent, bound, name)
-        elif type(bound) is region.rotated_rect:
+        elif type(bound) is shape.RotatedRect:
             return
-            # shape_name, coords = self.write_rotated_rect(parent, bound, name)
-        elif type(bound) is region.circle:
+            # shape_name, coords = self.write_RotatedRect(parent, bound, name)
+        elif type(bound) is shape.Circle:
             shape_name, coords = self.write_circle(parent, bound, name)
 
         else:

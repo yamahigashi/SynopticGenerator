@@ -7,8 +7,8 @@ import os
 import re
 import glob
 
-import synopticgenerator.recognizer.image_to_regions as image_to_regions
-# import synopticgenerator.region as region
+import synopticgenerator.recognizer.image_to_shapes as image_to_shapes
+# import synopticgenerator.shape as shape
 # import synopticgenerator.util as util
 # import logging
 ##############################################################################
@@ -55,7 +55,7 @@ class ImagesToRegionFromFilename(object):
                 'store': self.store,
                 'controller_name': ctrl_name
             }
-            reco = image_to_regions.SearchContours(conf, self.environ)
+            reco = image_to_shapes.SearchContours(conf, self.environ)
             content = reco.execute(content)
 
         return content
