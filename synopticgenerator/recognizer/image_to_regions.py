@@ -98,6 +98,10 @@ class SearchContours(object):
 
     def execute(self, content):
         regions = []
+        controller_name = self.config.get("controller_name")
+        if controller_name and 'str' in str(type(controller_name)):
+            naming = True
+
         for image in self.config["image"]:
             if not os.path.exists(image):
                 logging.error("file not found: {}".format(image))
@@ -107,6 +111,11 @@ class SearchContours(object):
             if self.config.get("color"):
                 for r in x:
                     r.color = util.color(self.config["color"], self.color_table)
+
+            if naming:
+                for r in x:
+                    r.name = controller_name
+
             regions.extend(x)
 
         if content.get(self.store):
