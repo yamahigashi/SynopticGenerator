@@ -1,5 +1,6 @@
 ﻿""" coding: utf-8 """
 
+import copy
 import bisect
 import cv2
 import numpy as np
@@ -34,20 +35,30 @@ class RealignmentPosition(object):
 
         # gather cog points
         cog_points_list = np.array([x.center for x in shapes], np.float32)
-        # pointcloud_list = np.array([x.center for x in shapes], np.float32)
-        # pointcloud_list = np.array([x.scatter_points(16) for x in shapes], np.float32)
-        points = self.uniform_distribution(shapes, 500)
-        pointcloud_list = np.array(points, np.float32)
 
-        pointcloud_list = np.r_[pointcloud_list, cog_points_list]
+        # inflate shapes
+        inflated = copy.deepcopy(shapes)
+        map(lambda x: x.scale(1.25), inflated)
+
+        inflated_points, inflated_indice = self.uniform_distribution(inflated, 500)
+        pointcloud_list = np.array(inflated_points, np.float32)
+        pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 shape
+        inflated_indice.extend([x for x in range(len(cog_points_list))])
         pointcloud_list /= normal_ratio
 
         # calculate x-means
-        # x_means = mathutil.XMeansCV2(random_state=1).fit(pointcloud_list)
+        # x_means = mathutil.XMeansCV2().fit(pointcloud_list)
         x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
         pointcloud_list *= normal_ratio
 
-        for cluster in x_means.clusters:
+        # resolve collision
+        for i, cluster in enumerate(x_means.clusters):
+            indice = np.unique(np.array(inflated_indice)[cluster.index])
+            targets = np.array(shapes)[indice]
+            self.resolve_collision(targets)
+
+        # alignment
+        for i, cluster in enumerate(x_means.clusters):
             x = np.std(cluster.data[0:, 0]) * normal_ratio
             y = np.std(cluster.data[0:, 1]) * normal_ratio
 
@@ -109,7 +120,7 @@ class RealignmentPosition(object):
 
             color = map(lambda x: x, (b, g, r))
 
-            cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 3, color, 2)
+            cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 1, color, 2)
 
         # cv2.imshow("Points", blank_image)
         cv2.imshow("Points Classified", blank_image_classified)
@@ -159,10 +170,24 @@ class RealignmentPosition(object):
             return selected_index
 
         points = []
+        indice = []
         for i in range(point_count):
-            points.append(shapes[_choose(cumulative_areas, sum_area, i)].scatter_points(i))
+            index = _choose(cumulative_areas, sum_area, i)
+            points.append(shapes[index].scatter_points(i))
+            indice.append(index)
 
-        return points
+        return points, indice
+
+    def resolve_collision(self, shapes):
+        """
+        Args:
+            shapes(np.array)
+        """
+        for shape in sorted(shapes, key=lambda x: x.area, reverse=True):
+            print shape.name, shape.area
+
+    def _is_infringement(self, a, b):
+        pass
 
 
 class RegionNotFound(Exception):
