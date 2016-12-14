@@ -1,6 +1,6 @@
 """ coding: utf-8 """
 
-# import logging
+import synopticgenerator.shape as shape
 
 
 class MinimumWidthHeight(object):
@@ -10,8 +10,7 @@ class MinimumWidthHeight(object):
         self.config = config
         self.environ = environ
         self.region = config.setdefault("region_name", "regions")
-        self.controls = config.setdefault("controls", None)
-        self.baseline = config.setdefault("baseline", 10)
+        self.baseline = config.setdefault("baseline", 9)
 
     def execute(self, content):
         if not content.get(self.region):
@@ -19,12 +18,12 @@ class MinimumWidthHeight(object):
 
         mini = self.config.get("baseline")
 
-        for shape in content[self.region]:
-            if "rect'" in str(type(shape)):
-                if shape.w < mini:
-                    shape.scale_x(float(mini) / shape.w)
-                if shape.h < mini:
-                    shape.scale_y(float(mini) / shape.h)
+        for ctrl in content[self.region]:
+            if isinstance(ctrl, shape.Rect):
+                if ctrl.w < mini:
+                    ctrl.scale_x(float(mini) / ctrl.w)
+                if ctrl.h < mini:
+                    ctrl.scale_y(float(mini) / ctrl.h)
 
         return content
 
