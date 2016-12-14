@@ -20,6 +20,8 @@ global:
 
         "hilight":    "195, 175, 185, 240"
 
+    x_center: 178
+
 
 pipeline:
     prepare:

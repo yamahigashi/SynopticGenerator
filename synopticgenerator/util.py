@@ -113,3 +113,53 @@ def color(string, color_table=None):
 def is_opencv_version_below_2():
     import cv2
     return int(cv2.__version__.split('.')[0]) <= 2
+
+
+def get_x_center(env):
+    width = env.get('width')
+    if not width:
+        # TODO
+        raise
+
+    x_center = env.get('x_center')
+    if not x_center:
+        x_center = width / 2
+
+    return x_center
+
+
+def is_point_inside_central_region(env, point):
+    width = env.get('width')
+    if not width:
+        return False
+
+    x_center = get_x_center(env)
+
+    margin_rate = 0.10
+    margin = width * (margin_rate / 2)
+    min = x_center - margin
+    max = x_center + margin
+
+    if point.x < min:
+        return False
+    elif max < point.x:
+        return False
+
+    return True
+
+
+def is_point_inside_lower_region(env, point):
+    height = env.get('height')
+    if not height:
+        return False
+
+    margin_rate = 0.25
+    min = height * (1 - margin_rate)
+    max = height
+
+    if point.y < min:
+        return False
+    elif max < point.y:
+        return False
+
+    return True
