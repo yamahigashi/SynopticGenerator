@@ -2,19 +2,28 @@
 
 import copy
 import bisect
+import logging
+
 import cv2
 import numpy as np
+
+import synopticgenerator.util as util
+import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
 
 
 class RealignmentPosition(object):
-    ''' clustering given shape as cog points by k-means. '''
+    ''' clustering given ctrl as cog points by k-means. '''
 
     def __init__(self, config, environ):
         self.config = config
         self.environ = environ
         self.region = config.setdefault("region_name", "regions")
         self.controls = config.setdefault("controls", None)
+        self.margin = config.setdefault("margin", 8)
+
+        self.aspect_ratio_baseline_for_conflict = config.setdefault(
+            "aspect_ratio_baseline_for_conflict", 0.25)
 
         self.ratio_over_unbalance = 4.0
         self.ratio_very_circle = 1.5
@@ -24,80 +33,113 @@ class RealignmentPosition(object):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
-        shapes = content[self.region]
+        ctrls = content[self.region]
         w = self.environ.get("width", 320)
         h = self.environ.get("height", 550)
 
         if w < h:
-            normal_ratio = h
+            self.aspect_ratio_normalizer = h
         else:
-            normal_ratio = w
+            self.aspect_ratio_normalizer = w
 
         # gather cog points
-        cog_points_list = np.array([x.center for x in shapes], np.float32)
+        cog_points_list = np.array([x.center for x in ctrls], np.float32)
 
-        # inflate shapes
-        inflated = copy.deepcopy(shapes)
-        map(lambda x: x.scale(1.25), inflated)
+        # inflate ctrls
+        inflated = copy.deepcopy(ctrls)
+        map(lambda x: x.scale(1.2), inflated)
 
-        inflated_points, inflated_indice = self.uniform_distribution(inflated, 500)
+        inflated_points, inflated_indice = self.uniform_distribution(inflated, 1)
         pointcloud_list = np.array(inflated_points, np.float32)
-        pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 shape
+        pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 ctrl
         inflated_indice.extend([x for x in range(len(cog_points_list))])
-        pointcloud_list /= normal_ratio
+        pointcloud_list /= self.aspect_ratio_normalizer
 
         # calculate x-means
         # x_means = mathutil.XMeansCV2().fit(pointcloud_list)
         x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
-        pointcloud_list *= normal_ratio
+        pointcloud_list *= self.aspect_ratio_normalizer
 
         # resolve collision
         for i, cluster in enumerate(x_means.clusters):
+            cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
+            cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
             indice = np.unique(np.array(inflated_indice)[cluster.index])
-            targets = np.array(shapes)[indice]
+            targets = np.array(ctrls)[indice]
             self.resolve_collision(targets)
+            self.alignment_in_cluster(cluster, targets, use_cluster_for_aspectratio=False)
 
-        # alignment
-        for i, cluster in enumerate(x_means.clusters):
-            x = np.std(cluster.data[0:, 0]) * normal_ratio
-            y = np.std(cluster.data[0:, 1]) * normal_ratio
-
-            if x < y:
-                is_vertical_longer = True
-                ratio = y / x
-            else:
-                is_vertical_longer = False
-                ratio = x / y
-
-            targets = [x for i, x in enumerate(shapes) if i in cluster.index]
-            if self.ratio_over_unbalance < ratio:
-                if is_vertical_longer:
-                    print "vertical"
-                    self.align_horizontal(cluster, targets)
-
-                else:
-                    self.align_vertical(cluster, targets)
-
-            elif ratio < self.ratio_very_circle:
-                print "circle", ratio
-
-            else:
-                print "none of them", ratio
-                _x = np.array([x.center[0] for x in targets], np.float32)
-                # k_means_about_x = mathutil.XMeans(random_state=1).fit(_x)
-
-                '''
-                compactness, labels, centers = cv2.kmeans(
-                    data=_x, K=3, bestLabels=None,
-                    criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10),
-                    attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
-                print labels
-                '''
+        cog_points_list = np.array([x.center for x in ctrls], np.float32)
+        x_means2 = mathutil.XMeans(random_state=1).fit(cog_points_list)
+        for i, cluster in enumerate(x_means2.clusters):
+            targets = np.array(ctrls)[cluster.index]
+            # self.alignment_in_cluster(cluster, targets)
 
         if self.config.get('draw_debug', True):
             self.draw_debug(pointcloud_list, x_means.labels)
+            self.draw_debug(cog_points_list, x_means2.labels)
 
         return content
+
+    def alignment_in_cluster(self, cluster, ctrls, use_cluster_for_aspectratio=True):
+        if not 1 < len(ctrls):
+            return
+
+        if use_cluster_for_aspectratio:
+            x = np.std(cluster.data[0:, 0])
+            y = np.std(cluster.data[0:, 1])
+
+        else:
+            xarray = sorted([ctrl.center[0] for ctrl in ctrls])
+            yarray = sorted([ctrl.center[1] for ctrl in ctrls])
+            x = xarray[-1] - xarray[0]
+            y = yarray[-1] - yarray[0]
+
+        if x < y:
+            is_vertical_longer = True
+            try:
+                ratio = y / x
+            except ZeroDivisionError:
+                ratio = y
+        else:
+            is_vertical_longer = False
+            try:
+                ratio = x / y
+            except ZeroDivisionError:
+                ratio = x
+
+        if self.ratio_over_unbalance < ratio:
+            if is_vertical_longer:
+                print "\nvertical", ratio, x, y
+                self.align_horizontal(cluster, ctrls)
+
+            else:
+                print "\nhorizontal", ratio, x, y
+                self.align_vertical(cluster, ctrls)
+
+        elif ratio < self.ratio_very_circle:
+            print "circle", ratio, x, y
+
+        else:
+            print "\nnone of them", ratio, x, y
+            if util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)):
+                print "is in center"
+                cluster.center[0] = util.get_x_center(self.environ)
+                self.align_horizontal(cluster, ctrls, exclusive_location="center")
+
+            if util.is_point_inside_lower_region(self.environ, shape.Vec2(*cluster.center)):
+                print "is in lower"
+                self.align_vertical_by_bottom(cluster, ctrls)
+            # _x = np.array([x.center[0] for x in targets], np.float32)
+            # k_means_about_x = mathutil.XMeans(random_state=1).fit(_x)
+
+            '''
+            compactness, labels, centers = cv2.kmeans(
+                data=_x, K=3, bestLabels=None,
+                criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10),
+                attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
+            print labels
+            '''
 
     def draw_debug(self, points_input, classified_points):
         import random
@@ -126,14 +168,17 @@ class RealignmentPosition(object):
         cv2.imshow("Points Classified", blank_image_classified)
         cv2.waitKey()
 
-    def align_horizontal(self, cluster, targets):
-        for shape in targets:
-            _x = cluster.center[0] - shape.center[0]
-            shape.translate((_x, 0))
+    def align_horizontal(self, cluster, targets, exclusive_location=None):
+        for ctrl in targets:
+            if exclusive_location and ctrl.location != exclusive_location:
+                continue
+            _x = cluster.center[0] - ctrl.center[0]
+            print ctrl.name, _x, cluster.center, ctrl.center
+            ctrl.translate((_x, 0))
 
     # def align_horizontal_by_center(self, cluster, targets):
-    #     for shape in targets:
-    #         print shape.name
+    #     for ctrl in targets:
+    #         print ctrl.name
 
     def align_vertical(self, cluster, targets):
         # if it is in the lower area, align it downward or align it centeroid
@@ -144,22 +189,24 @@ class RealignmentPosition(object):
             self.align_vertical_by_bottom(cluster, targets)
 
     def align_vertical_by_center(self, cluster, targets):
-        for shape in targets:
-            _y = cluster.center[1] - shape.center[1]
-            shape.translate((0, _y))
+        for ctrl in targets:
+            _y = cluster.center[1] - ctrl.center[1]
+            ctrl.translate((0, _y))
+            print "by center", ctrl.name
 
     def align_vertical_by_bottom(self, cluster, targets):
         y_mean = np.mean(np.array([x.bottom for x in targets]))
-        for shape in targets:
-            _y = y_mean - shape.bottom
-            shape.translate((0, _y))
+        for ctrl in targets:
+            _y = y_mean - ctrl.bottom
+            ctrl.translate((0, _y))
+            print "by bottom", ctrl.name
 
-    def uniform_distribution(self, shapes, point_count):
+    def uniform_distribution(self, ctrls, point_count):
 
         # 面積に応じてscatter, まずは累積面積のリスト作る
         sum_area = 0.0
         cumulative_areas = []
-        for x in shapes:
+        for x in ctrls:
             sum_area += x.area
             cumulative_areas.append(sum_area)
 
@@ -173,21 +220,108 @@ class RealignmentPosition(object):
         indice = []
         for i in range(point_count):
             index = _choose(cumulative_areas, sum_area, i)
-            points.append(shapes[index].scatter_points(i))
+            points.append(ctrls[index].scatter_points(i))
             indice.append(index)
 
         return points, indice
 
-    def resolve_collision(self, shapes):
+    def resolve_collision(self, ctrls):
         """
         Args:
-            shapes(np.array)
+            ctrls(np.array)
         """
-        for shape in sorted(shapes, key=lambda x: x.area, reverse=True):
-            print shape.name, shape.area
+        all = sorted(ctrls, key=lambda x: x.area)
+        while all:
+            target = all.pop()
+            for b in all:
+                self.resolve_collision_a_b(target, b)
 
-    def _is_infringement(self, a, b):
-        pass
+    def resolve_collision_a_b(self, a, b):
+        pa = shape.Vec2(*a.center)
+        pb = shape.Vec2(*b.center)
+        dist = pa - pb
+
+        move_x = ((a.w + b.w) / 2.0 + self.config.get('margin')) - abs(dist.x)
+        move_y = ((a.h + b.h) / 2.0 + self.config.get('margin')) - abs(dist.y)
+
+        if 0 < move_x and 0 < move_y:
+            mes = ("infringement detect at {}({}) with {}({})".format(
+                a.name, a.area, b.name, b.area))
+            logging.debug(mes)
+        else:
+            return
+
+        # round up
+        move = shape.Vec2(move_x, move_y)
+        move.x = 0.0 if move.x < 0 else move.x
+        move.y = 0.0 if move.y < 0 else move.y
+
+        # determine direction
+        move = self.solve_direction_to_avoid(a, b, move) * -1
+        b.translate(move)
+
+    def solve_direction_to_avoid(self, a, b, move):
+        aspect = self.which_direction_to_avoid_by_aspect_ratio(move.x / move.y)
+
+        if aspect and aspect == "horizontal":
+            move.y = 0
+
+        elif aspect and aspect == "vertical":
+            move.x = 0
+
+        else:
+            direction = self.which_direction_to_avoid_by_location_attribute(a, b)
+            if direction == "center":
+                move.x = 0
+
+            elif direction == "left":
+                move.x = abs(move.x) * -1
+                move.y = 0
+
+            elif direction == "right":
+                move.x = abs(move.x)
+                move.y = 0
+
+        # TODO: avoid protrude out from background
+
+        return move
+
+    def which_direction_to_avoid_by_aspect_ratio(self, ratio):
+        base = self.config.get('aspect_ratio_baseline_for_conflict')
+        rev_base = 1.0 / base
+
+        if rev_base < ratio:
+            return "vertical"
+
+        elif ratio < base:
+            return "horizontal"
+
+        else:
+            return None
+
+    def which_direction_to_avoid_by_location_attribute(self, a, b):
+        if a.location == 'center' and b.location == "center":
+            res = "center"
+
+        elif a.location == "center" and b.location != "center":
+            res = b.location
+
+        elif a.location != "center" and b.location == "center":
+            res = "center"
+
+        elif a.location != "center" and b.location != "center":
+            if a.location == b.location:
+                res = a.location
+            else:
+                res = b.location
+
+        else:
+            res = "center"
+
+        if not res:
+            res = "center"
+
+        return res
 
 
 class RegionNotFound(Exception):
