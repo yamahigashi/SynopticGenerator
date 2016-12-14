@@ -105,6 +105,8 @@ class SearchContours(object):
         controller_name = self.config.get("controller_name")
         if controller_name and 'str' in str(type(controller_name)):
             naming = True
+        else:
+            naming = False
 
         for image in self.config["image"]:
             if not os.path.exists(image):
