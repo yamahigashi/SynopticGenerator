@@ -261,3 +261,95 @@ def uniform_on_triangle(triangle, seed):
     )
 
     return (px, py)
+
+
+class Vec2(list):
+
+    x = property()
+    y = property()
+
+    def __init__(self, x, y):
+        super(Vec2, self).__init__()
+        self.append(x)
+        self.append(y)
+
+    @x.getter
+    def x(self):
+        return self[0]
+
+    @y.getter
+    def y(self):
+        return self[1]
+
+    @x.setter
+    def x(self, value):
+        self[0] = value
+
+    @y.setter
+    def y(self, value):
+        self[1] = value
+
+    # ----------------------------------------------------
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __ne__(self, other):
+        return self.x != other.x or self.y != other.y
+
+    # ----------------------------------------------------
+    def __add__(self, other):
+        return Vec2(self.x + other.x, self.y + other.y)
+
+    def __iadd__(self, other):
+        self.x += other.x
+        self.y += other.y
+        return self
+
+    # ----------------------------------------------------
+    def __sub__(self, other):
+        return Vec2(self.x - other.x, self.y - other.y)
+
+    def __isub__(self, other):
+        self.x -= other.x
+        self.y -= other.y
+        return self
+
+    # ----------------------------------------------------
+    def __mul__(self, other):
+        if isinstance(other, Vec2):
+            return Vec2(self.x * other.x, self.y * other.y)
+        else:
+            return Vec2(self.x * other, self.y * other)
+
+    def __imul__(self, other):
+        if isinstance(other, Vec2):
+            self.x *= other.x
+            self.y *= other.y
+            return self
+        else:
+            self.x *= other
+            self.y *= other
+            return self
+
+    # ----------------------------------------------------
+    def __div__(self, other):
+        if isinstance(other, Vec2):
+            return Vec2(self.x / other.x, self.y / other.y)
+        else:
+            return Vec2(self.x / other, self.y / other)
+
+    def __truediv__(self, other):
+        if isinstance(other, Vec2):
+            return Vec2(self.x / other.x, self.y / other.y)
+        else:
+            return Vec2(self.x / other, self.y / other)
+
+    def __idiv__(self, other):
+        if isinstance(other, Vec2):
+            self.x /= other.x
+            self.y /= other.y
+            return self
+        else:
+            self.x /= other
+            self.y /= other
+            return self
