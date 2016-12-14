@@ -27,6 +27,13 @@ class XMeansCV2:
         """
         self.k_init = k_init
         self.k_means_args = k_means_args
+        self.k_means_args.setdefault("bestLabels", None)
+        self.k_means_args.setdefault("criteria", (cv2.TERM_CRITERIA_EPS |
+                                                  cv2.TERM_CRITERIA_MAX_ITER,
+                                                  1, 0.0001))
+        self.k_means_args.setdefault("attempts", 1)
+        # self.k_means_args.setdefault("flags", cv2.KMEANS_RANDOM_CENTERS)
+        self.k_means_args.setdefault("flags", cv2.KMEANS_PP_CENTERS)
 
     def fit(self, X):
         """
@@ -35,13 +42,8 @@ class XMeansCV2:
         """
         self.clusters = []
 
-        compactness, labels, centers = cv2.kmeans(
-            data=X, K=self.k_init, bestLabels=None,
-            criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 100),
-            attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
-
+        compactness, labels, centers = cv2.kmeans(data=X, K=self.k_init, **self.k_means_args)
         clusters = self.Cluster.build(X, compactness, labels.flatten(), centers)
-
         self.__recursively_split(clusters)
 
         self.labels = np.empty(X.shape[0], dtype=np.intp)
@@ -64,11 +66,7 @@ class XMeansCV2:
                 self.clusters.append(cluster)
                 continue
 
-            compactness, labels, centers = cv2.kmeans(
-                data=cluster.data, K=2, bestLabels=None,
-                # criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10),
-                criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 100),
-                attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
+            compactness, labels, centers = cv2.kmeans(data=cluster.data, K=2, **self.k_means_args)
 
             c1, c2 = self.Cluster.build(cluster.data, compactness, labels.flatten(), centers, cluster.index)
 
