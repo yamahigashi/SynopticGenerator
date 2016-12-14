@@ -108,3 +108,8 @@ def color(string, color_table=None):
     check_range(a)
 
     return Color(r, g, b, a)
+
+
+def is_opencv_version_below_2():
+    import cv2
+    return int(cv2.__version__.split('.')[0]) <= 2

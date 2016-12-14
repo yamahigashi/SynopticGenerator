@@ -49,9 +49,13 @@ class SearchContours(object):
         # ADAPTIVE_THRESH_GAUSSIAN_C
 
         # 輪郭検出
-        contours, hierarchy = cv2.findContours(
-            # th1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        if util.is_opencv_version_below_2():
+            contours, hierarchy = cv2.findContours(
+                th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        else:
+            contours, hierarchy = cv2.findContours(
+                # th1, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+                th1, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)[-2:]
 
         return [c for c in contours if cv2.contourArea(c) > self.cutoff]
 

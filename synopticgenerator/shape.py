@@ -7,7 +7,7 @@ import cv2
 import numpy
 import math
 
-# import synopticcreater.drawer as drawer
+import synopticgenerator.util as util
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
@@ -137,7 +137,10 @@ class RotatedRect(Rect):
         self.h = cvrotatedrect[1][1]
         self.theta = cvrotatedrect[2]
 
-        p = cv2.cv.BoxPoints(cvrotatedrect)
+        if util.is_opencv_version_below_2():
+            p = cv2.cv.BoxPoints(cvrotatedrect)
+        else:
+            p = cv2.boxPoints(cvrotatedrect)
         p = numpy.int0(p)
         self.points = [(x[0], x[1]) for x in p]
         # self.drawer = drawer.polygon
