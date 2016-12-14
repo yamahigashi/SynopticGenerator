@@ -60,7 +60,7 @@ class SearchContours(object):
         return [c for c in contours if cv2.contourArea(c) > self.cutoff]
 
     def choose_region_by_area(self, cir, box, rot):
-        ''' fuzzy finder for deternime shape type by its area.'''
+        ''' fuzzy finder for determine shape type by its area.'''
 
         if cir.area < box.area and cir.area < rot.area:
             return cir
