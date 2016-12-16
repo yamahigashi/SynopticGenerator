@@ -49,7 +49,7 @@ class RealignmentPosition(object):
         inflated = copy.deepcopy(ctrls)
         map(lambda x: x.scale(1.2), inflated)
 
-        inflated_points, inflated_indice = self.uniform_distribution(inflated, 1)
+        inflated_points, inflated_indice = self.uniform_distribution(inflated, 500)
         pointcloud_list = np.array(inflated_points, np.float32)
         pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 ctrl
         inflated_indice.extend([x for x in range(len(cog_points_list))])
@@ -66,14 +66,13 @@ class RealignmentPosition(object):
             cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
             indice = np.unique(np.array(inflated_indice)[cluster.index])
             targets = np.array(ctrls)[indice]
-            self.resolve_collision(targets)
             self.alignment_in_cluster(cluster, targets, use_cluster_for_aspectratio=False)
 
         cog_points_list = np.array([x.center for x in ctrls], np.float32)
         x_means2 = mathutil.XMeans(random_state=1).fit(cog_points_list)
         for i, cluster in enumerate(x_means2.clusters):
             targets = np.array(ctrls)[cluster.index]
-            # self.alignment_in_cluster(cluster, targets)
+            self.alignment_in_cluster(cluster, targets)
 
         if self.config.get('draw_debug', True):
             self.draw_debug(pointcloud_list, x_means.labels)
@@ -224,104 +223,6 @@ class RealignmentPosition(object):
             indice.append(index)
 
         return points, indice
-
-    def resolve_collision(self, ctrls):
-        """
-        Args:
-            ctrls(np.array)
-        """
-        all = sorted(ctrls, key=lambda x: x.area)
-        while all:
-            target = all.pop()
-            for b in all:
-                self.resolve_collision_a_b(target, b)
-
-    def resolve_collision_a_b(self, a, b):
-        pa = shape.Vec2(*a.center)
-        pb = shape.Vec2(*b.center)
-        dist = pa - pb
-
-        move_x = ((a.w + b.w) / 2.0 + self.config.get('margin')) - abs(dist.x)
-        move_y = ((a.h + b.h) / 2.0 + self.config.get('margin')) - abs(dist.y)
-
-        if 0 < move_x and 0 < move_y:
-            mes = ("infringement detect at {}({}) with {}({})".format(
-                a.name, a.area, b.name, b.area))
-            logging.debug(mes)
-        else:
-            return
-
-        # round up
-        move = shape.Vec2(move_x, move_y)
-        move.x = 0.0 if move.x < 0 else move.x
-        move.y = 0.0 if move.y < 0 else move.y
-
-        # determine direction
-        move = self.solve_direction_to_avoid(a, b, move) * -1
-        b.translate(move)
-
-    def solve_direction_to_avoid(self, a, b, move):
-        aspect = self.which_direction_to_avoid_by_aspect_ratio(move.x / move.y)
-
-        if aspect and aspect == "horizontal":
-            move.y = 0
-
-        elif aspect and aspect == "vertical":
-            move.x = 0
-
-        else:
-            direction = self.which_direction_to_avoid_by_location_attribute(a, b)
-            if direction == "center":
-                move.x = 0
-
-            elif direction == "left":
-                move.x = abs(move.x) * -1
-                move.y = 0
-
-            elif direction == "right":
-                move.x = abs(move.x)
-                move.y = 0
-
-        # TODO: avoid protrude out from background
-
-        return move
-
-    def which_direction_to_avoid_by_aspect_ratio(self, ratio):
-        base = self.config.get('aspect_ratio_baseline_for_conflict')
-        rev_base = 1.0 / base
-
-        if rev_base < ratio:
-            return "vertical"
-
-        elif ratio < base:
-            return "horizontal"
-
-        else:
-            return None
-
-    def which_direction_to_avoid_by_location_attribute(self, a, b):
-        if a.location == 'center' and b.location == "center":
-            res = "center"
-
-        elif a.location == "center" and b.location != "center":
-            res = b.location
-
-        elif a.location != "center" and b.location == "center":
-            res = "center"
-
-        elif a.location != "center" and b.location != "center":
-            if a.location == b.location:
-                res = a.location
-            else:
-                res = b.location
-
-        else:
-            res = "center"
-
-        if not res:
-            res = "center"
-
-        return res
 
 
 class RegionNotFound(Exception):

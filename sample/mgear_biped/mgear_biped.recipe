@@ -50,7 +50,7 @@ pipeline:
 
         - module: filter.minimum_width_height
 
-        #- module: filter.round_up_smaller_region
+        # - module: filter.round_up_smaller_region
         #  config:
         #    baseline: 175
 
@@ -68,10 +68,19 @@ pipeline:
                 center: "_(C\\d+)_"
                 default: "center"
 
-        - module: filter.realignment_position
+        - module: filter.rearrange
           config:
-            target:
-              -"regions"
+            arrangement:
+              - ["arm_L0_fk2_ctl"]
+              - ["finger_L0_fk0_ctl", "finger_L1_fk0_ctl", "finger_L2_fk0_ctl", "finger_L3_fk0_ctl"]
+              - ["finger_L0_fk1_ctl", "finger_L1_fk1_ctl", "finger_L2_fk1_ctl", "finger_L3_fk1_ctl"]
+              - ["finger_L0_fk2_ctl", "finger_L1_fk2_ctl", "finger_L2_fk2_ctl", "finger_L3_fk2_ctl"]
+            orient: "down"
+
+
+            # - module: filter.extrude_collision
+
+        # - module: filter.realignment_position
 
     publisher:
         - module: writer.mgear

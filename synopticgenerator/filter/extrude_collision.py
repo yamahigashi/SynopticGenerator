@@ -1,0 +1,233 @@
+﻿""" coding: utf-8 """
+
+import copy
+import bisect
+import logging
+
+import cv2
+import numpy as np
+
+# import synopticgenerator.util as util
+import synopticgenerator.shape as shape
+import synopticgenerator.mathutil as mathutil
+
+
+class ExtrudeCollision(object):
+    ''' clustering given ctrl as cog points by k-means. '''
+
+    def __init__(self, config, environ):
+        self.config = config
+        self.environ = environ
+        self.region = config.setdefault("region_name", "regions")
+        self.controls = config.setdefault("controls", None)
+        self.margin = config.setdefault("margin", 8)
+
+        self.aspect_ratio_baseline_for_conflict = config.setdefault(
+            "aspect_ratio_baseline_for_conflict", 0.25)
+
+        self.ratio_over_unbalance = 4.0
+        self.ratio_very_circle = 1.5
+        self.ratio_lower_end_region = 0.25
+
+    def execute(self, content):
+        if not content.get(self.region):
+            raise RegionNotFound(self.region)
+
+        ctrls = content[self.region]
+        w = self.environ.get("width", 320)
+        h = self.environ.get("height", 550)
+
+        if w < h:
+            self.aspect_ratio_normalizer = h
+        else:
+            self.aspect_ratio_normalizer = w
+
+        # gather cog points
+        cog_points_list = np.array([x.center for x in ctrls], np.float32)
+
+        # inflate ctrls
+        inflated = copy.deepcopy(ctrls)
+        map(lambda x: x.scale(1.2), inflated)
+
+        inflated_points, inflated_indice = self.uniform_distribution(inflated, 1)
+        pointcloud_list = np.array(inflated_points, np.float32)
+        pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 ctrl
+        inflated_indice.extend([x for x in range(len(cog_points_list))])
+        pointcloud_list /= self.aspect_ratio_normalizer
+
+        # calculate x-means
+        # x_means = mathutil.XMeansCV2().fit(pointcloud_list)
+        x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
+        pointcloud_list *= self.aspect_ratio_normalizer
+
+        # resolve collision
+        for i, cluster in enumerate(x_means.clusters):
+            cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
+            cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
+            indice = np.unique(np.array(inflated_indice)[cluster.index])
+            targets = np.array(ctrls)[indice]
+            self.resolve_collision(targets)
+
+        if self.config.get('draw_debug', True):
+            self.draw_debug(pointcloud_list, x_means.labels)
+
+        return content
+
+    def draw_debug(self, points_input, classified_points):
+        import random
+
+        # draw debug
+        blank_image = np.zeros((800, 800, 3))
+        blank_image_classified = np.zeros((800, 800, 3))
+
+        for point in points_input:
+            cv2.circle(blank_image, (int(point[0]), int(point[1])), 1, (0, 255, 0), -1)
+
+        max_allocation = max(classified_points)
+        for point, allocation in zip(points_input, classified_points):
+
+            random.seed(allocation)
+            r = random.random()
+            g = 0.0
+            random.seed(max_allocation - allocation)
+            b = random.random()
+
+            color = map(lambda x: x, (b, g, r))
+
+            cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 1, color, 2)
+
+        # cv2.imshow("Points", blank_image)
+        cv2.imshow("Points Classified", blank_image_classified)
+        cv2.waitKey()
+
+    def uniform_distribution(self, ctrls, point_count):
+
+        # 面積に応じてscatter, まずは累積面積のリスト作る
+        sum_area = 0.0
+        cumulative_areas = []
+        for x in ctrls:
+            sum_area += x.area
+            cumulative_areas.append(sum_area)
+
+        def _choose(areas, end, i):
+            p = np.random.uniform(0.0, sum_area)
+            selected_index = bisect.bisect_left(areas, p)
+
+            return selected_index
+
+        points = []
+        indice = []
+        for i in range(point_count):
+            index = _choose(cumulative_areas, sum_area, i)
+            points.append(ctrls[index].scatter_points(i))
+            indice.append(index)
+
+        return points, indice
+
+    def resolve_collision(self, ctrls):
+        """
+        Args:
+            ctrls(np.array)
+        """
+        all = sorted(ctrls, key=lambda x: x.area)
+        while all:
+            target = all.pop()
+            for b in all:
+                self.resolve_collision_a_b(target, b)
+
+    def resolve_collision_a_b(self, a, b):
+        pa = shape.Vec2(*a.center)
+        pb = shape.Vec2(*b.center)
+        dist = pa - pb
+
+        move_x = ((a.w + b.w) / 2.0 + self.config.get('margin')) - abs(dist.x)
+        move_y = ((a.h + b.h) / 2.0 + self.config.get('margin')) - abs(dist.y)
+
+        if 0 < move_x and 0 < move_y:
+            mes = ("infringement detect at {}({}) with {}({})".format(
+                a.name, a.area, b.name, b.area))
+            logging.debug(mes)
+        else:
+            return
+
+        # round up
+        move = shape.Vec2(move_x, move_y)
+        move.x = 0.0 if move.x < 0 else move.x
+        move.y = 0.0 if move.y < 0 else move.y
+
+        # determine direction
+        move = self.solve_direction_to_avoid(a, b, move) * -1
+        b.translate(move)
+
+    def solve_direction_to_avoid(self, a, b, move):
+        aspect = self.which_direction_to_avoid_by_aspect_ratio(move.x / move.y)
+
+        if aspect and aspect == "horizontal":
+            move.y = 0
+
+        elif aspect and aspect == "vertical":
+            move.x = 0
+
+        else:
+            direction = self.which_direction_to_avoid_by_location_attribute(a, b)
+            if direction == "center":
+                move.x = 0
+
+            elif direction == "left":
+                move.x = abs(move.x) * -1
+                move.y = 0
+
+            elif direction == "right":
+                move.x = abs(move.x)
+                move.y = 0
+
+        # TODO: avoid protrude out from background
+
+        return move
+
+    def which_direction_to_avoid_by_aspect_ratio(self, ratio):
+        base = self.config.get('aspect_ratio_baseline_for_conflict')
+        rev_base = 1.0 / base
+
+        if rev_base < ratio:
+            return "vertical"
+
+        elif ratio < base:
+            return "horizontal"
+
+        else:
+            return None
+
+    def which_direction_to_avoid_by_location_attribute(self, a, b):
+        if a.location == 'center' and b.location == "center":
+            res = "center"
+
+        elif a.location == "center" and b.location != "center":
+            res = b.location
+
+        elif a.location != "center" and b.location == "center":
+            res = "center"
+
+        elif a.location != "center" and b.location != "center":
+            if a.location == b.location:
+                res = a.location
+            else:
+                res = b.location
+
+        else:
+            res = "center"
+
+        if not res:
+            res = "center"
+
+        return res
+
+
+class RegionNotFound(Exception):
+
+    def str(self, v):
+        return "Region named {} not found in content".format(v)
+
+
+def create(config, environ):
+    return ExtrudeCollision(config, environ)

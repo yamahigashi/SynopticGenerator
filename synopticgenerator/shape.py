@@ -6,6 +6,7 @@
 import cv2
 import numpy
 import math
+import logging
 
 import synopticgenerator.util as util
 ##############################################################################
@@ -31,6 +32,135 @@ class Shape(object):
     radius = None
     location = None  # LocationType
     # cog = None
+
+    def calculate_infringement(self, other, config=[]):
+        pa = Vec2(*other.center)
+        pb = Vec2(*self.center)
+        dist = pa - pb
+
+        move_x = ((other.w + self.w) / 2.0 + config.get('margin', 8)) - abs(dist.x)
+        move_y = ((other.h + self.h) / 2.0 + config.get('margin', 8)) - abs(dist.y)
+
+        if 0 < move_x and 0 < move_y:
+            mes = ("infringement detect at {}({}) with {}({})".format(
+                other.name, other.area, self.name, self.area))
+            logging.debug(mes)
+        else:
+            return (0, 0)
+
+        move = Vec2(move_x, move_y)
+        return move
+
+    def avoid_collision(self, other, config=[]):
+        move = self.calculate_infringement(other, config)
+
+        # round up
+        move.x = 0.0 if move.x < 0 else move.x
+        move.y = 0.0 if move.y < 0 else move.y
+
+        # determine direction
+        move = self.solve_direction_to_avoid(other, move, config) * -1
+        self.translate(move)
+
+    def solve_direction_to_avoid(self, other, move, config=[]):
+
+        if config.get('arrange_direction'):
+            horizontal, vertical = self.which_direction_to_avoid_by_config(config)
+
+            if horizontal and horizontal == "left":
+                move.x = abs(move.x)
+            elif horizontal and horizontal == "right":
+                move.x = abs(move.x) * -1
+            elif horizontal and horizontal == "horizontal":
+                move.y = 0
+
+            if vertical and vertical == "vertical":
+                move.x = 0
+
+            return
+
+        aspect = self.which_direction_to_avoid_by_aspect_ratio(move.x / move.y)
+
+        if aspect and aspect == "horizontal":
+            move.y = 0
+
+        elif aspect and aspect == "vertical":
+            move.x = 0
+
+        else:
+            direction = self.which_direction_to_avoid_by_location_attribute(other, self)
+            if direction == "center":
+                move.x = 0
+
+            elif direction == "left":
+                move.x = abs(move.x) * -1
+                move.y = 0
+
+            elif direction == "right":
+                move.x = abs(move.x)
+                move.y = 0
+
+        # TODO: avoid protrude out from background
+
+        return move
+
+    def which_direction_to_avoid_by_config(self, ratio, config=[]):
+        direction = config.get('arrange_direction')
+        horizontal = None
+        vertical = None
+        for candidate in ["left", "right", "horizontal"]:
+            if candidate in direction:
+                horizontal = candidate
+                break
+
+        for candidate in ["down", "up", "vertical"]:
+            if candidate in direction:
+                vertical = candidate
+                break
+
+        if not horizontal and vertical:
+            msg = "arrange_direction's value not match any candidate"
+            msg += """ in ["left", "right", "down", "up", "horizontal", "vertical"]"""
+            logging.error(msg)
+
+        return horizontal, vertical
+
+    def which_direction_to_avoid_by_aspect_ratio(self, ratio, config=[]):
+        base = config.get('aspect_ratio_baseline_for_conflict')
+        rev_base = 1.0 / base
+
+        if rev_base < ratio:
+            return "vertical"
+
+        elif ratio < base:
+            return "horizontal"
+
+        else:
+            return None
+
+    def which_direction_to_avoid_by_location_attribute(self, other, config=[]):
+        if other.location == 'center' and self.location == "center":
+            res = "center"
+
+        elif other.location == "center" and self.location != "center":
+            res = self.location
+
+        elif other.location != "center" and self.location == "center":
+            res = "center"
+
+        elif other.location != "center" and self.location != "center":
+            if other.location == self.location:
+                res = other.location
+            else:
+                res = self.location
+
+        else:
+            res = "center"
+
+        if not res:
+            res = "center"
+
+        return res
 
 
 class Rect(Shape):
