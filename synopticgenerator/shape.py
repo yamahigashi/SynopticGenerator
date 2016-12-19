@@ -33,25 +33,30 @@ class Shape(object):
     location = None  # LocationType
     # cog = None
 
-    def calculate_infringement(self, other, config=[]):
+    def calculate_infringement(self, other, config={}):
         pa = Vec2(*other.center)
         pb = Vec2(*self.center)
         dist = pa - pb
 
-        move_x = ((other.w + self.w) / 2.0 + config.get('margin', 8)) - abs(dist.x)
-        move_y = ((other.h + self.h) / 2.0 + config.get('margin', 8)) - abs(dist.y)
+        move_x = ((other.w + self.w) / 2.0 + config.get('margin', 0)) - abs(dist.x)
+        move_y = ((other.h + self.h) / 2.0 + config.get('margin', 0)) - abs(dist.y)
 
         if 0 < move_x and 0 < move_y:
             mes = ("infringement detect at {}({}) with {}({})".format(
                 other.name, other.area, self.name, self.area))
-            logging.debug(mes)
+            # logging.debug(mes)
         else:
             return (0, 0)
+
+        if dist.x < 0:
+            move_x *= -1
+        if dist.y < 0:
+            move_y *= -1
 
         move = Vec2(move_x, move_y)
         return move
 
-    def avoid_collision(self, other, config=[]):
+    def avoid_collision(self, other, config={}):
         move = self.calculate_infringement(other, config)
 
         # round up
@@ -62,49 +67,12 @@ class Shape(object):
         move = self.solve_direction_to_avoid(other, move, config) * -1
         self.translate(move)
 
-    def solve_direction_to_avoid(self, other, move, config=[]):
-
-        if config.get('arrange_direction'):
-            horizontal, vertical = self.which_direction_to_avoid_by_config(config)
-
-            if horizontal and horizontal == "left":
-                move.x = abs(move.x)
-            elif horizontal and horizontal == "right":
-                move.x = abs(move.x) * -1
-            elif horizontal and horizontal == "horizontal":
-                move.y = 0
-
-            if vertical and vertical == "vertical":
-                move.x = 0
-
-            return
-
-        aspect = self.which_direction_to_avoid_by_aspect_ratio(move.x / move.y)
-
-        if aspect and aspect == "horizontal":
-            move.y = 0
-
-        elif aspect and aspect == "vertical":
-            move.x = 0
-
-        else:
-            direction = self.which_direction_to_avoid_by_location_attribute(other, self)
-            if direction == "center":
-                move.x = 0
-
-            elif direction == "left":
-                move.x = abs(move.x) * -1
-                move.y = 0
-
-            elif direction == "right":
-                move.x = abs(move.x)
-                move.y = 0
-
-        # TODO: avoid protrude out from background
-
+    def solve_direction_to_avoid(self, move, other=None, config={}):
+        solver = CollisionSolverChooser.choose(config)
+        move = solver.solve(config, self, move, other)
         return move
 
-    def which_direction_to_avoid_by_config(self, ratio, config=[]):
+    def which_direction_to_avoid_by_config(self, config={}):
         direction = config.get('arrange_direction')
         horizontal = None
         vertical = None
@@ -125,7 +93,7 @@ class Shape(object):
 
         return horizontal, vertical
 
-    def which_direction_to_avoid_by_aspect_ratio(self, ratio, config=[]):
+    def which_direction_to_avoid_by_aspect_ratio(self, ratio, config={}):
         base = config.get('aspect_ratio_baseline_for_conflict')
         rev_base = 1.0 / base
 
@@ -138,7 +106,7 @@ class Shape(object):
         else:
             return None
 
-    def which_direction_to_avoid_by_location_attribute(self, other, config=[]):
+    def which_direction_to_avoid_by_location_attribute(self, other, config={}):
         if other.location == 'center' and self.location == "center":
             res = "center"
 
@@ -274,7 +242,6 @@ class RotatedRect(Rect):
         p = numpy.int0(p)
         self.points = [(x[0], x[1]) for x in p]
         # self.drawer = drawer.polygon
-        # print self.points
 
     @center.getter
     def center(self):
@@ -393,6 +360,153 @@ def uniform_on_triangle(triangle, seed):
     return (px, py)
 
 
+class CollisionSolverChooser(object):
+    """ Base class of base collision solver """
+
+    @staticmethod
+    def choose(config):
+        for solver in [
+            ConfigBaseCollisionSolver,
+            AspectRatioBaseCollisionSolver,
+            AttributeBaseCollisionSolver
+        ]:
+
+            if solver.match_rule(config):
+                logging.debug("CollisionSolverChooser.choose result {}".format(solver))
+                return solver()
+
+        else:
+            raise "error CollisionSolver class not ound"
+
+
+# --------------------------------------------------------------------------- #
+#
+# --------------------------------------------------------------------------- #
+class BaseCollisionSolver(object):
+    """ Base class of base collision solver """
+
+    def solve(self, config, shape, move, other=None):
+        if not isinstance(move, Vec2):
+            move = Vec2(move[0], move[1])
+
+        return self.solve_direction(config, shape, move, other)
+
+
+class ConfigBaseCollisionSolver(BaseCollisionSolver):
+
+    @staticmethod
+    def match_rule(config):
+        return config.get('arrange_direction', False)
+
+    def solve_direction(self, config, shape, move, othel=None):
+        horizontal, vertical = shape.which_direction_to_avoid_by_config(config)
+
+        # -------------------------------------------
+        if horizontal and horizontal == "left":
+            move.x = abs(move.x) * -1
+        elif horizontal and horizontal == "right":
+            move.x = abs(move.x)
+
+        if horizontal and not vertical:
+            move.y = 0
+
+        # -------------------------------------------
+        if vertical and vertical == "up":
+            move.y = abs(move.y) * -1
+        elif vertical and vertical == "down":
+            move.y = abs(move.y)
+
+        if vertical and not horizontal:
+            move.x = 0
+
+        return move
+
+
+class AspectRatioBaseCollisionSolver(BaseCollisionSolver):
+
+    @staticmethod
+    def match_rule(config):
+        return config.get('aspect_ratio_baseline_for_conflict', False)
+
+    def get_fallback(self):
+        return AttributeBaseCollisionSolver()
+        # return ConfigBaseCollisionSolver()
+
+    def solve_direction(self, config, shape, move, other=None):
+        if move[0] == 0 and move[1] == 0:
+            aspect = 1
+
+        elif move[0] == 0:
+            aspect = 0
+
+        elif move[1] == 0:
+            aspect = move[0]
+
+        else:
+            aspect = shape.which_direction_to_avoid_by_aspect_ratio(abs(move[0]) / abs(move[1]), config)
+
+        if aspect and aspect == "horizontal":
+            move.y = 0
+
+        elif aspect and aspect == "vertical":
+            move.x = 0
+
+        else:
+            # Fall back
+            if other:
+                horizontal = ""
+                vertical = ""
+                dist = Vec2(other.center[0] - shape.center[0], other.center[1] - shape.center[1])
+                if dist[0] < 0:
+                    horizontal = "left"
+                else:
+                    horizontal = "right"
+
+                if dist[1] < 0:
+                    vertical = "down"
+                else:
+                    vertical = "up"
+
+                arrange_direction = config.get("arrange_direction")
+                if arrange_direction:
+                    delete_later = False
+                else:
+                    delete_later = True
+                    config.setdefault("arrange_direction", "{},{}".format(horizontal, vertical))
+
+            move = self.get_fallback().solve_direction(config, shape, move, other)
+
+            if delete_later:
+                del config["arrange_direction"]
+
+        return move
+
+
+class AttributeBaseCollisionSolver(BaseCollisionSolver):
+
+    @staticmethod
+    def match_rule(config):
+        return True
+
+    def solve_direction(self, config, shape, move, other=None):
+        direction = shape.which_direction_to_avoid_by_location_attribute(other, config)
+        if direction == "center":
+            move.x = 0
+
+        elif direction == "left":
+            move.x = abs(move.x) * -1
+            move.y = 0
+
+        elif direction == "right":
+            move.x = abs(move.x)
+            move.y = 0
+
+        return move
+
+
+# --------------------------------------------------------------------------- #
+#
+# --------------------------------------------------------------------------- #
 class Vec2(list):
 
     x = property()

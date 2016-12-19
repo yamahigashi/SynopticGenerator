@@ -2,14 +2,15 @@
 
 import copy
 import bisect
-import logging
+# import logging
 
 import cv2
 import numpy as np
 
-# import synopticgenerator.util as util
+import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
+import synopticgenerator.filter.rearrange as rearrange
 
 
 class ExtrudeCollision(object):
@@ -60,16 +61,49 @@ class ExtrudeCollision(object):
         x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
         pointcloud_list *= self.aspect_ratio_normalizer
 
+        print len(x_means.clusters)
+
         # resolve collision
         for i, cluster in enumerate(x_means.clusters):
+
             cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
             cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
             indice = np.unique(np.array(inflated_indice)[cluster.index])
             targets = np.array(ctrls)[indice]
+
+            content = self.analyze_cluster(content, cluster, targets)
+
             self.resolve_collision(targets)
 
-        if self.config.get('draw_debug', True):
+        if self.config.get('draw_debug', False):
             self.draw_debug(pointcloud_list, x_means.labels)
+
+        return content
+
+    def analyze_cluster(self, content, cluster, targets):
+        x_min = cluster.data.min(axis=0)[0]
+        x_max = cluster.data.max(axis=0)[0]
+        y_min = cluster.data.min(axis=0)[1]
+        y_max = cluster.data.max(axis=0)[1]
+        print x_min, x_max, y_min, y_max
+        print cluster.center
+        print [x.name for x in targets]
+        print util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center))
+        sorted_by_y = sorted(targets, key=lambda x: x.center[1])
+
+        if util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)):
+            config = {
+                "arrangement": [],
+                "arrange_direction": "down"
+            }
+
+            for ctrl in sorted_by_y:
+                if ctrl.location == "center" and util.is_point_inside_central_region(self.environ, shape.Vec2(*ctrl.center)):
+                    config["arrangement"].append([ctrl.name])
+
+            print config
+            sub_module = rearrange.create(config, self.environ)
+            content = sub_module.execute(content)
 
         return content
 
@@ -133,94 +167,10 @@ class ExtrudeCollision(object):
         while all:
             target = all.pop()
             for b in all:
-                self.resolve_collision_a_b(target, b)
+                protrude = b.calculate_infringement(target, config=self.config)
+                protrude = b.solve_direction_to_avoid(protrude, other=target, config=self.config)
 
-    def resolve_collision_a_b(self, a, b):
-        pa = shape.Vec2(*a.center)
-        pb = shape.Vec2(*b.center)
-        dist = pa - pb
-
-        move_x = ((a.w + b.w) / 2.0 + self.config.get('margin')) - abs(dist.x)
-        move_y = ((a.h + b.h) / 2.0 + self.config.get('margin')) - abs(dist.y)
-
-        if 0 < move_x and 0 < move_y:
-            mes = ("infringement detect at {}({}) with {}({})".format(
-                a.name, a.area, b.name, b.area))
-            logging.debug(mes)
-        else:
-            return
-
-        # round up
-        move = shape.Vec2(move_x, move_y)
-        move.x = 0.0 if move.x < 0 else move.x
-        move.y = 0.0 if move.y < 0 else move.y
-
-        # determine direction
-        move = self.solve_direction_to_avoid(a, b, move) * -1
-        b.translate(move)
-
-    def solve_direction_to_avoid(self, a, b, move):
-        aspect = self.which_direction_to_avoid_by_aspect_ratio(move.x / move.y)
-
-        if aspect and aspect == "horizontal":
-            move.y = 0
-
-        elif aspect and aspect == "vertical":
-            move.x = 0
-
-        else:
-            direction = self.which_direction_to_avoid_by_location_attribute(a, b)
-            if direction == "center":
-                move.x = 0
-
-            elif direction == "left":
-                move.x = abs(move.x) * -1
-                move.y = 0
-
-            elif direction == "right":
-                move.x = abs(move.x)
-                move.y = 0
-
-        # TODO: avoid protrude out from background
-
-        return move
-
-    def which_direction_to_avoid_by_aspect_ratio(self, ratio):
-        base = self.config.get('aspect_ratio_baseline_for_conflict')
-        rev_base = 1.0 / base
-
-        if rev_base < ratio:
-            return "vertical"
-
-        elif ratio < base:
-            return "horizontal"
-
-        else:
-            return None
-
-    def which_direction_to_avoid_by_location_attribute(self, a, b):
-        if a.location == 'center' and b.location == "center":
-            res = "center"
-
-        elif a.location == "center" and b.location != "center":
-            res = b.location
-
-        elif a.location != "center" and b.location == "center":
-            res = "center"
-
-        elif a.location != "center" and b.location != "center":
-            if a.location == b.location:
-                res = a.location
-            else:
-                res = b.location
-
-        else:
-            res = "center"
-
-        if not res:
-            res = "center"
-
-        return res
+                b.translate(protrude)
 
 
 class RegionNotFound(Exception):

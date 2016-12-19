@@ -185,6 +185,10 @@ pipeline:
                 center: "^(C|Center)"
                 default: "center"
 
+        - module: filter.extrude_collision
+          config:
+            draw_debug: false
+
         - module: filter.realignment_position
           config:
             target:

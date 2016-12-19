@@ -1,24 +1,5 @@
 global:
-    # log_level: "WARN"  # "INFO", "WARN", "ERROR", "CRITICAL"
-    # log_level: "INFO"  # "INFO", "WARN", "ERROR", "CRITICAL"
     log_level: "DEBUG"  # "INFO", "WARN", "ERROR", "CRITICAL"
-    color_table:
-        "white": "255, 255, 255"
-
-        "ik_center":  "233, 127, 237"
-        "fk_center":  "172,  86, 221"
-
-        "ik_left":    "236, 157,  91"
-        "fk_left":    "221,  65,  66"
-
-        "ik_right":   " 91, 175, 235"
-        "fk_right":   " 65,  80, 221"
-
-        "mos_green":  "113, 168,  85"
-        "light_blue": "115, 146, 210"
-        "red":        "188,  72,  73"
-
-        "hilight":    "195, 175, 185, 240"
 
 
 pipeline:
@@ -68,17 +49,45 @@ pipeline:
                 center: "_(C\\d+)_"
                 default: "center"
 
-        - module: filter.rearrange
+        - module: filter.rearrange_by_naming_convention
           config:
-            arrangement:
-              - ["arm_L0_fk2_ctl"]
-              - ["finger_L0_fk0_ctl", "finger_L1_fk0_ctl", "finger_L2_fk0_ctl", "finger_L3_fk0_ctl"]
-              - ["finger_L0_fk1_ctl", "finger_L1_fk1_ctl", "finger_L2_fk1_ctl", "finger_L3_fk1_ctl"]
-              - ["finger_L0_fk2_ctl", "finger_L1_fk2_ctl", "finger_L2_fk2_ctl", "finger_L3_fk2_ctl"]
-            orient: "down"
+            expression: "{{ parts_name }}_{{ location }}{{ horizontal_index }}_fk{{ vertical_index }}"
+            parts_name: "\\w+"
+            location: "L"
+            group_by: "parts_name"
+            arrange_direction: "right,down"
+
+        - module: filter.rearrange_by_naming_convention
+          config:
+            expression: "{{ parts_name }}_{{ location }}{{ horizontal_index }}_fk{{ vertical_index }}"
+            parts_name: "\\w+"
+            location: "R"
+            group_by: "parts_name"
+            arrange_direction: "left,down"
 
 
-            # - module: filter.extrude_collision
+        # - module: filter.rearrange
+        #   config:
+        #     arrangement:
+        #       - ["arm_L0_fk2_ctl"]
+        #       - ["finger_L0_fk0_ctl", "finger_L1_fk0_ctl", "finger_L2_fk0_ctl", "finger_L3_fk0_ctl"]
+        #       - ["finger_L0_fk1_ctl", "finger_L1_fk1_ctl", "finger_L2_fk1_ctl", "finger_L3_fk1_ctl"]
+        #       - ["finger_L0_fk2_ctl", "finger_L1_fk2_ctl", "finger_L2_fk2_ctl", "finger_L3_fk2_ctl"]
+        #     arrange_direction: "right,down"
+
+        # - module: filter.rearrange
+        #   config:
+        #     arrangement:
+        #       - ["arm_R0_fk2_ctl"]
+        #       - ["finger_R0_fk0_ctl", "finger_R1_fk0_ctl", "finger_R2_fk0_ctl", "finger_R3_fk0_ctl"]
+        #       - ["finger_R0_fk1_ctl", "finger_R1_fk1_ctl", "finger_R2_fk1_ctl", "finger_R3_fk1_ctl"]
+        #       - ["finger_R0_fk2_ctl", "finger_R1_fk2_ctl", "finger_R2_fk2_ctl", "finger_R3_fk2_ctl"]
+        #     arrange_direction: "left,down"
+
+
+        # - module: filter.extrude_collision
+        #   config:
+        #     draw_debug: false
 
         # - module: filter.realignment_position
 

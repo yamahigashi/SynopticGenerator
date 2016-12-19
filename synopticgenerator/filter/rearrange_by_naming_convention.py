@@ -1,6 +1,7 @@
 ﻿""" coding: utf-8 """
 
 # import logging
+import re
 import copy
 
 import cv2
@@ -11,24 +12,82 @@ import synopticgenerator.shape as shape
 # import synopticgenerator.mathutil as mathutil
 
 
-class Rearrange(object):
+class RearrangeByNamingConvention(object):
     ''' clustering given ctrl as cog points by k-means. '''
 
     def __init__(self, config, environ):
         self.config = config
         self.environ = environ
+
+        self.expression_replacer = self.config.keys()
         self.region = config.setdefault("region_name", "regions")
         self.margin = config.setdefault("margin", 8)
-        # self.arrangement = config.setdefault("arrangement", [])
+        self.expression = config.setdefault("expression", "{{ parts_name }}_{{ location }}{{ horizontal_index }}_fk{{ vertical_index }}")
+        self.group_by = config.setdefault("group_by", "")
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
+        exp = self.expression
+        for k in self.expression_replacer:
+            if "expression" == k or "group_by" == k:
+                continue
+
+            if self.group_by == k:
+                exp = re.sub("{{{{\s*{}\s*}}}}".format(k), "(?P<group_by>{})".format(self.config.get(k)), exp)
+            else:
+                exp = re.sub("{{{{\s*{}\s*}}}}".format(k), self.config.get(k), exp)
+
+        # apply index getter
+        exp = re.sub("{{{{\s*{}\s*}}}}".format("horizontal_index"), "(?P<horizontal_index>\\d+)", exp)
+        exp = re.sub("{{{{\s*{}\s*}}}}".format("vertical_index"), "(?P<vertical_index>\\d+)", exp)
+        exp = re.compile(exp)
+
         self.ctrls = content[self.region]
 
-        # resolve collision
-        self.arrange(self.config.get("arrangement", []))
+        results = {}
+        for ctrl in self.ctrls:
+            m = exp.search(ctrl.name)
+            if m:
+                group_by = m.groupdict().get("group_by")
+                if group_by:
+                    tmp = {'obj': ctrl}
+                    tmp.update(m.groupdict())
+                    if results.get(group_by):
+                        results[group_by].append(tmp)
+                    else:
+                        results[group_by] = [tmp]
+
+        print "res", results.keys()
+        configs = {}
+        for key in results.keys():
+            parts = results[key]
+            parts = sorted(parts, key=lambda x: x["horizontal_index"])
+            parts = sorted(parts, key=lambda x: x["vertical_index"])
+
+            h_max = int(max(parts, key=lambda x: int(x["horizontal_index"]))["horizontal_index"]) + 1
+            v_max = int(max(parts, key=lambda x: int(x["vertical_index"]))["vertical_index"]) + 1
+
+            configs[key] = {
+                "arrangement": [[None] * h_max] * v_max,
+                "arrange_direction": self.config.get("arrange_direction")
+            }
+
+            for part in parts:
+                v_index = int(part["vertical_index"])
+                h_index = int(part["horizontal_index"])
+
+                if not configs[key]:
+                    configs[key]["arrangement"][v_index] = []
+
+                try:
+                    configs[key]["arrangement"][v_index][h_index] = part["obj"]
+                except IndexError:
+                    print "IndexError", h_index, v_index, part["obj"].name
+                    # configs[key][v_index][h_index] = part["obj"]
+
+        print "configs", configs
 
         return content
 
@@ -192,4 +251,4 @@ class RegionNotFound(Exception):
 
 
 def create(config, environ):
-    return Rearrange(config, environ)
+    return RearrangeByNamingConvention(config, environ)
