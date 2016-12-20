@@ -110,25 +110,25 @@ class RealignmentPosition(Pipeline):
 
         if self.ratio_over_unbalance < ratio:
             if is_vertical_longer:
-                print "\nvertical", ratio, x, y
+                print("\nvertical", ratio, x, y)
                 self.align_horizontal(cluster, ctrls)
 
             else:
-                print "\nhorizontal", ratio, x, y
+                print("\nhorizontal", ratio, x, y)
                 self.align_vertical(cluster, ctrls)
 
         elif ratio < self.ratio_very_circle:
-            print "circle", ratio, x, y
+            print("circle", ratio, x, y)
 
         else:
-            print "\nnone of them", ratio, x, y
+            print("\nnone of them", ratio, x, y)
             if util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)):
-                print "is in center"
+                print("is in center")
                 cluster.center[0] = util.get_x_center(self.environ)
                 self.align_horizontal(cluster, ctrls, exclusive_location="center")
 
             if util.is_point_inside_lower_region(self.environ, shape.Vec2(*cluster.center)):
-                print "is in lower"
+                print("is in lower")
                 self.align_vertical_by_bottom(cluster, ctrls)
             # _x = np.array([x.center[0] for x in targets], np.float32)
             # k_means_about_x = mathutil.XMeans(random_state=1).fit(_x)
@@ -138,7 +138,7 @@ class RealignmentPosition(Pipeline):
                 data=_x, K=3, bestLabels=None,
                 criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_MAX_ITER, 1, 10),
                 attempts=1, flags=cv2.KMEANS_RANDOM_CENTERS)
-            print labels
+            print(labels)
             '''
 
     def draw_debug(self, points_input, classified_points):
@@ -173,12 +173,12 @@ class RealignmentPosition(Pipeline):
             if exclusive_location and ctrl.location != exclusive_location:
                 continue
             _x = cluster.center[0] - ctrl.center[0]
-            print ctrl.name, _x, cluster.center, ctrl.center
+            print(ctrl.name, _x, cluster.center, ctrl.center)
             ctrl.translate((_x, 0))
 
     # def align_horizontal_by_center(self, cluster, targets):
     #     for ctrl in targets:
-    #         print ctrl.name
+    #         print(ctrl.name)
 
     def align_vertical(self, cluster, targets):
         # if it is in the lower area, align it downward or align it centeroid
@@ -192,14 +192,14 @@ class RealignmentPosition(Pipeline):
         for ctrl in targets:
             _y = cluster.center[1] - ctrl.center[1]
             ctrl.translate((0, _y))
-            print "by center", ctrl.name
+            print("by center", ctrl.name)
 
     def align_vertical_by_bottom(self, cluster, targets):
         y_mean = np.mean(np.array([x.bottom for x in targets]))
         for ctrl in targets:
             _y = y_mean - ctrl.bottom
             ctrl.translate((0, _y))
-            print "by bottom", ctrl.name
+            print("by bottom", ctrl.name)
 
     def uniform_distribution(self, ctrls, point_count):
 

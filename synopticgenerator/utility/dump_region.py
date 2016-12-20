@@ -15,8 +15,8 @@ class DumpRegion(Pipeline):
             raise RegionNotFound(self.region)
 
         for x in content[self.region]:
-            print 'name: {} shape: "{}", center: "{}", color: "{}"'.format(
-                x.name, x.__class__.__name__, str(x.center), str(x.color))
+            print('name: {} shape: "{}", center: "{}", color: "{}"'.format(
+                x.name, x.__class__.__name__, str(x.center), str(x.color)))
 
         return content
 

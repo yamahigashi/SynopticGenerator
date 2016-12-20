@@ -5,7 +5,7 @@
 
 # import os
 import logging
-import math
+# import math
 
 import synopticgenerator.shape as shape
 import synopticgenerator.util as util
@@ -15,6 +15,7 @@ try:
     has_lxml = True
 except ImportError:
     import xml.etree.cElementTree as ET
+    has_lxml = False
 
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
@@ -175,7 +176,7 @@ class Writer(object):
         y = control.top_left[1]
         x2 = control.bottom_right[0] - x
         y2 = control.bottom_right[1] - y
-        coords = map(int, [x, y, x2, y2])
+        coords = list(map(int, [x, y, x2, y2]))
 
         return self.get_selector_button_class(control, "Box"), coords
 

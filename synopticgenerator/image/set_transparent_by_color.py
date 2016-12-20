@@ -74,4 +74,4 @@ if __name__ == "__main__":
 
     args = recognizer.parse_args()
     path = transparent(args.input_file, args.color)
-    print path
+    print(path)

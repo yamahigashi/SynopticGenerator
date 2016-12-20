@@ -62,7 +62,7 @@ class ExtrudeCollision(Pipeline):
         x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
         pointcloud_list *= self.aspect_ratio_normalizer
 
-        print len(x_means.clusters)
+        print(len(x_means.clusters))
 
         # resolve collision
         for i, cluster in enumerate(x_means.clusters):
@@ -86,10 +86,10 @@ class ExtrudeCollision(Pipeline):
         x_max = cluster.data.max(axis=0)[0]
         y_min = cluster.data.min(axis=0)[1]
         y_max = cluster.data.max(axis=0)[1]
-        print x_min, x_max, y_min, y_max
-        print cluster.center
-        print [x.name for x in targets]
-        print util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center))
+        print(x_min, x_max, y_min, y_max)
+        print(cluster.center)
+        print([x.name for x in targets])
+        print(util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)))
         sorted_by_y = sorted(targets, key=lambda x: x.center[1])
 
         if util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)):
@@ -102,7 +102,7 @@ class ExtrudeCollision(Pipeline):
                 if ctrl.location == "center" and util.is_point_inside_central_region(self.environ, shape.Vec2(*ctrl.center)):
                     config["arrangement"].append([ctrl.name])
 
-            print config
+            print(config)
             sub_module = rearrange.create(config, self.environ)
             content = sub_module.execute(content)
 
@@ -127,7 +127,7 @@ class ExtrudeCollision(Pipeline):
             random.seed(max_allocation - allocation)
             b = random.random()
 
-            color = map(lambda x: x, (b, g, r))
+            color = list(map(lambda x: x, (b, g, r)))
 
             cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 1, color, 2)
 

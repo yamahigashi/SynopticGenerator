@@ -59,4 +59,4 @@ def error(*args, **kwds):
 
 
 def log(*args, **kwds):
-    print args[0]
+    print(args[0])

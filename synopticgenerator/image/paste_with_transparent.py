@@ -32,7 +32,7 @@ def paste(image1, image2):
     return output_path
 
 
-class Paster(object):
+class Paster(Pipeline):
 
     def __init__(self, config, environ):
         self.config = config
@@ -64,4 +64,4 @@ if __name__ == "__main__":
 
     args = recognizer.parse_args()
     path = paste(args.image1, args.image2)
-    print path
+    print(path)

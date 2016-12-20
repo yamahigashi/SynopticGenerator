@@ -33,7 +33,7 @@ class NamingRegion(Pipeline):
             try:
                 x.name = self.controls[i]
             except IndexError:
-                print x
+                print(x)
 
         return content
 

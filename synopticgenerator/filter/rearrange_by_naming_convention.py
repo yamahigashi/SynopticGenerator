@@ -61,7 +61,7 @@ class RearrangeByNamingConvention(Pipeline):
                     else:
                         results[group_by] = [tmp]
 
-        print "res", results.keys()
+        print("res", results.keys())
         configs = {}
         for key in results.keys():
             parts = results[key]
@@ -86,7 +86,7 @@ class RearrangeByNamingConvention(Pipeline):
                 try:
                     configs[key]["arrangement"][v_index][h_index] = part["obj"]
                 except IndexError:
-                    print "IndexError", h_index, v_index, part["obj"].name
+                    print("IndexError", h_index, v_index, part["obj"].name)
                     # configs[key][v_index][h_index] = part["obj"]
 
         print "configs", configs

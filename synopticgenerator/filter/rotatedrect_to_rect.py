@@ -51,9 +51,9 @@ class RotatedrectToRect(Pipeline):
 
             return int(round(x)), int(round(y))
 
-        diff = map(lambda x: (x[0] - c[0], x[1] - c[1]), ctrl.points)
-        rot = map(lambda x: rotate(x, theta), diff)
-        new = map(lambda x: (x[0] + c[0], x[1] + c[1]), rot)
+        diff = list(map(lambda x: (x[0] - c[0], x[1] - c[1]), ctrl.points))
+        rot = list(map(lambda x: rotate(x, theta), diff))
+        new = list(map(lambda x: (x[0] + c[0], x[1] + c[1]), rot))
 
         x = new[0][0]
         y = new[0][1]
@@ -68,7 +68,9 @@ class RotatedrectToRect(Pipeline):
         new_rect.location = ctrl.location
         new_cog = new_rect.center
         # match_position by old centeroid
-        new_rect.translate((old_cog[0] - new_cog[0], old_cog[1] - new_cog[1]))
+        x = old_cog[0] - new_cog[0]
+        y = old_cog[1] - new_cog[1]
+        new_rect.translate((x, y))
 
         # self.draw_debug(new_rect.points, (1, 0, 0))
         return new_rect
@@ -83,7 +85,7 @@ class RotatedrectToRect(Pipeline):
             cv2.circle(blank_image, (int(point[0]), int(point[1])), 1, (0, 255, 0), -1)
 
         for point in points_input:
-            _color = map(lambda x: int(x * 255), color)
+            _color = list(map(lambda x: int(x * 255), color))
 
             cv2.circle(blank_image, (int(point[0]), int(point[1])), 3, _color, -1)
 

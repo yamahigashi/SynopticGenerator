@@ -44,7 +44,7 @@ class Shape(object):
         if 0 < move_x and 0 < move_y:
             mes = ("infringement detect at {}({}) with {}({})".format(
                 other.name, other.area, self.name, self.area))
-            # logging.debug(mes)
+            logging.debug(mes)
         else:
             return (0, 0)
 
@@ -154,23 +154,23 @@ class Rect(Shape):
 
     @top_left.getter
     def top_left(self):
-        return map(int, (self.x, self.y))
+        return Vec2.from_map(map(int, (self.x, self.y)))
 
     @top_right.getter
     def top_right(self):
-        return map(int, (self.x + self.w, self.y))
+        return Vec2.from_map(map(int, (self.x + self.w, self.y)))
 
     @bottom_left.getter
     def bottom_left(self):
-        return map(int, (self.x, self.y + self.h))
+        return Vec2.from_map(map(int, (self.x, self.y + self.h)))
 
     @bottom_right.getter
     def bottom_right(self):
-        return map(int, (self.x + self.w, self.y + self.h))
+        return Vec2.from_map(map(int, (self.x + self.w, self.y + self.h)))
 
     @center.getter
     def center(self):
-        return map(int, (self.x + self.w / 2, self.y + self.h / 2))
+        return Vec2.from_map(map(int, (self.x + self.w / 2, self.y + self.h / 2)))
 
     @bottom.getter
     def bottom(self):
@@ -186,7 +186,7 @@ class Rect(Shape):
 
     def scale(self, ratio):
         c = self.center
-        self.w, self.h = map(lambda x: int(x * ratio), [self.w, self.h])
+        self.w, self.h = list(map(lambda x: int(x * ratio), [self.w, self.h]))
         self.x = int(c[0] - (self.w / 2.0))
         self.y = int(c[1] - (self.h / 2.0))
 
@@ -259,7 +259,7 @@ class RotatedRect(Rect):
 
     def scale(self, ratio):
         c = self.center
-        self.w, self.h = map(lambda x: int(x * ratio), [self.w, self.h])
+        self.w, self.h = list(map(lambda x: int(x * ratio), [self.w, self.h]))
         self.x = int(c[0] - (self.w / 2.0))
         self.y = int(c[1] - (self.h / 2.0))
 
@@ -277,11 +277,11 @@ class Circle(Shape):
 
     @top_left.getter
     def top_left(self):
-        return map(lambda x: x - self.radius, self.center)
+        return Vec2.from_map(map(lambda x: x - self.radius, self.center))
 
     @bottom_right.getter
     def bottom_right(self):
-        return map(lambda x: x + self.radius, self.center)
+        return Vec2.from_map(map(lambda x: x + self.radius, self.center))
 
     @bottom.getter
     def bottom(self):
@@ -516,6 +516,13 @@ class Vec2(list):
         super(Vec2, self).__init__()
         self.append(x)
         self.append(y)
+
+    @staticmethod
+    def from_map(map):
+        l_ = list(map)
+        x = l_[0]
+        y = l_[1]
+        return Vec2(x, y)
 
     @x.getter
     def x(self):
