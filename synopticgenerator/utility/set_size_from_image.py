@@ -5,8 +5,10 @@ from PIL import Image
 
 import logging
 
+from synopticgenerator import Pipeline
 
-class SetSizeFromImage(object):
+
+class SetSizeFromImage(Pipeline):
     ''' Set width and height for environ from given image size '''
 
     def __init__(self, config, environ):

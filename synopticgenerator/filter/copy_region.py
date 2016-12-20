@@ -2,9 +2,10 @@
 
 import copy
 import synopticgenerator.log as log
+from synopticgenerator import Pipeline
 
 
-class CopyRegion(object):
+class CopyRegion(Pipeline):
     ''' :w '''
 
     def __init__(self, config, environ):

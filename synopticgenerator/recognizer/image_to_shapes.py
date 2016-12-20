@@ -9,6 +9,7 @@ import cv2
 import synopticgenerator.shape as shape
 import synopticgenerator.util as util
 import logging
+from synopticgenerator import Pipeline
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
@@ -20,7 +21,7 @@ __status__ = "Prototype"
 ##############################################################################
 
 
-class SearchContours(object):
+class SearchContours(Pipeline):
     # color = (172, 86, 221)
 
     def __init__(self, config, environ):

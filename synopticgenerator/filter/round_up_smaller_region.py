@@ -1,9 +1,10 @@
 """ coding: utf-8 """
 
 import logging
+from synopticgenerator import Pipeline
 
 
-class RoundUpSmallerRegion(object):
+class RoundUpSmallerRegion(Pipeline):
     ''' :w '''
 
     def __init__(self, config, environ):

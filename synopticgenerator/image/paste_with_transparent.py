@@ -5,6 +5,8 @@ import shutil
 import tempfile
 from PIL import Image
 
+from synopticgenerator import Pipeline
+
 
 def paste(image1, image2):
     """ 2枚のイメージを合成する """

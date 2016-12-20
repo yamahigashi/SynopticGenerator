@@ -1,7 +1,9 @@
 """ coding: utf-8 """
 
+from synopticgenerator import Pipeline
 
-class ConcatRegion(object):
+
+class ConcatRegion(Pipeline):
     ''' :w '''
 
     def __init__(self, config, environ):

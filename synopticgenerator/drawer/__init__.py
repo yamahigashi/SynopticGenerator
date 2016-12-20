@@ -1,11 +1,8 @@
 """ coding: utf-8 """
+from synopticgenerator import Pipeline
 
-class ObjectDrawer(object):
+
+class ObjectDrawer(Pipeline):
 
     def __init__(self, config, image):
         self.canvas = image
-
-
-def draw(config, image, bound):
-    r = RectangleDrawer(config, image)
-    r.draw(bound, color)

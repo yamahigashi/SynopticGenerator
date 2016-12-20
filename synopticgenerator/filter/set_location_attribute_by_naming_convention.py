@@ -4,9 +4,10 @@ import re
 import logging
 
 # import synopticgenerator.util as util
+from synopticgenerator import Pipeline
 
 
-class SetLocationAttributeByNamingConvention(object):
+class SetLocationAttributeByNamingConvention(Pipeline):
     ''' :w '''
 
     def __init__(self, config, environ):

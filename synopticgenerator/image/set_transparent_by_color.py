@@ -7,9 +7,10 @@ import shutil
 from PIL import Image
 
 import synopticgenerator.util as util
+from synopticgenerator import Pipeline
 
 
-class Transparenter(object):
+class Transparenter(Pipeline):
 
     def __init__(self, config, environ):
         self.config = config

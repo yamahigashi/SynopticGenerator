@@ -2,9 +2,10 @@
 
 
 import synopticgenerator.util as util
+from synopticgenerator import Pipeline
 
 
-class SetColorRegion(object):
+class SetColorRegion(Pipeline):
     ''' :w '''
 
     def __init__(self, config, environ):

@@ -4,8 +4,10 @@
 import xml.sax.saxutils as saxutils
 import logging
 
+from synopticgenerator import Pipeline
 
-class HTMLCharacter(object):
+
+class HTMLCharacter(Pipeline):
     ''' manipulate HTML charcter '''
 
     def __init__(self, config, environ):

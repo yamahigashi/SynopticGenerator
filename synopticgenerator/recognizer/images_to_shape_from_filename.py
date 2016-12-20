@@ -8,6 +8,7 @@ import re
 import glob
 
 import synopticgenerator.recognizer.image_to_shapes as image_to_shapes
+from synopticgenerator import Pipeline
 # import synopticgenerator.shape as shape
 # import synopticgenerator.util as util
 # import logging
@@ -22,7 +23,7 @@ __status__ = "Prototype"
 ##############################################################################
 
 
-class ImagesToRegionFromFilename(object):
+class ImagesToRegionFromFilename(Pipeline):
     # color = (172, 86, 221)
 
     place_holder_controller_name = "controller_name"

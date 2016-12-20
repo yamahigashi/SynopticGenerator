@@ -40,6 +40,7 @@ class SynopticGenerator(object):
         self.load_after(config)
 
     def load_after(self, config):
+        # type: Dict[str, object]
         ''' set plugin path
 
         plugin loading path sequence order is
@@ -55,6 +56,7 @@ class SynopticGenerator(object):
             self.environ["plugin_path"].append(CURRENT_PATH)
 
     def start_logging(self, environ):
+        # type: Dict(str, object)
         level = environ.setdefault("log_level", "INFO")
         filename = environ.setdefault("log_file", None)
         formatter = environ.setdefault("log_format", log.DEFAULT_FORMATTER)
@@ -62,16 +64,19 @@ class SynopticGenerator(object):
         log.start(filename=filename, level=level, formatter=formatter)
 
     def add_plugin_path(self, path):
-        l = path + self.environ["plugin_path"]
-        self.environ["plugin_path"] = list(set(l))
+        # type: Dict(str, object)
+        p = path + self.environ["plugin_path"]
+        self.environ["plugin_path"] = list(set(p))
 
     def run_all(self):
+        # type: -> Dict(str, object)
         res = {}
         for k in self.pipelines.keys():
             res = self.run_line(k, res)
         return res
 
     def run_line(self, pipeline, content=None):
+        # type: List(Dict(str, object)), Dict(str, object) -> Dict(str, object)
         """ run by pipeline name(filter, recognizer, publish) """
 
         line = self.pipelines[pipeline]
@@ -83,6 +88,7 @@ class SynopticGenerator(object):
         return res
 
     def instantiate(self, line):
+        # type: -> Dict(str, object)
         """ return SynopticGenerator plugin module instance. """
 
         logging.info("start instantiate %s" % line["module"])
@@ -99,6 +105,10 @@ class SynopticGenerator(object):
             obj.set_submodules(sub_module_instances)
 
         return obj
+
+
+class Pipeline(object):
+    """ SynopticGenerator's pipeline base class """
 
 
 def create(config_path):

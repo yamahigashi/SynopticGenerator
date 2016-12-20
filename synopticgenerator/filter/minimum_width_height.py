@@ -1,9 +1,10 @@
 """ coding: utf-8 """
 
 import synopticgenerator.shape as shape
+from synopticgenerator import Pipeline
 
 
-class MinimumWidthHeight(object):
+class MinimumWidthHeight(Pipeline):
     '''  '''
 
     def __init__(self, config, environ):

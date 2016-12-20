@@ -1,7 +1,8 @@
 """ coding: utf-8 """
+from synopticgenerator import Pipeline
 
 
-class DumpRegion(object):
+class DumpRegion(Pipeline):
     ''' manipulate HTML charcter '''
 
     def __init__(self, config, environ):

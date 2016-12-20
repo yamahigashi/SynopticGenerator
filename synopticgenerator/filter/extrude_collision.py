@@ -11,9 +11,10 @@ import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
 import synopticgenerator.filter.rearrange as rearrange
+from synopticgenerator import Pipeline
 
 
-class ExtrudeCollision(object):
+class ExtrudeCollision(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
     def __init__(self, config, environ):

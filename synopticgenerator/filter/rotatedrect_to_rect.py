@@ -4,9 +4,10 @@ import math
 
 
 import synopticgenerator.shape as shape
+from synopticgenerator import Pipeline
 
 
-class RotatedrectToRect(object):
+class RotatedrectToRect(Pipeline):
 
     def __init__(self, config, environ):
         self.config = config

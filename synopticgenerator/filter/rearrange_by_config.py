@@ -8,11 +8,11 @@ import numpy as np
 
 # import synopticgenerator.util as util
 import synopticgenerator.shape as shape
-# import synopticgenerator.mathutil as mathutil
 from synopticgenerator import Pipeline
+# import synopticgenerator.mathutil as mathutil
 
 
-class Rearrange(Pipeline):
+class RearrangeByConfig(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
     def __init__(self, config, environ):
@@ -66,7 +66,13 @@ class Rearrange(Pipeline):
         for i, arr in enumerate(arrange_direction):
             tmp = []
             for j, a in enumerate(arr):
-                tmp.append([x for x in self.ctrls if x.name == arrange_direction[i][j]][0])
+                elem = arrange_direction[i][j]
+                if isinstance(elem, shape.Shape):
+                    tmp.append(elem)
+                elif isinstance(elem, str) or isinstance(elem, unicode):
+                    tmp.append([x for x in self.ctrls if x.name == arrange_direction[i][j]][0])
+                else:
+                    raise ConfigInvalid()
 
             ctrls_direction.append(tmp)
         ctrls_direction.reverse()
@@ -75,10 +81,9 @@ class Rearrange(Pipeline):
             return
 
         target_row_bottom = None
-        horizontal_baseline = None
+        horizontal_baseline = []
         while ctrls_direction:
             target_row = ctrls_direction.pop()
-
             self.arrange_horizon(target_row, target_row_bottom, horizontal_baseline)
             target_row_bottom = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
             horizontal_baseline = [x.center[0] for x in target_row]
@@ -117,8 +122,8 @@ class Rearrange(Pipeline):
             rule(str): "align_bottom", "align_center"
         """
         if not height:
-            bottoms = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
-            return bottoms
+            # bottoms = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
+            height = min([(x.center[1] - (x.h / 2.0)) for x in target_row])
 
         arrange_direction = self.config.get("arrange_direction")
 
@@ -192,5 +197,11 @@ class RegionNotFound(Exception):
         return "Region named {} not found in content".format(v)
 
 
+class ConfigInvalid(Exception):
+
+    def str(self, v):
+        return "{}".format(v)
+
+
 def create(config, environ):
-    return Rearrange(config, environ)
+    return RearrangeByConfig(config, environ)

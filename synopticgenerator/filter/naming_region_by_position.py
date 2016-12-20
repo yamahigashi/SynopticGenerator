@@ -1,9 +1,10 @@
 """ coding: utf-8 """
 
 import logging
+from synopticgenerator import Pipeline
 
 
-class NamingRegion(object):
+class NamingRegion(Pipeline):
     ''' apply name to region '''
 
     def __init__(self, config, environ):

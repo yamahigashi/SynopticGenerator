@@ -3,8 +3,10 @@
 
 import logging
 
+from synopticgenerator import Pipeline
 
-class FileRemover(object):
+
+class FileRemover(Pipeline):
 
     def __init__(self, config, environ):
         self.config = config

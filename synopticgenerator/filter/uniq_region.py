@@ -1,7 +1,8 @@
 """ coding: utf-8 """
+from synopticgenerator import Pipeline
 
 
-class UniqRegion(object):
+class UniqRegion(Pipeline):
     ''' :w '''
 
     def __init__(self, config, environ):

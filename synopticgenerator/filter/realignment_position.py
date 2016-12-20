@@ -10,9 +10,10 @@ import numpy as np
 import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
+from synopticgenerator import Pipeline
 
 
-class RealignmentPosition(object):
+class RealignmentPosition(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
     def __init__(self, config, environ):
