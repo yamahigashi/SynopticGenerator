@@ -18,7 +18,13 @@ class FileRemover(Pipeline):
             import send2trash
             logging.info("send 2 trash: {0}".format(f))
             send2trash.send2trash(f)
+
         except ImportError:
+            import os
+            logging.warn("REMOVE file: {0}".format(f))
+            os.remove(f)
+
+        except NameError:
             import os
             logging.warn("REMOVE file: {0}".format(f))
             os.remove(f)

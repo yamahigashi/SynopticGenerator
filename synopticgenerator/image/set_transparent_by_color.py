@@ -1,6 +1,7 @@
 ﻿""" coding: utf-8 """
 
 import os
+import io
 import tempfile
 import shutil
 
@@ -30,7 +31,7 @@ class Transparenter(Pipeline):
 def transparent(f, color=util.color("255, 255, 255")):
     """ 指定パス画像の指定カラー部分透明にする """
 
-    if isinstance(f, file):
+    if isinstance(f, io.IOBase):
         file_path = f.name
     elif isinstance(f, str):
         file_path = f

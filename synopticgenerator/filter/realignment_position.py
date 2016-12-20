@@ -160,7 +160,7 @@ class RealignmentPosition(Pipeline):
             random.seed(max_allocation - allocation)
             b = random.random()
 
-            color = map(lambda x: x, (b, g, r))
+            color = list(map(lambda x: x, (b, g, r)))
 
             cv2.circle(blank_image_classified, (int(point[0]), int(point[1])), 1, color, 2)
 

@@ -1,6 +1,7 @@
 ﻿""" coding: utf-8 """
 
 import os
+import io
 import shutil
 import tempfile
 from PIL import Image
@@ -11,12 +12,12 @@ from synopticgenerator import Pipeline
 def paste(image1, image2):
     """ 2枚のイメージを合成する """
 
-    if isinstance(image1, file):
+    if isinstance(image1, io.IOBase):
         image1_file_path = image1.name
     elif isinstance(image1, str):
         image1_file_path = image1
 
-    if isinstance(image2, file):
+    if isinstance(image2, io.IOBase):
         image2_file_path = image2.name
     elif isinstance(image2, str):
         image2_file_path = image2
