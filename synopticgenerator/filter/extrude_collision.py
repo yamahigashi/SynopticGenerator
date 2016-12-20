@@ -63,8 +63,7 @@ class ExtrudeCollision(Pipeline):
         x_means = mathutil.XMeans(random_state=1).fit(pointcloud_list)
         pointcloud_list *= self.aspect_ratio_normalizer
 
-        print(len(x_means.clusters))
-
+        cluster_infos = []
         # resolve collision
         for i, cluster in enumerate(x_means.clusters):
 
@@ -73,40 +72,31 @@ class ExtrudeCollision(Pipeline):
             indice = np.unique(np.array(inflated_indice)[cluster.index])
             targets = np.array(ctrls)[indice]
 
-            content = self.analyze_cluster(content, cluster, targets)
-            self.resolve_collision(targets)
+            info = ClusterInformation(self.environ, cluster, targets)
+            cluster_infos.append(info)
+
+            content = self.analyze_cluster(content, info, targets)
+            # self.resolve_collision(targets)
             # content = self.analyze_cluster(content, cluster, targets)
+
+        for info in cluster_infos:
+            print "info", info.upper_free(cluster_infos), info.lower_free(cluster_infos)
 
         if self.config.get('draw_debug', False):
             self.draw_debug(pointcloud_list, x_means.labels)
 
         return content
 
-    def analyze_cluster(self, content, cluster, targets):
-        x_min = cluster.data.min(axis=0)[0]
-        x_max = cluster.data.max(axis=0)[0]
-        y_min = cluster.data.min(axis=0)[1]
-        y_max = cluster.data.max(axis=0)[1]
-        print("analyze_cluster")
-        print(x_min, x_max, y_min, y_max)
-        print(cluster.center)
-        print([x.name for x in targets])
-        print(util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)))
+    def analyze_cluster(self, content, info, targets):
         sorted_by_y = sorted(targets, key=lambda x: x.center[1])
 
-        is_inside_central = util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center))
-        has_even_lr = shape.contain_location_even_left_right(self.environ, targets)
-
-        if is_inside_central:
-            # align center
-            print len(sorted_by_y)
+        if info.is_inside_central:
             center_ctrls = [ctrl for ctrl in shape.filter_has_attr_center_and_central(self.environ, sorted_by_y)]
-            print len(center_ctrls)
             content = self.align_center(content, center_ctrls)
 
-        if has_even_lr:
+        if info.has_even_lr:
             lr_ctrls = [ctrl for ctrl in shape.filter_has_attr_not_center(self.environ, sorted_by_y)]
-            # content = self.align_symmetry(content, lr_ctrls)
+            content = self.align_symmetry(content, lr_ctrls)
 
         return content
 
@@ -181,18 +171,8 @@ class ExtrudeCollision(Pipeline):
             "arrange_direction": "down"
         }
 
-        print ctrls, len(ctrls)
         for ctrl in ctrls:
-            print ctrl.name
             config["arrangement"].append([ctrl])
-
-        print "align center"
-        print "align center"
-        print "align center"
-        print "align center"
-        print "align center"
-        print "align center"
-        print "align center"
 
         sub_module = rearrange_by_config.create(config, self.environ)
         content = sub_module.execute(content)
@@ -206,6 +186,76 @@ class ExtrudeCollision(Pipeline):
         content = sub_module.execute(content)
 
         return content
+
+
+class ClusterInformation(object):
+
+    def __init__(self, env, cluster, targets):
+        # type: (Dict[str, Any], mathutil.XMeans.Cluster, List[shape.Shape]) -> None 
+        self.env = env
+        self.raw_cluster = cluster
+        self.targets = targets
+
+        # self.x_min = cluster.data.min(axis=0)[0]
+        # self.x_max = cluster.data.max(axis=0)[0]
+        # self.y_min = cluster.data.min(axis=0)[1]
+        # self.y_max = cluster.data.max(axis=0)[1]
+        self.x_min = min([x.top_left[0] for x in targets])
+        self.x_max = max([x.top_right[0] for x in targets])
+        self.y_min = min([x.bottom_left[1] for x in targets])
+        self.y_max = max([x.top_left[1] for x in targets])
+        self.center = shape.Vec2(*cluster.center)
+
+        print self.x_min, self.x_max, self.y_min, self.y_max, self.center
+
+        self.is_inside_central = util.is_point_inside_central_region(
+            self.env, shape.Vec2(*cluster.center))
+
+        self.has_even_lr = shape.contain_location_even_left_right(
+            self.env, targets)
+
+        self.c_count, self.l_count, self.r_count = shape.count_groupby_location(
+            self.env, targets)
+
+        self.c_rate = self.c_count / len(targets)
+        self.l_rate = self.l_count / len(targets)
+        self.r_rate = self.r_count / len(targets)
+
+    def upper_free(self, others):
+        # type: List[ClusterInformation] -> bool
+
+        for other in others:
+            if self == other:
+                continue
+
+            if not self.y_max < other.y_min:
+                continue
+
+            if not self.x_min < other.center.x and not other.center.x < self.x_max:
+                continue
+
+            return False
+
+        else:
+            return True
+
+    def lower_free(self, others):
+        # type: List[ClusterInformation] -> bool
+
+        for other in others:
+            if self == other:
+                continue
+
+            if not other.y_min < self.y_max:
+                continue
+
+            if not self.x_min < other.center.x and not other.center.x < self.x_max:
+                continue
+
+            return True
+
+        else:
+            return False
 
 
 class RegionNotFound(Exception):
