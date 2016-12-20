@@ -72,10 +72,11 @@ class RearrangeByNamingConvention(Pipeline):
             v_max = int(max(parts, key=lambda x: int(x["vertical_index"]))["vertical_index"]) + 1
 
             configs[key] = {
-                "arrangement": [[None] * h_max] * v_max,
+                "arrangement": [[None for i in range(h_max)] for j in range(v_max)],
                 "arrange_direction": self.config.get("arrange_direction")
             }
 
+            # gather parts
             for part in parts:
                 v_index = int(part["vertical_index"])
                 h_index = int(part["horizontal_index"])
@@ -89,7 +90,9 @@ class RearrangeByNamingConvention(Pipeline):
                     print("IndexError", h_index, v_index, part["obj"].name)
                     # configs[key][v_index][h_index] = part["obj"]
 
-        print "configs", configs
+            # execute sub-module
+            submodule = rearrange_by_config.create(configs[key], self.environ)
+            content = submodule.execute(content)
 
         return content
 

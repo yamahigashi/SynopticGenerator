@@ -10,7 +10,8 @@ import numpy as np
 import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
-import synopticgenerator.filter.rearrange as rearrange
+import synopticgenerator.filter.rearrange_by_config as rearrange_by_config
+import synopticgenerator.filter.align_symmetry as align_symmetry
 from synopticgenerator import Pipeline
 
 
@@ -73,8 +74,8 @@ class ExtrudeCollision(Pipeline):
             targets = np.array(ctrls)[indice]
 
             content = self.analyze_cluster(content, cluster, targets)
-
             self.resolve_collision(targets)
+            # content = self.analyze_cluster(content, cluster, targets)
 
         if self.config.get('draw_debug', False):
             self.draw_debug(pointcloud_list, x_means.labels)
@@ -86,25 +87,26 @@ class ExtrudeCollision(Pipeline):
         x_max = cluster.data.max(axis=0)[0]
         y_min = cluster.data.min(axis=0)[1]
         y_max = cluster.data.max(axis=0)[1]
+        print("analyze_cluster")
         print(x_min, x_max, y_min, y_max)
         print(cluster.center)
         print([x.name for x in targets])
         print(util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)))
         sorted_by_y = sorted(targets, key=lambda x: x.center[1])
 
-        if util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center)):
-            config = {
-                "arrangement": [],
-                "arrange_direction": "down"
-            }
+        is_inside_central = util.is_point_inside_central_region(self.environ, shape.Vec2(*cluster.center))
+        has_even_lr = shape.contain_location_even_left_right(self.environ, targets)
 
-            for ctrl in sorted_by_y:
-                if ctrl.location == "center" and util.is_point_inside_central_region(self.environ, shape.Vec2(*ctrl.center)):
-                    config["arrangement"].append([ctrl.name])
+        if is_inside_central:
+            # align center
+            print len(sorted_by_y)
+            center_ctrls = [ctrl for ctrl in shape.filter_has_attr_center_and_central(self.environ, sorted_by_y)]
+            print len(center_ctrls)
+            content = self.align_center(content, center_ctrls)
 
-            print(config)
-            sub_module = rearrange.create(config, self.environ)
-            content = sub_module.execute(content)
+        if has_even_lr:
+            lr_ctrls = [ctrl for ctrl in shape.filter_has_attr_not_center(self.environ, sorted_by_y)]
+            # content = self.align_symmetry(content, lr_ctrls)
 
         return content
 
@@ -172,6 +174,38 @@ class ExtrudeCollision(Pipeline):
                 protrude = b.solve_direction_to_avoid(protrude, other=target, config=self.config)
 
                 b.translate(protrude)
+
+    def align_center(self, content, ctrls):
+        config = {
+            "arrangement": [],
+            "arrange_direction": "down"
+        }
+
+        print ctrls, len(ctrls)
+        for ctrl in ctrls:
+            print ctrl.name
+            config["arrangement"].append([ctrl])
+
+        print "align center"
+        print "align center"
+        print "align center"
+        print "align center"
+        print "align center"
+        print "align center"
+        print "align center"
+
+        sub_module = rearrange_by_config.create(config, self.environ)
+        content = sub_module.execute(content)
+        return content
+
+    def align_symmetry(self, content, ctrls):
+        config = {
+            "controls": ctrls
+        }
+        sub_module = align_symmetry.create(config, self.environ)
+        content = sub_module.execute(content)
+
+        return content
 
 
 class RegionNotFound(Exception):
