@@ -169,7 +169,7 @@ class Rect(Shape):
             x_axis = util.get_x_center(env)
 
         new_center = x_axis + (x_axis - self.center.x)
-        new_x = new_center - self.w
+        new_x = new_center - (self.w / 2.0)
         new_shape = Rect((new_x, self.y, self.w, self.h))
         new_shape.name = name
         if self.location:
@@ -272,7 +272,7 @@ class RotatedRect(Rect):
             x_axis = util.get_x_center(env)
 
         new_center = x_axis + (x_axis - self.center.x)
-        new_x = new_center - self.w
+        new_x = new_center - (self.w / 2.0)
         new_theta = self.theta * -1
         cvrotatedrect = [
             [new_x, self.y],
@@ -376,7 +376,7 @@ class Ellipse(Shape):
             x_axis = util.get_x_center(env)
 
         new_center = x_axis + (x_axis - self.center.x)
-        new_x = new_center - self.w
+        new_x = new_center - (self.w / 2.0)
         new_theta = self.theta * -1
         cvrotatedrect = [
             [new_x, self.y],
@@ -752,8 +752,8 @@ def filter_has_attr_not_center(environ, ctrls):
         yield ctrl
 
 
-def contain_location_even_left_right(environ, ctrls):
-    # type: (list[Shape]) -> boolean
+def count_groupby_location(environ, ctrls):
+    # type: (list[Shape]) -> tuple(int, int, int)
     c_count = 0
     l_count = 0
     r_count = 0
@@ -768,6 +768,13 @@ def contain_location_even_left_right(environ, ctrls):
             r_count += 1
         else:
             c_count += 1
+
+    return c_count, l_count, r_count
+
+
+def contain_location_even_left_right(environ, ctrls):
+    # type: (list[Shape]) -> boolean
+    c_count, l_count, r_count = count_groupby_location(environ, ctrls)
 
     mes = "contain_location_even_left_right = c({}), l({}), r({})".format(
         c_count, l_count, r_count)
