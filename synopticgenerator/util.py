@@ -4,6 +4,7 @@ import imp
 import os
 import logging
 
+
 ##############################################################################
 _moduleFactories = {}
 
@@ -30,7 +31,7 @@ def load_module(module_name, plugin_base_path=[]):
 
 
 def ensure_folder(filename):
-    if not "/" in filename and not "\\" in filename:
+    if "/" not in filename and "\\" not in filename:
         return
 
     dname = os.path.dirname(filename)
