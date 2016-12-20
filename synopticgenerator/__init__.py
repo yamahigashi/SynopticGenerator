@@ -40,7 +40,7 @@ class SynopticGenerator(object):
         self.load_after(config)
 
     def load_after(self, config):
-        # type: Dict[str, object]
+        # type: (Dict[str, object])
         ''' set plugin path
 
         plugin loading path sequence order is
@@ -49,14 +49,19 @@ class SynopticGenerator(object):
          3. this module directory path for the standard plugins.
         '''
 
+        self.initialize_environ()
         self.environ.setdefault("plugin_path", ["."])
         if "." not in self.environ["plugin_path"]:
             self.environ["plugin_path"].insert(0, ".")
         if CURRENT_PATH not in self.environ["plugin_path"]:
             self.environ["plugin_path"].append(CURRENT_PATH)
 
+    def initialize_environ(self):
+        self.environ.setdefault("location_expression", "_(L|R|C)\\d+_")
+        self.environ.setdefault("location_label", {"left": "L", "right": "R", "center": "C"})
+
     def start_logging(self, environ):
-        # type: Dict(str, object)
+        # type: (Dict(str, object))
         level = environ.setdefault("log_level", "INFO")
         filename = environ.setdefault("log_file", None)
         formatter = environ.setdefault("log_format", log.DEFAULT_FORMATTER)
@@ -64,19 +69,19 @@ class SynopticGenerator(object):
         log.start(filename=filename, level=level, formatter=formatter)
 
     def add_plugin_path(self, path):
-        # type: Dict(str, object)
+        # type: (Dict(str, object))
         p = path + self.environ["plugin_path"]
         self.environ["plugin_path"] = list(set(p))
 
     def run_all(self):
-        # type: -> Dict(str, object)
+        # type: () -> Dict(str, object)
         res = {}
         for k in self.pipelines.keys():
             res = self.run_line(k, res)
         return res
 
     def run_line(self, pipeline, content=None):
-        # type: List(Dict(str, object)), Dict(str, object) -> Dict(str, object)
+        # type: (List(Dict(str, object)), Dict(str, object)) -> Dict(str, object)
         """ run by pipeline name(filter, recognizer, publish) """
 
         line = self.pipelines[pipeline]
@@ -88,7 +93,7 @@ class SynopticGenerator(object):
         return res
 
     def instantiate(self, line):
-        # type: -> Dict(str, object)
+        # type: () -> Pipeline
         """ return SynopticGenerator plugin module instance. """
 
         logging.info("start instantiate %s" % line["module"])

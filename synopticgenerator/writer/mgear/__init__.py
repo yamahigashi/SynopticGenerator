@@ -199,11 +199,11 @@ class Writer(object):
         return self.get_selector_button_class(control, "Circle"), coords
 
     def get_selector_button_class(self, control, shape_name):
-        if control.location == "center":
+        if control.location == shape.LocationAttributeCenter:
             loc = "C"
-        elif control.location == "left":
+        elif control.location == shape.LocationAttributeLeft:
             loc = "L"
-        elif control.location == "right":
+        elif control.location == shape.LocationAttributeRight:
             loc = "R"
         else:
             loc = "C"

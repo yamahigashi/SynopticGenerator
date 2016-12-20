@@ -5,6 +5,7 @@ import logging
 
 # import synopticgenerator.util as util
 from synopticgenerator import Pipeline
+import synopticgenerator.shape as shape
 
 
 class SetLocationAttributeByNamingConvention(Pipeline):
@@ -15,23 +16,23 @@ class SetLocationAttributeByNamingConvention(Pipeline):
         self.environ = environ
 
         self.convetion = config["convention"]
-        self.default = self.convetion.get("default", "center")
+        self.default = self.convetion.get("default", shape.LocationAttributeCenter)
 
         _l = self.convetion.get("left", None)
         _r = self.convetion.get("right", None)
         _c = self.convetion.get("center", None)
         if _l:
-            self.convention_l = {'expr': re.compile(_l), 'attr': 'left'}
+            self.convention_l = {'expr': re.compile(_l), 'attr': shape.LocationAttributeLeft}
         else:
             self.convention_l = None
 
         if _r:
-            self.convention_r = {'expr': re.compile(_r), 'attr': 'right'}
+            self.convention_r = {'expr': re.compile(_r), 'attr': shape.LocationAttributeRight}
         else:
             self.convention_r = None
 
         if _c:
-            self.convention_c = {'expr': re.compile(_c), 'attr': 'center'}
+            self.convention_c = {'expr': re.compile(_c), 'attr': shape.LocationAttributeCenter}
         else:
             self.convention_c = None
 
@@ -52,14 +53,14 @@ class SetLocationAttributeByNamingConvention(Pipeline):
                 continue
 
             if convention['expr'].search(ctrl.name):
-                ctrl.location = convention['attr']
+                ctrl.location = convention['attr']()
                 logging.debug("setting location attribute for region: {}, location: {}".format(
                     ctrl.name, ctrl.location))
 
                 break
 
         else:
-            ctrl.location = self.default
+            ctrl.location = self.default()
             logging.debug("setting location attribute as default for region: {}, location: {}".format(
                 ctrl.name, ctrl.location))
 

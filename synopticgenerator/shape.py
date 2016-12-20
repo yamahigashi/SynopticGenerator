@@ -107,26 +107,38 @@ class Shape(object):
             return None
 
     def which_direction_to_avoid_by_location_attribute(self, other, config={}):
-        if other.location == 'center' and self.location == "center":
-            res = "center"
+        if (
+                isinstance(other.location, LocationAttributeCenter) and
+                isinstance(self.location, LocationAttributeCenter)):
 
-        elif other.location == "center" and self.location != "center":
+            res = LocationAttributeCenter
+
+        elif (
+                isinstance(other.location, LocationAttributeCenter) and
+                not isinstance(self.location, LocationAttributeCenter)):
+
             res = self.location
 
-        elif other.location != "center" and self.location == "center":
-            res = "center"
+        elif (
+                not isinstance(other.location, LocationAttributeCenter) and
+                isinstance(self.location, LocationAttributeCenter)):
 
-        elif other.location != "center" and self.location != "center":
+            res = LocationAttributeCenter
+
+        elif (
+                not isinstance(other.location, LocationAttributeCenter) and
+                not isinstance(self.location, LocationAttributeCenter)):
+
             if other.location == self.location:
                 res = other.location
             else:
                 res = self.location
 
         else:
-            res = "center"
+            res = LocationAttributeCenter
 
         if not res:
-            res = "center"
+            res = LocationAttributeCenter
 
         return res
 
@@ -151,6 +163,18 @@ class Rect(Shape):
         self.y = cvrect[1]
         self.w = cvrect[2]
         self.h = cvrect[3]
+
+    def copy_mirror(self, env, name, x_axis=None):
+        if not x_axis:
+            x_axis = util.get_x_center(env)
+
+        new_center = x_axis + (x_axis - self.center.x)
+        new_x = new_center - self.w
+        new_shape = Rect((new_x, self.y, self.w, self.h))
+        new_shape.name = name
+        if self.location:
+            new_shape.location = self.location.mirror()
+        return new_shape
 
     @top_left.getter
     def top_left(self):
@@ -243,6 +267,24 @@ class RotatedRect(Rect):
         self.points = [(x[0], x[1]) for x in p]
         # self.drawer = drawer.polygon
 
+    def copy_mirror(self, env, name, x_axis=None):
+        if not x_axis:
+            x_axis = util.get_x_center(env)
+
+        new_center = x_axis + (x_axis - self.center.x)
+        new_x = new_center - self.w
+        new_theta = self.theta * -1
+        cvrotatedrect = [
+            [new_x, self.y],
+            [self.w, self.h],
+            new_theta
+        ]
+        new_shape = RotatedRect(cvrotatedrect)
+        new_shape.name = name
+        if self.location:
+            new_shape.location = self.location.mirror()
+        return new_shape
+
     @center.getter
     def center(self):
         x = 0
@@ -274,6 +316,17 @@ class Circle(Shape):
     def __init__(self, center, radius):
         self.center = center
         self.radius = radius
+
+    def copy_mirror(self, env, name, x_axis=None):
+        if not x_axis:
+            x_axis = util.get_x_center(env)
+
+        new_center = x_axis + (x_axis - self.center.x)
+        new_shape = Circle(new_center, self.radius)
+        new_shape.name = name
+        if self.location:
+            new_shape.location = self.location.mirror()
+        return new_shape
 
     @top_left.getter
     def top_left(self):
@@ -317,6 +370,24 @@ class Ellipse(Shape):
         self.h = cvrotated[1][1]
         self.theta = cvrotated[2]
         self.center = cvrotated[0]
+
+    def copy_mirror(self, env, name, x_axis=None):
+        if not x_axis:
+            x_axis = util.get_x_center(env)
+
+        new_center = x_axis + (x_axis - self.center.x)
+        new_x = new_center - self.w
+        new_theta = self.theta * -1
+        cvrotatedrect = [
+            [new_x, self.y],
+            [self.w, self.h],
+            new_theta
+        ]
+        new_shape = Ellipse(cvrotatedrect)
+        new_shape.name = name
+        if self.location:
+            new_shape.location = self.location.mirror()
+        return new_shape
 
     @area.getter
     def area(self):
@@ -490,18 +561,62 @@ class AttributeBaseCollisionSolver(BaseCollisionSolver):
 
     def solve_direction(self, config, shape, move, other=None):
         direction = shape.which_direction_to_avoid_by_location_attribute(other, config)
-        if direction == "center":
+        if direction == LocationAttributeCenter:
             move.x = 0
 
-        elif direction == "left":
+        elif direction == LocationAttributeLeft:
             move.x = abs(move.x) * -1
             move.y = 0
 
-        elif direction == "right":
+        elif direction == LocationAttributeRight:
             move.x = abs(move.x)
             move.y = 0
 
         return move
+
+
+# --------------------------------------------------------------------------- #
+#
+# --------------------------------------------------------------------------- #
+class LocationAttribute(object):
+
+    label = None
+
+    def __str__(self):
+        return self.label
+
+    def __eq__(self, other):
+        if isinstance(other, type):
+            return type(self) == other
+
+        return type(self) == type(other)
+
+    def __nq__(self, other):
+        return not self.__eq__(other)
+
+
+class LocationAttributeCenter(LocationAttribute):
+
+    label = "center"
+
+    def mirror(self):
+        return LocationAttributeCenter()
+
+
+class LocationAttributeLeft(LocationAttribute):
+
+    label = "left"
+
+    def mirror(self):
+        return LocationAttributeRight()
+
+
+class LocationAttributeRight(LocationAttribute):
+
+    label = "right"
+
+    def mirror(self):
+        return LocationAttributeLeft()
 
 
 # --------------------------------------------------------------------------- #
