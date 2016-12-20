@@ -12,15 +12,25 @@ class MinimumWidthHeight(Pipeline):
         self.environ = environ
         self.region = config.setdefault("region_name", "regions")
         self.baseline = config.setdefault("baseline", 9)
+        self.height = config.setdefault("height", None)
+        self.width = config.setdefault("width", None)
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
         mini = self.config.get("baseline")
+        height = self.config.get("height")
+        width = self.config.get("width")
 
         for ctrl in content[self.region]:
             if isinstance(ctrl, shape.Rect):
+
+                if width and ctrl.w < width:
+                    ctrl.scale_x(float(width) / ctrl.w)
+                if height and ctrl.h < height:
+                    ctrl.scale_y(float(height) / ctrl.h)
+
                 if ctrl.w < mini:
                     ctrl.scale_x(float(mini) / ctrl.w)
                 if ctrl.h < mini:
