@@ -112,7 +112,7 @@ class ExtrudeCollision(Pipeline):
 
             if 0.7 < info.c_rate:
                 center_ctrls = [ctrl for ctrl in shape.filter_only_central(self.environ, sorted_by_y)]
-                content = self.solve_vertical_collision(content, center_ctrls, direction=direction)
+                content = self.solve_vertical_collision(content, [center_ctrls,], direction=direction)
                 print "solve_vertical_collision", len(center_ctrls), [x.name for x in center_ctrls]
 
                 center_ctrls = [ctrl for ctrl in shape.filter_has_attr_center_and_central(self.environ, sorted_by_y)]
@@ -256,7 +256,7 @@ class ExtrudeCollision(Pipeline):
 
         else:
             content = self.solve_collision_as_grid(content, cluster)
-            # return content
+            return content
 
         print config, [x.name for x in cluster.targets]
 
@@ -290,28 +290,64 @@ class ExtrudeCollision(Pipeline):
         y_array /= self.aspect_ratio_normalizer
 
         x_x_means = mathutil.XMeans(random_state=1).fit(x_array)
-        # y_x_means = mathutil.XMeans(random_state=1).fit(y_array)
+        y_x_means = mathutil.XMeans(random_state=1).fit(y_array)
 
         print "xmeans"
 
+        vertical_targets = {}  # type: Dict[int, shape.Shape]
         for i, sub_cluster in enumerate(x_x_means.clusters):
             sub_cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
             sub_cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
 
-            sub_targets = np.array(cluster.targets)[sub_cluster.index]
+            sub_targets = np.array(cluster.targets)[sub_cluster.index].tolist()
             if sub_cluster.cov[0][0] < 1e-5:
-                print "hogeeeeeeeeeeeeeeeee"
                 # align x by sub_cluster's center.x
+                try:
+                    vertical_targets[len(sub_targets)].append(sub_targets)
+                except KeyError:
+                    vertical_targets[len(sub_targets)] = [sub_targets]
+
                 for ctrl in sub_targets:
                     move = int(sub_cluster.center[0] - ctrl.center.x)
                     ctrl.translate((move, 0))
 
-                # b.translate(protrude)
             print "sub", sub_cluster.df, [x.name for x in sub_targets]
+
+        horizontal_targets = {}  # type: Dict[int, shape.Shape]
+        for i, sub_cluster in enumerate(y_x_means.clusters):
+            sub_cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
+            sub_cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
+
+            sub_targets = np.array(cluster.targets)[sub_cluster.index].tolist()
+            if sub_cluster.cov[0][0] < 1e-5:
+                # align y by sub_cluster's center.y
+                try:
+                    horizontal_targets[len(sub_targets)].append(sub_targets)
+                except KeyError:
+                    horizontal_targets[len(sub_targets)] = [sub_targets]
+
+                for ctrl in sub_targets:
+                    move = int(sub_cluster.center[0] - ctrl.center.y)
+                    print ctrl.name, move, sub_cluster.center[0], ctrl.center.y
+                    ctrl.translate((0, move))
+
+            print "bub", sub_cluster.df, [x.name for x in sub_targets]
+
+        for k, sub_targets in vertical_targets.iteritems():
+            tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), sub_targets))
+            transposed = list(map(list, zip(*tmp)))
+            content = self.solve_vertical_collision(content, transposed)
+
+        for k, sub_targets in horizontal_targets.iteritems():
+            transposed = list(map(list, zip(*sub_targets)))
+            content = self.solve_vertical_collision(content, transposed)
+
+        cluster.calculate_boundingbox()
+        content = self.arrange_cluster_neighbor(content, cluster)
 
         return content
 
-    def solve_vertical_collision(self, content, ctrls, direction="down"):
+    def solve_vertical_collision(self, content, ctrl_cols=[], direction="down"):
         # type: (Dict[str, Any], List[shape.Shape], string) -> Dict[str, Any]
 
         config = {
@@ -320,8 +356,11 @@ class ExtrudeCollision(Pipeline):
             "skip_horizon": True
         }
 
-        for ctrl in ctrls:
-            config["arrangement"].append([ctrl])
+        for col in ctrl_cols:
+            print "----"
+            for ctrl in col:
+                print ctrl.name
+                config["arrangement"].append([ctrl])
 
         sub_module = rearrange_by_config.create(config, self.environ)
         content = sub_module.execute(content)
