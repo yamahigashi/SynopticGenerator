@@ -42,7 +42,7 @@ class SynopticGenerator(object):
         self.load_after(config)
 
     def load_after(self, config):
-        # type: (Dict[str, object])
+        # type: (Dict[str, object]) -> None
         ''' set plugin path
 
         plugin loading path sequence order is
@@ -63,7 +63,7 @@ class SynopticGenerator(object):
         self.environ.setdefault("location_label", {"left": "L", "right": "R", "center": "C"})
 
     def start_logging(self, environ):
-        # type: (Dict(str, object))
+        # type: (Dict[str, object]) -> None
         level = environ.setdefault("log_level", "INFO")
         filename = environ.setdefault("log_file", None)
         formatter = environ.setdefault("log_format", log.DEFAULT_FORMATTER)
@@ -71,19 +71,20 @@ class SynopticGenerator(object):
         log.start(filename=filename, level=level, formatter=formatter)
 
     def add_plugin_path(self, path):
-        # type: (Dict(str, object))
+        # type: (Dict[str, object]) -> None
         p = path + self.environ["plugin_path"]
         self.environ["plugin_path"] = list(set(p))
 
     def run_all(self):
-        # type: () -> Dict(str, object)
-        res = {}
+        # type: () -> Dict[str, object]
+
+        res = {}  # type: Dict[str, object]
         for k in self.pipelines.keys():
             res = self.run_line(k, res)
         return res
 
     def run_line(self, pipeline, content=None):
-        # type: (List(Dict(str, object)), Dict(str, object)) -> Dict(str, object)
+        # type: (List[Dict[str, object]], Dict[str, object]) -> Dict[str, object]
         """ run by pipeline name(filter, recognizer, publish) """
 
         line = self.pipelines[pipeline]
@@ -95,20 +96,18 @@ class SynopticGenerator(object):
         return res
 
     def instantiate(self, line):
-        # type: () -> Pipeline
+        # type: (Dict[str, Any]) -> Pipeline
         """ return SynopticGenerator plugin module instance. """
 
         logging.info("start instantiate %s" % line["module"])
-        module = util.load_module(
-            line["module"], self.environ["plugin_path"])
+        module = util.load_module(line["module"], self.environ["plugin_path"])
         config = line.setdefault("config", {})
         obj = module.create(config, self.environ)
 
         if hasattr(obj, "set_submodules"):
             logging.info("{} has sub modules".format(obj.__module__))
             sub_modules = line.get("sub-modules", [])
-            sub_module_instances = [
-                self.instantiate(smod) for smod in sub_modules]
+            sub_module_instances = [self.instantiate(smod) for smod in sub_modules]
             obj.set_submodules(sub_module_instances)
 
         return obj

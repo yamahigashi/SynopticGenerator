@@ -724,23 +724,34 @@ class Vec2(list):
             return self
 
 
-def filter_has_attr_center_and_central(environ, ctrls):
-    # type: (list[Shape]) -> list[Shape]
+def filter_only_central(environ, ctrls):
+    # type: (Dict[str, object], list[Shape]) -> Generator[Shape]
     for ctrl in ctrls:
-        if hasattr(ctrl, "location") and ctrl.location != LocationAttributeCenter:
-            print "continue", ctrl.name, ctrl.location, (ctrl.location == LocationAttributeCenter and ctrl.location != LocationAttributeCenter)
+        if ctrl.location != LocationAttributeCenter:
             continue
 
         pos = Vec2(*ctrl.center)
         if not util.is_point_inside_central_region(environ, pos):
-            print "continue", ctrl.name
+            continue
+
+        yield ctrl
+
+
+def filter_has_attr_center_and_central(environ, ctrls):
+    # type: (Dict[str, object], list[Shape]) -> Generator[Shape]
+    for ctrl in ctrls:
+        if hasattr(ctrl, "location") and ctrl.location != LocationAttributeCenter:
+            continue
+
+        pos = Vec2(*ctrl.center)
+        if not util.is_point_inside_central_region(environ, pos):
             continue
 
         yield ctrl
 
 
 def filter_has_attr_not_center(environ, ctrls):
-    # type: (list[Shape]) -> list[Shape]
+    # type: (Dict[str, object], list[Shape]) -> Generator[Shape]
 
     for ctrl in ctrls:
         if not hasattr(ctrl, "location"):
@@ -753,7 +764,7 @@ def filter_has_attr_not_center(environ, ctrls):
 
 
 def count_groupby_location(environ, ctrls):
-    # type: (list[Shape]) -> tuple(int, int, int)
+    # type: (Dict[str, object], list[Shape]) -> tuple[int, int, int]
     c_count = 0
     l_count = 0
     r_count = 0
@@ -773,7 +784,7 @@ def count_groupby_location(environ, ctrls):
 
 
 def contain_location_even_left_right(environ, ctrls):
-    # type: (list[Shape]) -> boolean
+    # type: (Dict[str, object], list[Shape]) -> bool
     c_count, l_count, r_count = count_groupby_location(environ, ctrls)
 
     mes = "contain_location_even_left_right = c({}), l({}), r({})".format(
