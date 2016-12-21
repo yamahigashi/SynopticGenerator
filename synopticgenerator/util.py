@@ -165,13 +165,13 @@ def is_point_inside_lower_region(env, point, margin_rate=0.25):
     return True
 
 
-def is_point_inside_upper_region(env, point, margin_rate):
+def is_point_inside_upper_region(env, point, margin_rate=0.25):
     height = env.get('height')
     if not height:
         return False
 
     min = 0
-    max = height * (1 - margin_rate)
+    max = height *  margin_rate
 
     if point.y < min:
         return False
