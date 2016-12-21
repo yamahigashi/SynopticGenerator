@@ -22,6 +22,10 @@ class RearrangeByConfig(Pipeline):
         self.margin = config.setdefault("margin", 8)
         # self.arrangement = config.setdefault("arrangement", [])
 
+    def default_config(self):
+        # type: () -> None
+        pass
+
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
@@ -84,7 +88,8 @@ class RearrangeByConfig(Pipeline):
         horizontal_baseline = []
         while ctrls_direction:
             target_row = ctrls_direction.pop()
-            self.arrange_horizon(target_row, target_row_bottom, horizontal_baseline)
+            if self.config.get("skip_horizon", False):
+                self.arrange_horizon(target_row, target_row_bottom, horizontal_baseline)
             target_row_bottom = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
             horizontal_baseline = [x.center[0] for x in target_row]
 
@@ -111,16 +116,13 @@ class RearrangeByConfig(Pipeline):
             move.y = 0.0 if move.y < 0 else move.y
 
             # determine direction
+            print "arrange_direction", self.config.get("arrange_direction")
             move = ctrl.solve_direction_to_avoid(move, config=self.config)
             ctrl.translate(move)
 
     def arrange_horizon(self, target_row, height, horizontal_baseline=[], rule="align_center"):
-        """
-        Args:
-            target_row(list): target row controllers
-            height(float):  align base
-            rule(str): "align_bottom", "align_center"
-        """
+        # type: List[], float, List[] -> None
+
         if not height:
             # bottoms = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
             height = min([(x.center[1] - (x.h / 2.0)) for x in target_row])
@@ -150,6 +152,7 @@ class RearrangeByConfig(Pipeline):
                         ctrl.translate((dist_x * -1, 0))
 
                 protrude = target.calculate_infringement(ctrl, self.config)
+                print "arrange_direction", self.config.get("arrange_direction")
                 protrude = target.solve_direction_to_avoid(protrude, config=self.config)
                 x = protrude[0]
                 ctrl.translate((x, y))
