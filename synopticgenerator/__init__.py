@@ -13,6 +13,7 @@ import synopticgenerator.log as log
 import logging
 
 CURRENT_PATH = os.path.dirname(__file__)
+DEFAULT_PLUGIN_PATH = os.path.join(CURRENT_PATH, "plugins")
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
@@ -53,8 +54,8 @@ class SynopticGenerator(object):
         self.environ.setdefault("plugin_path", ["."])
         if "." not in self.environ["plugin_path"]:
             self.environ["plugin_path"].insert(0, ".")
-        if CURRENT_PATH not in self.environ["plugin_path"]:
-            self.environ["plugin_path"].append(CURRENT_PATH)
+        if DEFAULT_PLUGIN_PATH not in self.environ["plugin_path"]:
+            self.environ["plugin_path"].append(DEFAULT_PLUGIN_PATH)
 
     def initialize_environ(self):
         self.environ.setdefault("location_expression", "_(L|R|C)\\d+_")
