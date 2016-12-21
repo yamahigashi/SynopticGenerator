@@ -86,7 +86,7 @@ class Shape(object):
                 vertical = candidate
                 break
 
-        if not horizontal and vertical:
+        if not horizontal and not vertical:
             msg = "arrange_direction's value not match any candidate"
             msg += """ in ["left", "right", "down", "up", "horizontal", "vertical"]"""
             logging.error(msg)
