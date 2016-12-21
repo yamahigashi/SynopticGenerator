@@ -49,14 +49,20 @@ class ExtrudeCollision(Pipeline):
         cog_points_list = np.array([x.center for x in ctrls], np.float32)
 
         # inflate ctrls
-        inflated = copy.deepcopy(ctrls)
-        map(lambda x: x.scale(1.2), inflated)
+        if self.config.get("inflate", False):
+            inflated = copy.deepcopy(ctrls)
+            map(lambda x: x.scale(1.2), inflated)
 
-        inflated_points, inflated_indice = self.uniform_distribution(inflated, 1)
-        pointcloud_list = np.array(inflated_points, np.float32)
-        pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 ctrl
-        inflated_indice.extend([x for x in range(len(cog_points_list))])
-        pointcloud_list /= self.aspect_ratio_normalizer
+            inflated_points, inflated_indice = self.uniform_distribution(inflated, 1500)
+            pointcloud_list = np.array(inflated_points, np.float32)
+            pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 ctrl
+            inflated_indice.extend([x for x in range(len(cog_points_list))])
+            pointcloud_list /= self.aspect_ratio_normalizer
+
+        else:
+            pointcloud_list = np.array(cog_points_list, np.float32)
+            pointcloud_list /= self.aspect_ratio_normalizer
+            inflated_indice = [i for i in range(len(pointcloud_list))]
 
         # calculate x-means
         # x_means = mathutil.XMeansCV2().fit(pointcloud_list)
