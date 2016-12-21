@@ -117,16 +117,26 @@ def is_opencv_version_below_2():
 
 
 def get_x_center(env):
-    width = env.get('width')
+    width = env.get("width")
     if not width:
         # TODO
         raise
 
-    x_center = env.get('x_center')
+    x_center = env.get("x_center")
     if not x_center:
         x_center = width / 2
 
     return x_center
+
+
+def get_distance_from_cog(env, point):
+    # type: (Dict[str, object], List[int]) -> float
+    """ get distance from center of background """
+
+    x = get_x_center(env)
+    y = env.get("height") / 2.0
+
+    return abs(x - point[0]) + abs(y - point[1])
 
 
 def is_point_inside_central_region(env, point):
