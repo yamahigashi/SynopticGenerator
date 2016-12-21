@@ -114,10 +114,6 @@ class SynopticGenerator(object):
         return obj
 
 
-class Pipeline(object):
-    """ SynopticGenerator's pipeline base class """
-
-
 def create(config_path):
     sc = SynopticGenerator()
     with open(config_path) as c:
