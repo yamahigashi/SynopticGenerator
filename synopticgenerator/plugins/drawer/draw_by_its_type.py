@@ -7,9 +7,9 @@ import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 
 from synopticgenerator.drawer import ObjectDrawer
-import synopticgenerator.drawer.rectangle as rectangle
-import synopticgenerator.drawer.polygon as polygon
-import synopticgenerator.drawer.circle as circle
+import synopticgenerator.plugins.drawer.rectangle as rectangle
+import synopticgenerator.plugins.drawer.polygon as polygon
+import synopticgenerator.plugins.drawer.circle as circle
 from synopticgenerator.error import InvalidColorConfig
 
 

@@ -1,7 +1,7 @@
 """ coding: utf-8 """
 
 import synopticgenerator.shape as shape
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class MinimumWidthHeight(Pipeline):

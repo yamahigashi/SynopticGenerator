@@ -3,15 +3,20 @@
 # All rights reserved.
 #
 ##############################################################################
-
-import os
-import yaml
-
-import synopticgenerator.util as util
-from synopticgenerator.yamlordereddict import OrderedDictYAMLLoader
-import synopticgenerator.log as log
-import logging
+import abc
 
 
 class Pipeline(object):
     """ SynopticGenerator's pipeline base class """
+
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def execute(self, content):
+        # type: (Dict[str, object]) -> Dict[str, object]
+        pass
+
+    # @abc.abstractmethod
+    def set_default_config(self):
+        # type: () -> None
+        pass

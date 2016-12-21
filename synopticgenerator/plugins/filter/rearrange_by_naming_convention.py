@@ -9,8 +9,8 @@ import numpy as np
 
 # import synopticgenerator.util as util
 import synopticgenerator.shape as shape
-import synopticgenerator.filter.rearrange_by_config as rearrange_by_config
-from synopticgenerator import Pipeline
+import synopticgenerator.plugins.filter.rearrange_by_config as rearrange_by_config
+from synopticgenerator.plugins import Pipeline
 # import synopticgenerator.mathutil as mathutil
 
 

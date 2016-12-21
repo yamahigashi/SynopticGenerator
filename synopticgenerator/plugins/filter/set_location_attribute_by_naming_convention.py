@@ -4,7 +4,7 @@ import re
 import logging
 
 # import synopticgenerator.util as util
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 import synopticgenerator.shape as shape
 
 

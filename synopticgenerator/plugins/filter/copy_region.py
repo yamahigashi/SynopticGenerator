@@ -2,7 +2,7 @@
 
 import copy
 import synopticgenerator.log as log
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class CopyRegion(Pipeline):

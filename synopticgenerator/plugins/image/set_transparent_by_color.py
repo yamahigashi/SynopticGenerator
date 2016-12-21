@@ -8,7 +8,7 @@ import shutil
 from PIL import Image
 
 import synopticgenerator.util as util
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class Transparenter(Pipeline):

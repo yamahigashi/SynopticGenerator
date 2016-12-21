@@ -8,7 +8,7 @@ import numpy as np
 
 # import synopticgenerator.util as util
 import synopticgenerator.shape as shape
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 # import synopticgenerator.mathutil as mathutil
 
 

@@ -2,7 +2,7 @@
 import re
 import logging
 
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class MirrorRegion(Pipeline):

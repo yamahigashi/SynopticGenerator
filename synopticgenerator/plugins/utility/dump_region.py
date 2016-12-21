@@ -1,5 +1,5 @@
 """ coding: utf-8 """
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class DumpRegion(Pipeline):

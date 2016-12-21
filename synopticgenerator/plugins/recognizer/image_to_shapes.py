@@ -9,7 +9,7 @@ import cv2
 import synopticgenerator.shape as shape
 import synopticgenerator.util as util
 import logging
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]

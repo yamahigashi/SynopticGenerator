@@ -5,7 +5,7 @@ import logging
 
 import synopticgenerator.util as util
 import synopticgenerator.shape as shape
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class AlignSymmetry(Pipeline):

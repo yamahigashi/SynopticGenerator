@@ -6,7 +6,7 @@ import shutil
 import tempfile
 from PIL import Image
 
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 def paste(image1, image2):

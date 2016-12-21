@@ -1,7 +1,7 @@
 """ coding: utf-8 """
 
 import logging
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class RoundDownBiggerRegion(Pipeline):

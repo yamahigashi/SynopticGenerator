@@ -5,7 +5,7 @@ from PIL import Image
 
 import logging
 
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class SetSizeFromImage(Pipeline):

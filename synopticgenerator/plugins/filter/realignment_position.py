@@ -10,7 +10,7 @@ import numpy as np
 import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class RealignmentPosition(Pipeline):

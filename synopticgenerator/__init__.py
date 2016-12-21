@@ -8,6 +8,7 @@ import os
 import yaml
 
 import synopticgenerator.util as util
+from synopticgenerator.plugins import Pipeline
 from synopticgenerator.yamlordereddict import OrderedDictYAMLLoader
 import synopticgenerator.log as log
 import logging

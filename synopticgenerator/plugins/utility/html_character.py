@@ -4,7 +4,7 @@
 import xml.sax.saxutils as saxutils
 import logging
 
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class HTMLCharacter(Pipeline):

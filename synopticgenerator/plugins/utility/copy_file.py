@@ -3,7 +3,7 @@
 import shutil
 import logging
 
-from synopticgenerator import Pipeline
+from synopticgenerator.plugins import Pipeline
 
 
 class FileRemover(Pipeline):
