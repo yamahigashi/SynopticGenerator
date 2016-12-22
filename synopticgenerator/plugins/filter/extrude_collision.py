@@ -18,27 +18,25 @@ from synopticgenerator.plugins import Pipeline
 class ExtrudeCollision(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.controls = config.setdefault("controls", None)
-        self.margin = config.setdefault("margin", 8)
+    def set_default_config(self):
+        # type: () -> None
 
-        self.aspect_ratio_baseline_for_conflict = config.setdefault(
-            "aspect_ratio_baseline_for_conflict", 0.25)
+        self.environ.setdefault("width", 320)
+        self.environ.setdefault("height", 550)
 
-        self.ratio_over_unbalance = 4.0
-        self.ratio_very_circle = 1.5
-        self.ratio_lower_end_region = 0.25
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
+        self.margin = self.config.setdefault("margin", 8)
+        self.config.setdefault("inflate", False)
+        self.config.setdefault('draw_debug', False)
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
-        ctrls = content[self.region]
-        w = self.environ.get("width", 320)
-        h = self.environ.get("height", 550)
+        ctrls = self.controls or content[self.region]
+        w = self.environ.get("width")
+        h = self.environ.get("height")
 
         if w < h:
             self.aspect_ratio_normalizer = h
@@ -515,7 +513,7 @@ class ClusterInformation(object):
         # type: ClusterInformation -> list[bool, bool, bool, bool]
 
         # shortcut
-        m = self.env.get("margin")
+        m = self.env.get("margin", 8)
 
         up = (self.top - m) < other.bottom and other.bottom < (self.bottom + m)
         down = (other.top - m) < self.bottom and self.bottom < (other.bottom + m)
@@ -538,7 +536,7 @@ class ClusterInformation(object):
     def get_infringement(self, other, direction):
         # type: (ClusterInformation, string) -> float
 
-        m = self.env.get("margin")
+        m = self.env.get("margin", 8)
 
         if direction == "top":
             res = self.top - other.bottom - m

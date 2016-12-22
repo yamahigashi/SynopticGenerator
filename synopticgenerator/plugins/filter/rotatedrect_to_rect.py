@@ -9,22 +9,28 @@ from synopticgenerator.plugins import Pipeline
 
 class RotatedrectToRect(Pipeline):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
 
     def execute(self, content):
         if not content.get(self.region):
-            raise RegionNotFound(self.region)
+            raise Pipeline.RegionNotFound(self.region)
 
+        ctrls = self.controls or content[self.region]
         news = []
-        for i, ctrl in enumerate(content[self.region]):
+        for i, ctrl in enumerate(ctrls):
             if type(ctrl) == shape.RotatedRect:
                 news.append([i, self.convert(ctrl)])
 
         for to_replace in news:
-            content[self.region][to_replace[0]] = to_replace[1]
+            if self.controls:
+                # TODO: replace
+                pass
+            else:
+                content[self.region][to_replace[0]] = to_replace[1]
 
         return content
 

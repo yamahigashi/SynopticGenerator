@@ -6,14 +6,13 @@ from synopticgenerator.plugins import Pipeline
 
 
 class MirrorRegion(Pipeline):
-    ''' :w '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.controls = config.setdefault("controls", None)
-        config.setdefault("skip_duplicate", True)
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
+        self.config.setdefault("skip_duplicate", True)
 
     def execute(self, content):
         if not content.get(self.region):
@@ -52,7 +51,7 @@ class MirrorRegion(Pipeline):
 
             return "".join(s)
 
-        ctrls = content[self.region]
+        ctrls = self.controls or content[self.region]
         names = [x.name for x in ctrls]
         new_shapes = []
 

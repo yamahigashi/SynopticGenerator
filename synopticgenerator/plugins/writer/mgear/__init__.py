@@ -9,6 +9,7 @@ import logging
 
 import synopticgenerator.shape as shape
 import synopticgenerator.util as util
+from synopticgenerator.plugins import Pipeline
 
 try:
     import lxml.etree as ET
@@ -30,17 +31,27 @@ __all__ = ["SoftimageHTMLWriter"]
 ##############################################################################
 
 
-class Writer(object):
+class Writer(Pipeline):
     output_filename = ""
     bounding_boxies = None
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.regions = []
-        self.version = config.setdefault("version", "2")
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.output = self.config.setdefault("output", None)
+        self.version = self.config.setdefault("version", "2")
+        self.config.setdefault("background", "")
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.output:
+            raise Pipeline.ConfigInvalid("output")
 
     def execute(self, content):
+        self.regions = []
+
         if not content.get("regions"):
             return content
 

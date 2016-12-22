@@ -3,23 +3,30 @@ from synopticgenerator.plugins import Pipeline
 
 
 class UniqRegion(Pipeline):
-    ''' :w '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.controls = config.setdefault("controls", None)
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
+        ctrls = self.controls or content[self.region]
+
         seen = set()
         seen_add = seen.add
-        uniq = [x for x in content[self.region]
+        uniq = [x for x in ctrls
                 if x.center not in seen and not seen_add(x.center)]
-        content[self.region] = uniq
+
+        if self.controls:
+            # TODO
+            self.controls = uniq
+
+        else:
+            content[self.region] = uniq
 
         return content
 

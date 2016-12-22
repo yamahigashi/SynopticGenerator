@@ -25,13 +25,18 @@ class SearchContours(Pipeline):
     # color = (172, 86, 221)
 
     def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-
+        super(SearchContours, self).__init__(config, environ)
         self.sub_modules = []
-        self.store = config.setdefault("store", "regions")
-        self.color_table = environ.setdefault("color_table", None)
-        self.cutoff = environ.setdefault("cutoff_area", 9)
+
+    def set_default_config(self):
+        # type: () -> None
+
+        self.color_table = self.environ.setdefault("color_table", None)
+        self.cutoff = self.environ.setdefault("cutoff_area", 9)
+
+        self.store = self.config.setdefault("store", "regions")
+        self.config.setdefault("controller_name", None)
+        self.config.setdefault("image", None)
 
     def set_submodules(self, sub_modules):
         self.sub_modules = sub_modules

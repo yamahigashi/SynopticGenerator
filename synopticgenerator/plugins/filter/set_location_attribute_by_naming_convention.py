@@ -9,13 +9,23 @@ import synopticgenerator.shape as shape
 
 
 class SetLocationAttributeByNamingConvention(Pipeline):
-    ''' :w '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.convetion = config["convention"]
+        self.config.setdefault("target", [])
+        self.config.setdefault("convention", None)
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.config.get("convention"):
+            raise Pipeline.ConfigInvalid("convention")
+
+    def read_convention(self):
+        # type: () -> None
+
+        self.convetion = self.config.get("convention")
         self.default = self.convetion.get("default", shape.LocationAttributeCenter)
 
         _l = self.convetion.get("left", None)
@@ -37,10 +47,12 @@ class SetLocationAttributeByNamingConvention(Pipeline):
             self.convention_c = None
 
     def execute(self, content):
-        for target in self.config.get("target", []):
+        self.read_convention()
+
+        for target in self.config.get("target"):
             regions = content.get(target)
             if not regions:
-                raise RegionNotFound(target)
+                raise Pipeline.RegionNotFound(target)
 
             for region in regions:
                 self.apply_conventions(region)
@@ -60,15 +72,9 @@ class SetLocationAttributeByNamingConvention(Pipeline):
                 break
 
         else:
-            ctrl.location = self.default()
+            ctrl.location = self.default
             logging.debug("setting location attribute as default for region: {}, location: {}".format(
                 ctrl.name, ctrl.location))
-
-
-class RegionNotFound(Exception):
-
-    def str(self, v):
-        return "Region named {} not found in content".format(v)
 
 
 def create(config, environ):

@@ -16,27 +16,31 @@ from synopticgenerator.plugins import Pipeline
 class RealignmentPosition(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.controls = config.setdefault("controls", None)
-        self.margin = config.setdefault("margin", 8)
+    def set_default_config(self):
+        # type: () -> None
 
-        self.aspect_ratio_baseline_for_conflict = config.setdefault(
-            "aspect_ratio_baseline_for_conflict", 0.25)
+        self.environ.setdefault("height", 10)
 
-        self.ratio_over_unbalance = 4.0
-        self.ratio_very_circle = 1.5
-        self.ratio_lower_end_region = 0.25
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
+
+        # self.aspect_ratio_baseline_for_conflict = self.config.setdefault(
+        #     "aspect_ratio_baseline_for_conflict", 0.25)
+
+        self.config.setdefault("inflate", False)
+        self.config.setdefault('draw_debug', False)
+
+        self.ratio_over_unbalance = self.config.setdefault("ratio_over_unbalance", 4.0)
+        self.ratio_very_circle = self.config.setdefault("ratio_very_circle", 1.5)
+        self.ratio_lower_end_region = self.config.setdefault("ratio_lower_end_region", 0.25)
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
-        ctrls = content[self.region]
-        w = self.environ.get("width", 320)
-        h = self.environ.get("height", 550)
+        ctrls = self.controls or content[self.region]
+        w = self.environ.get("width")
+        h = self.environ.get("height")
 
         if w < h:
             self.aspect_ratio_normalizer = h
@@ -50,7 +54,7 @@ class RealignmentPosition(Pipeline):
         inflated = copy.deepcopy(ctrls)
         map(lambda x: x.scale(1.2), inflated)
 
-        if self.config.get("inflate", False):
+        if self.config.get("inflate"):
             inflated_points, inflated_indice = self.uniform_distribution(inflated, 500)
             pointcloud_list = np.array(inflated_points, np.float32)
             pointcloud_list = np.r_[pointcloud_list, cog_points_list]  # guarantee 1 point per 1 ctrl
@@ -81,7 +85,7 @@ class RealignmentPosition(Pipeline):
             targets = np.array(ctrls)[cluster.index]
             self.alignment_in_cluster(cluster, targets)
 
-        if self.config.get('draw_debug', True):
+        if self.config.get('draw_debug'):
             self.draw_debug(pointcloud_list, x_means.labels)
             self.draw_debug(cog_points_list, x_means2.labels)
 

@@ -17,15 +17,13 @@ from synopticgenerator.plugins import Pipeline
 class RearrangeByNamingConvention(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-
+    def set_default_config(self):
         self.expression_replacer = self.config.keys()
-        self.region = config.setdefault("region_name", "regions")
-        self.margin = config.setdefault("margin", 8)
-        self.expression = config.setdefault("expression", "{{ parts_name }}_{{ location }}{{ horizontal_index }}_fk{{ vertical_index }}")
-        self.group_by = config.setdefault("group_by", "")
+        self.region = self.config.setdefault("region_name", "regions")
+        self.margin = self.config.setdefault("margin", 8)
+        self.expression = self.config.setdefault("expression", "{{ parts_name }}_{{ location }}{{ horizontal_index }}_fk{{ vertical_index }}")
+        self.group_by = self.config.setdefault("group_by", "")
+        self.config.setdefault("arrange_direction", "")
 
     def execute(self, content):
         if not content.get(self.region):
@@ -46,7 +44,7 @@ class RearrangeByNamingConvention(Pipeline):
         exp = re.sub("{{{{\s*{}\s*}}}}".format("vertical_index"), "(?P<vertical_index>\\d+)", exp)
         exp = re.compile(exp)
 
-        self.ctrls = content[self.region]
+        self.ctrls = self.controls or content[self.region]
 
         results = {}
         for ctrl in self.ctrls:

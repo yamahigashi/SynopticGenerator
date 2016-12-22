@@ -13,10 +13,10 @@ from synopticgenerator.plugins import Pipeline
 
 class Transparenter(Pipeline):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.color_table = environ.setdefault("color_table", None)
+    def set_default_config(self):
+        # type: () -> None
+
+        self.color_table = self.environ.setdefault("color_table", None)
 
     def execute(self, content):
         input_file = self.config["input"]

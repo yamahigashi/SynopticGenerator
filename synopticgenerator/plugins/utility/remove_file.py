@@ -8,10 +8,16 @@ from synopticgenerator.plugins import Pipeline
 
 class FileRemover(Pipeline):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.files = config.setdefault("file", "")
+    def set_default_config(self):
+        # type: () -> None
+
+        self.files = self.config.setdefault("file", [])
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.files:
+            raise Pipeline.ConfigInvalid("file")
 
     def _remove(self, f):
         try:

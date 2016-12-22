@@ -6,30 +6,37 @@ from PIL import Image
 
 from synopticgenerator.drawer import ObjectDrawer
 import synopticgenerator.util as util
-# import synopticgenerator
+from synopticgenerator.plugins import Pipeline
 from synopticgenerator.error import InvalidColorConfig
 
 
 class Drawer(ObjectDrawer):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.target = config.setdefault("target", "regions")
-        self.outline = config.setdefault("outline", True)
-        self.thickness = config.setdefault("thickness", 3)
-        self.outline_thickness = config.setdefault("outline_thickness", 6)
+        self.controls = self.config.setdefault("controls", None)
+        self.target = self.config.setdefault("target", "regions")
+        self.outline = self.config.setdefault("outline", True)
+        self.thickness = self.config.setdefault("thickness", 3)
+        self.outline_thickness = self.config.setdefault("outline_thickness", 6)
+        self.canvas = self.config.setdefault("canvas", None)
 
-        color_table = environ.setdefault("color_table", None)
-        color = config.setdefault("color", None)
+        color_table = self.environ.setdefault("color_table", None)
+        color = self.config.setdefault("color", None)
         if color:
             self.color = util.color(color, color_table)
         else:
             self.color = None
         self.outline_color = util.color(
-            config.setdefault("outline_color", "111, 111, 111"),
+            self.config.setdefault("outline_color", "111, 111, 111"),
             color_table)
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.config.get("canvas"):
+            raise Pipeline.ConfigInvalid("canvas")
 
     def drawpoly(self, canvas, bound, color, thickness, linetype=4, shift=0):
         # b1 = bound.top_left
@@ -84,11 +91,13 @@ class Drawer(ObjectDrawer):
 
     def execute(self, content):
         if not content.get(self.target):
-            return content
+            raise Pipeline.RegionNotFound(self.target)
 
-        canvas = self.config["canvas"]
+        ctrls = self.controls or content[self.target]
+        canvas = self.config.get("canvas")
         image = cv2.imread(canvas)
-        for r in content[self.target]:
+
+        for r in ctrls:
             if not self.color and not r.color:
                 raise InvalidColorConfig()
             if self.color:

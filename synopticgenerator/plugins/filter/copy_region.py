@@ -6,30 +6,27 @@ from synopticgenerator.plugins import Pipeline
 
 
 class CopyRegion(Pipeline):
-    ''' :w '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.src = config["src"]
-        self.dst = config["dst"]
+        self.src = self.config.setdefault("src", None)
+        self.dst = self.config.setdefault("dst", None)
+
+    def check_config(self):
+        if not self.config.get("src"):
+            raise Pipeline.ConfigInvalid("src")
 
     def execute(self, content):
         if not content.get(self.src):
-            raise RegionNotFound(self.src)
+            raise Pipeline.RegionNotFound(self.src)
+
         if content.get(self.dst):
             log.warn("already exists region {}".format(self.dst))
-            #raise RegionNotFound(self.dst)
 
         content[self.dst] = copy.deepcopy(content.get(self.src))
 
         return content
-
-
-class RegionNotFound(Exception):
-    def str(self, v):
-        return "Region named {} not found in content".format(v)
 
 
 def create(config, environ):

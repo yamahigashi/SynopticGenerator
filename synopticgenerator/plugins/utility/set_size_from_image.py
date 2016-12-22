@@ -11,9 +11,16 @@ from synopticgenerator.plugins import Pipeline
 class SetSizeFromImage(Pipeline):
     ''' Set width and height for environ from given image size '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
+
+        self.config.setdefault("image", [])
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.config.get("image"):
+            raise Pipeline.ConfigInvalid("image")
 
     def execute(self, content):
         w, h = [0, 0]

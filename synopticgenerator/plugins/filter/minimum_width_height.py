@@ -5,25 +5,26 @@ from synopticgenerator.plugins import Pipeline
 
 
 class MinimumWidthHeight(Pipeline):
-    '''  '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.baseline = config.setdefault("baseline", 9)
-        self.height = config.setdefault("height", None)
-        self.width = config.setdefault("width", None)
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
+        self.baseline = self.config.setdefault("baseline", 9)
+        self.height = self.config.setdefault("height", None)
+        self.width = self.config.setdefault("width", None)
 
     def execute(self, content):
         if not content.get(self.region):
-            raise RegionNotFound(self.region)
+            raise Pipeline.RegionNotFound(self.region)
 
         mini = self.config.get("baseline")
         height = self.config.get("height")
         width = self.config.get("width")
+        ctrls = self.controls or content[self.region]
 
-        for ctrl in content[self.region]:
+        for ctrl in ctrls:
             if isinstance(ctrl, shape.Rect):
 
                 if width and ctrl.w < width:
@@ -37,12 +38,6 @@ class MinimumWidthHeight(Pipeline):
                     ctrl.scale_y(float(mini) / ctrl.h)
 
         return content
-
-
-class RegionNotFound(Exception):
-
-    def str(self, v):
-        return "Region named {} not found in content".format(v)
 
 
 def create(config, environ):

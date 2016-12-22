@@ -8,17 +8,23 @@ from synopticgenerator.plugins import Pipeline
 
 class FileRemover(Pipeline):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.files = config.setdefault("file", "")
+    def set_default_config(self):
+        # type: () -> None
+        self.files = self.config.setdefault("file", "")
+        self.src = self.config.setdefault("src", None)
+        self.dst = self.config.setdefault("dst", None)
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.src:
+            raise Pipeline.ConfigInvalid("src")
+        if not self.dst:
+            raise Pipeline.ConfigInvalid("dst")
 
     def execute(self, content):
-        src = self.config["src"]
-        dst = self.config["dst"]
-
-        logging.info("copying file from {} to {}".format(src, dst))
-        shutil.copy(src, dst)
+        logging.info("copying file from {} to {}".format(self.src, self.dst))
+        shutil.copy(self.src, self.dst)
 
         return content
 

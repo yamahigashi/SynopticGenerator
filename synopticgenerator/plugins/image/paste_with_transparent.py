@@ -35,13 +35,24 @@ def paste(image1, image2):
 
 class Paster(Pipeline):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
+
+        self.config.setdefault("base", None)
+        self.config.setdefault("paste", None)
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.config.get("base"):
+            raise Pipeline.ConfigInvalid("base")
+
+        if not self.config.get("paste"):
+            raise Pipeline.ConfigInvalid("paste")
 
     def execute(self, content):
-        image1 = self.config["base"]
-        image2 = self.config["paste"]
+        image1 = self.config.get("base")
+        image2 = self.config.get("paste")
         res = paste(image1, image2)
         shutil.copyfile(res, self.config["output"])
         shutil.rmtree(os.path.dirname(res))

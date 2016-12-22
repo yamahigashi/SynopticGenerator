@@ -23,17 +23,22 @@ __status__ = "Prototype"
 ##############################################################################
 
 
-class ImagesToRegionFromFilename(Pipeline):
+class ImagesToShapeFromFilename(Pipeline):
     # color = (172, 86, 221)
 
     place_holder_controller_name = "controller_name"
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.sub_modules = []
-        self.store = config.setdefault("store", "regions")
+        self.store = self.config.setdefault("store", "regions")
+        self.config.setdefault("image_pattern", None)
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.config.get("image_pattern"):
+            raise Pipeline.ConfigInvalid("image_pattern")
 
     def execute(self, content):
         glob_pat = self.config["image_pattern"]
@@ -63,7 +68,7 @@ class ImagesToRegionFromFilename(Pipeline):
 
 
 def create(config, environ):
-    return ImagesToRegionFromFilename(config, environ)
+    return ImagesToShapeFromFilename(config, environ)
 
 
 # def do(path):

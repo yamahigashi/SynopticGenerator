@@ -15,21 +15,24 @@ from synopticgenerator.plugins import Pipeline
 class Rearrange(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.margin = config.setdefault("margin", 8)
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.margin = self.config.setdefault("margin", 8)
+        self.controls = self.config.setdefault("controls", None)
+        self.config.setdefault("arrangement", [])
+        self.config.setdefault("arrange_direction", "")
         # self.arrangement = config.setdefault("arrangement", [])
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
-        self.ctrls = content[self.region]
+        self.ctrls = self.controls or content[self.region]
 
         # resolve collision
-        self.arrange(self.config.get("arrangement", []))
+        self.arrange(self.config.get("arrangement"))
 
         return content
 
@@ -153,9 +156,9 @@ class Rearrange(Pipeline):
                 ctrl.translate((x, y))
 
     def solve_protrude(self, ctrls_direction):
-        w = self.environ.get("width", 320)
-        h = self.environ.get("height", 550)
-        m = self.config.get("margin", 8)
+        w = self.environ.get("width")
+        h = self.environ.get("height")
+        m = self.config.get("margin")
 
         # left side
         # 1. select row that has maximum width in rows

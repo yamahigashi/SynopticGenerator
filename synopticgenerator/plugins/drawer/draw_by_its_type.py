@@ -5,6 +5,7 @@ import logging
 
 import synopticgenerator.util as util
 import synopticgenerator.shape as shape
+from synopticgenerator.plugins import Pipeline
 
 from synopticgenerator.drawer import ObjectDrawer
 import synopticgenerator.plugins.drawer.rectangle as rectangle
@@ -15,32 +16,36 @@ from synopticgenerator.error import InvalidColorConfig
 
 class DrawByType(ObjectDrawer):
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.rect_drawer = rectangle.Drawer(config, environ)
-        self.poly_drawer = polygon.Drawer(config, environ)
-        self.circle_drawer = circle.Drawer(config, environ)
+        self.target = self.config.setdefault("target", "regions")
+        self.outline = self.config.setdefault("outline", True)
+        self.thickness = self.config.setdefault("thickness", 3)
+        self.outline_thickness = self.config.setdefault("outline_thickness", 6)
 
-        self.target = config.setdefault("target", "regions")
-        self.outline = config.setdefault("outline", True)
-        self.thickness = config.setdefault("thickness", 3)
-        self.outline_thickness = config.setdefault("outline_thickness", 6)
-
-        color_table = environ.setdefault("color_table", None)
-        color = config.setdefault("color", None)
+        color_table = self.environ.setdefault("color_table", None)
+        color = self.config.setdefault("color", None)
         if color:
             self.color = util.color(color, color_table)
         else:
             self.color = None
         self.outline_color = util.color(
-            config.setdefault("outline_color", "111, 111, 111"),
+            self.config.setdefault("outline_color", "111, 111, 111"),
             color_table)
+
+    def initialize_drawer(self):
+        # type: () -> None
+
+        self.rect_drawer = rectangle.Drawer(self.config, self.environ)
+        self.poly_drawer = polygon.Drawer(self.config, self.environ)
+        self.circle_drawer = circle.Drawer(self.config, self.environ)
 
     def execute(self, content):
         if not content.get(self.target):
-            return content
+            raise Pipeline.RegionNotFound(self.target)
+
+        self.initialize_drawer()
 
         canvas = self.config["canvas"]
         image = cv2.imread(canvas)

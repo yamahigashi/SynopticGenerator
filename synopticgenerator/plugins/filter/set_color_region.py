@@ -6,29 +6,30 @@ from synopticgenerator.plugins import Pipeline
 
 
 class SetColorRegion(Pipeline):
-    ''' :w '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.color_table = environ.setdefault("color_table", None)
-        self.region = config.setdefault("region", "regions")
-        self.color = config["color"]
+        self.color_table = self.environ.setdefault("color_table", None)
+
+        self.region = self.config.setdefault("region", "regions")
+        self.controls = self.config.setdefault("controls", None)
+        self.color = self.config.setdefault("color", None)
+
+    def check_config(self):
+        if not self.config.get("color"):
+            raise Pipeline.ConfigInvalid("color")
 
     def execute(self, content):
-        if not content.get(self.region):
-            raise RegionNotFound(self.region)
+        ctrls = self.controls or content[self.region]
 
-        for r in content[self.region]:
+        if not ctrls:
+            raise Pipeline.RegionNotFound(self.region)
+
+        for r in ctrls:
             r.color = util.color(self.config["color"], self.color_table)
 
         return content
-
-
-class RegionNotFound(Exception):
-    def str(self, v):
-        return "Region named {} not found in content".format(v)
 
 
 def create(config, environ):

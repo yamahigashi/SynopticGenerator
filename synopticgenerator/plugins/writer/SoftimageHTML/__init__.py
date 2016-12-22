@@ -2,6 +2,16 @@
 # Copyright 2016, MATSUMOTO Takayoshi
 # All rights reserved.
 ##############################################################################
+
+import os
+import yaml
+import logging
+
+import synopticgenerator.shape as shape
+import synopticgenerator.util as util
+from synopticgenerator.plugins import Pipeline
+
+##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
 __license__ = "Modified BSD license"
@@ -12,37 +22,41 @@ __status__ = "Prototype"
 __all__ = ["SoftimageHTMLWriter"]
 ##############################################################################
 
-import os
-import yaml
-import logging
-
-import synopticgenerator.shape as shape
-import synopticgenerator.util as util
-
-##############################################################################
-
 
 class Writer(object):
     output_filename = ""
     has_lxml = False
     bounding_boxies = None
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.regions = []
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.output = self.config.setdefault("output", None)
+
+        self.config.setdefault("template", None)
+
+    def after_set_config(self):
+        # type: () -> None
 
         if self.config.get("template"):
             self.template = yaml.load(open(self.config["template"]))
         else:
             self.template = None
-        self.version = config.setdefault("version", "2")
+        self.version = self.config.setdefault("version", "2")
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.output:
+            raise Pipeline.ConfigInvalid("output")
 
     def execute(self, content):
-        if not content.get("regions"):
+        self.ctrls = []
+        if not content.get(self.region):
             return content
 
-        for r in content["regions"]:
+        for r in content[self.region]:
             self.regions.append(r)
         self.write(self.config["output"])
 
@@ -106,7 +120,7 @@ class Writer(object):
         region_map = ET.SubElement(body, "map")
         region_map.set("name", "SynopticMap")
         self.preprocess_write_area(body)
-        for i, b in enumerate(self.regions):
+        for i, b in enumerate(self.ctrls):
             name = b.name if b.name else "plz_replace_{}".format(str(i))
 
             if self.template:

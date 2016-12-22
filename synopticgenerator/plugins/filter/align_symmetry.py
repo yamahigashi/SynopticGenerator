@@ -9,17 +9,16 @@ from synopticgenerator.plugins import Pipeline
 
 
 class AlignSymmetry(Pipeline):
-    ''' clustering given ctrl as cog points by k-means. '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.controls = config.setdefault("controls", None)
+    def set_default_config(self):
+        # type: () -> None
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
 
     def execute(self, content):
         if not content.get(self.region):
-            raise RegionNotFound(self.region)
+            raise Pipeline.RegionNotFound(self.region)
 
         ctrls = self.controls or content[self.region]
 
@@ -127,12 +126,6 @@ class AlignSymmetry(Pipeline):
             return (float(r_count) / l_count) > 0.8
         else:
             return False
-
-
-class RegionNotFound(Exception):
-
-    def str(self, v):
-        return "Region named {} not found in content".format(v)
 
 
 def create(config, environ):

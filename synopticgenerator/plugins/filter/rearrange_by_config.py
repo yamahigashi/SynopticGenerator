@@ -15,25 +15,28 @@ from synopticgenerator.plugins import Pipeline
 class RearrangeByConfig(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
-        self.region = config.setdefault("region_name", "regions")
-        self.margin = config.setdefault("margin", 8)
-        # self.arrangement = config.setdefault("arrangement", [])
-
-    def default_config(self):
+    def set_default_config(self):
         # type: () -> None
-        pass
+
+        self.environ.setdefault("width", 320)
+        self.environ.setdefault("height", 550)
+
+        self.region = self.config.setdefault("region_name", "regions")
+        self.controls = self.config.setdefault("controls", None)
+        self.margin = self.config.setdefault("margin", 8)
+
+        self.config.setdefault("arrangement", [])
+        self.config.setdefault("skip_horizon", False)
+        self.config.setdefault("arrange_direction", "")
 
     def execute(self, content):
         if not content.get(self.region):
             raise RegionNotFound(self.region)
 
-        self.ctrls = content[self.region]
+        self.ctrls = self.controls or content[self.region]
 
         # resolve collision
-        self.arrange(self.config.get("arrangement", []))
+        self.arrange(self.config.get("arrangement"))
 
         return content
 
@@ -64,17 +67,17 @@ class RearrangeByConfig(Pipeline):
         cv2.imshow("Points Classified", blank_image_classified)
         cv2.waitKey()
 
-    def arrange(self, arrange_direction):
-        # arrange_direction.reverse()
+    def arrange(self, arrangement):
+        # arrangement.reverse()
         ctrls_direction = []
-        for i, arr in enumerate(arrange_direction):
+        for i, arr in enumerate(arrangement):
             tmp = []
             for j, a in enumerate(arr):
-                elem = arrange_direction[i][j]
+                elem = arrangement[i][j]
                 if isinstance(elem, shape.Shape):
                     tmp.append(elem)
                 elif isinstance(elem, str) or isinstance(elem, unicode):
-                    tmp.append([x for x in self.ctrls if x.name == arrange_direction[i][j]][0])
+                    tmp.append([x for x in self.ctrls if x.name == arrangement[i][j]][0])
                 else:
                     raise ConfigInvalid()
 
@@ -88,7 +91,7 @@ class RearrangeByConfig(Pipeline):
         horizontal_baseline = []
         while ctrls_direction:
             target_row = ctrls_direction.pop()
-            if self.config.get("skip_horizon", False):
+            if self.config.get("skip_horizon"):
                 self.arrange_horizon(target_row, target_row_bottom, horizontal_baseline)
             target_row_bottom = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
             horizontal_baseline = [x.center[0] for x in target_row]
@@ -163,9 +166,9 @@ class RearrangeByConfig(Pipeline):
                 ctrl.translate((x, y))
 
     def solve_protrude(self, ctrls_direction):
-        w = self.environ.get("width", 320)
-        h = self.environ.get("height", 550)
-        m = self.config.get("margin", 8)
+        w = self.environ.get("width")
+        h = self.environ.get("height")
+        m = self.config.get("margin")
 
         # left side
         # 1. select row that has maximum width in rows

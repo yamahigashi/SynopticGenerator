@@ -10,12 +10,23 @@ from synopticgenerator.plugins import Pipeline
 class HTMLCharacter(Pipeline):
     ''' manipulate HTML charcter '''
 
-    def __init__(self, config, environ):
-        self.config = config
-        self.environ = environ
+    def set_default_config(self):
+        # type: () -> None
 
-        self.file = config.setdefault("file", None)
-        self.mode = config.setdefault("mode", "")
+        self.file = self.config.setdefault("file", None)
+        self.mode = self.config.setdefault("mode", "")
+
+    def check_config(self):
+        # type: () -> None
+
+        if not self.file:
+            raise Pipeline.ConfigInvalid("file")
+
+        if not self.mode:
+            raise Pipeline.ConfigInvalid("mode")
+
+        if "escape" not in self.mode and "unescape" not in self.mode:
+            raise Pipeline.ConfigInvalid("mode is [\"escape\", \"unescape\"")
 
     def unescape(self, fo):
         logging.info("unescape: {}".format(fo))
@@ -35,8 +46,6 @@ class HTMLCharacter(Pipeline):
             self.escape(self.file)
         elif self.mode == "unescape":
             self.unescape(self.file)
-        else:
-            raise
 
         return content
 
