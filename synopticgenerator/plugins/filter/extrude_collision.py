@@ -49,7 +49,7 @@ class ExtrudeCollision(Pipeline):
         cog_points_list = np.array([x.center for x in ctrls], np.float32)
 
         # inflate ctrls
-        if self.config.get("inflate", False):
+        if self.config.get("inflate"):
             inflated = copy.deepcopy(ctrls)
             map(lambda x: x.scale(1.2), inflated)
 
@@ -90,7 +90,7 @@ class ExtrudeCollision(Pipeline):
             content = self.arrange_cluster_neighbor(content, info)
             content = self.solve_collision(content, info)
 
-        if self.config.get('draw_debug', False):
+        if self.config.get('draw_debug'):
             self.draw_debug(pointcloud_list, x_means.labels)
 
         return content
@@ -112,7 +112,7 @@ class ExtrudeCollision(Pipeline):
 
             if 0.7 < info.c_rate:
                 center_ctrls = [ctrl for ctrl in shape.filter_only_central(self.environ, sorted_by_y)]
-                content = self.solve_vertical_collision(content, [center_ctrls,], direction=direction)
+                content = self.solve_vertical_collision(content, [center_ctrls], direction=direction)
                 print "solve_vertical_collision", len(center_ctrls), [x.name for x in center_ctrls]
 
                 center_ctrls = [ctrl for ctrl in shape.filter_has_attr_center_and_central(self.environ, sorted_by_y)]
@@ -134,9 +134,7 @@ class ExtrudeCollision(Pipeline):
         return content
 
     def arrange_cluster_neighbor(self, content, info):
-
-        # def _each(neighbor):
-        #     if neighbor.is_inside_central:
+        # type: (Dict[str, object], ClusterInformation) -> Dict[str, object]
 
         for neighbor in info.adjacents:
             u, d, l, r = info.is_infringement(neighbor)
@@ -311,7 +309,7 @@ class ExtrudeCollision(Pipeline):
                     move = int(sub_cluster.center[0] - ctrl.center.x)
                     ctrl.translate((move, 0))
 
-            print "sub", sub_cluster.df, [x.name for x in sub_targets]
+            print "sub", len(sub_targets), [x.name for x in sub_targets]
 
         horizontal_targets = {}  # type: Dict[int, shape.Shape]
         for i, sub_cluster in enumerate(y_x_means.clusters):
@@ -331,16 +329,20 @@ class ExtrudeCollision(Pipeline):
                     print ctrl.name, move, sub_cluster.center[0], ctrl.center.y
                     ctrl.translate((0, move))
 
-            print "bub", sub_cluster.df, [x.name for x in sub_targets]
+            print "bub", len(sub_targets), [x.name for x in sub_targets]
 
         for k, sub_targets in vertical_targets.iteritems():
             tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), sub_targets))
             transposed = list(map(list, zip(*tmp)))
             content = self.solve_vertical_collision(content, transposed)
 
+        print "horizontal_targets"
+        print horizontal_targets
         for k, sub_targets in horizontal_targets.iteritems():
-            transposed = list(map(list, zip(*sub_targets)))
-            content = self.solve_vertical_collision(content, transposed)
+            tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), sub_targets))
+            tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[0]), tmp))
+            transposed = list(map(list, zip(*tmp)))
+            content = self.solve_horizontal_collision(content, transposed)
 
         cluster.calculate_boundingbox()
         content = self.arrange_cluster_neighbor(content, cluster)
@@ -357,10 +359,27 @@ class ExtrudeCollision(Pipeline):
         }
 
         for col in ctrl_cols:
-            print "----"
             for ctrl in col:
-                print ctrl.name
                 config["arrangement"].append([ctrl])
+
+        sub_module = rearrange_by_config.create(config, self.environ)
+        content = sub_module.execute(content)
+        return content
+
+    def solve_horizontal_collision(self, content, ctrl_cols=[], direction="right"):
+        # type: (Dict[str, Any], List[shape.Shape], string) -> Dict[str, Any]
+
+        config = {
+            "arrangement": [],
+            "arrange_direction": direction
+        }
+
+        for col in ctrl_cols:
+            for i, ctrl in enumerate(col):
+                try:
+                    config["arrangement"][i].append(ctrl)
+                except IndexError:
+                    config["arrangement"].append([ctrl])
 
         sub_module = rearrange_by_config.create(config, self.environ)
         content = sub_module.execute(content)
@@ -496,7 +515,7 @@ class ClusterInformation(object):
         # type: ClusterInformation -> list[bool, bool, bool, bool]
 
         # shortcut
-        m = self.env.get("margin", 8)
+        m = self.env.get("margin")
 
         up = (self.top - m) < other.bottom and other.bottom < (self.bottom + m)
         down = (other.top - m) < self.bottom and self.bottom < (other.bottom + m)
@@ -519,7 +538,7 @@ class ClusterInformation(object):
     def get_infringement(self, other, direction):
         # type: (ClusterInformation, string) -> float
 
-        m = self.env.get("margin", 8)
+        m = self.env.get("margin")
 
         if direction == "top":
             res = self.top - other.bottom - m

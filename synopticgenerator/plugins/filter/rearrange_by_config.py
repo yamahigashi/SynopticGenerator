@@ -92,6 +92,7 @@ class RearrangeByConfig(Pipeline):
                 self.arrange_horizon(target_row, target_row_bottom, horizontal_baseline)
             target_row_bottom = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
             horizontal_baseline = [x.center[0] for x in target_row]
+            print target_row_bottom
 
             try:
                 b = ctrls_direction[-1]
@@ -116,16 +117,17 @@ class RearrangeByConfig(Pipeline):
             move.y = 0.0 if move.y < 0 else move.y
 
             # determine direction
-            print "arrange_direction", self.config.get("arrange_direction")
+            print "arrange_direction", self.config.get("arrange_direction"), ctrl.name
             move = ctrl.solve_direction_to_avoid(move, config=self.config)
             ctrl.translate(move)
 
-    def arrange_horizon(self, target_row, height, horizontal_baseline=[], rule="align_center"):
+    def arrange_horizon(self, target_row, height, horizontal_baseline=[], rule="align_bottom"):
         # type: List[], float, List[] -> None
 
         if not height:
-            # bottoms = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
-            height = min([(x.center[1] - (x.h / 2.0)) for x in target_row])
+            # TODO: look up rule
+            # height = min([(x.center[1] - (x.h / 2.0)) for x in target_row])
+            height = max([(x.center[1] + (x.h / 2.0)) for x in target_row])
 
         arrange_direction = self.config.get("arrange_direction")
 
