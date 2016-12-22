@@ -31,6 +31,8 @@ class ArrangeByClusterByAxis(Pipeline):
         self.config.setdefault("axis", None)
         self.config.setdefault("threshold", 1e-4)
         self.config.setdefault("draw_debug", False)
+        self.config.setdefault("equality_tolerance", 3.0)
+        # self.config.setdefault("equality_tolerance", 1e-3)
 
     def check_config(self):
         # type: () -> None
@@ -49,7 +51,8 @@ class ArrangeByClusterByAxis(Pipeline):
         if not content.get(self.region):
             raise Pipeline.RegionNotFound(self.region)
 
-        ctrls = self.controls or content[self.region]
+        ctrls = self.controls if self.controls is not None else content[self.region]
+        print "ctrls", [x.name for x in ctrls]
         w = self.environ.get("width")
         h = self.environ.get("height")
 
@@ -58,7 +61,11 @@ class ArrangeByClusterByAxis(Pipeline):
         else:
             self.aspect_ratio_normalizer = w
 
-        content = self.arrange_with_clustering_by_x(content, ctrls)
+        if "x" in self.axis:
+            content = self.arrange_with_clustering_by_x(content, ctrls)
+
+        if "y" in self.axis:
+            content = self.arrange_with_clustering_by_y(content, ctrls)
 
         return content
 
@@ -74,7 +81,7 @@ class ArrangeByClusterByAxis(Pipeline):
         x_x_means = clusterutil.x_means(self.environ, x_array, ctrls, self.aspect_ratio_normalizer)
         # y_x_means = mathutil.XMeans(random_state=1).fit(y_array)
 
-        vertical_targets = {}  # type: Dict[int, shape.Shape]
+        target_cols = {}  # type: Dict[int, shape.Shape]
         for i, cluster in enumerate(x_x_means.clusters):
 
             info = cluster.info
@@ -82,22 +89,34 @@ class ArrangeByClusterByAxis(Pipeline):
             if cluster.cov[0][0] < self.config.get("threshold"):
                 # align x by cluster's center.x
                 try:
-                    vertical_targets[len(sub_targets)].append(sub_targets)
+                    col = {
+                        "obj": sub_targets,
+                        "center": cluster.info.center[1],
+                        "min": cluster.info.top,
+                        "max": cluster.info.bottom,
+                    }
+                    target_cols[len(sub_targets)].append(col)
                 except KeyError:
-                    vertical_targets[len(sub_targets)] = [sub_targets]
+                    target_cols[len(sub_targets)] = [col]
 
                 for ctrl in sub_targets:
                     move = int(cluster.center[0] - ctrl.center.x)
                     ctrl.translate((move, 0))
 
-            print "sub", len(sub_targets), [x.name for x in sub_targets]
+                print "sub", len(sub_targets), [x.name for x in sub_targets]
             info.calculate_boundingbox()
             content = info.arrange_cluster_neighbor(content)
 
-        # for k, sub_targets in vertical_targets.iteritems():
-        #     tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), sub_targets))
-        #     transposed = list(map(list, zip(*tmp)))
-        #     content = self.solve_vertical_collision(content, transposed)
+        print "cols", target_cols
+        for elem_count, col in target_cols.iteritems():
+
+            for row in self.group_by_equality(col):
+
+                tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), row))
+                transposed = list(map(list, zip(*tmp)))
+
+                print "transposed", transposed
+                content = self.solve_vertical_collision(content, transposed)
 
         return content
 
@@ -118,6 +137,7 @@ class ArrangeByClusterByAxis(Pipeline):
 
             info = cluster.info
             sub_targets = np.array(ctrls)[cluster.index].tolist()
+            print cluster.cov
             if cluster.cov[0][0] < self.config.get("threshold"):
                 # align x by cluster's center.x
                 try:
@@ -129,7 +149,7 @@ class ArrangeByClusterByAxis(Pipeline):
                     move = int(cluster.center[0] - ctrl.center.y)
                     ctrl.translate((0, move))
 
-            print "bub", len(sub_targets), [x.name for x in sub_targets]
+                print "bub", len(sub_targets), [x.name for x in sub_targets]
             info.calculate_boundingbox()
             content = info.arrange_cluster_neighbor(content)
 
@@ -169,6 +189,47 @@ class ArrangeByClusterByAxis(Pipeline):
         cv2.imshow("Points Classified", blank_image_classified)
         cv2.waitKey()
 
+    def group_by_equality(self, cols):
+
+        results = []
+        group_id = []
+
+        # TODO: need to rewrite in more efficient algolithm
+        for i, col in enumerate(cols):
+
+            if i == 0:
+                results.append([col["obj"]])
+                group_id.append(len(results) - 1)
+                continue
+
+            for j, other in enumerate(cols):
+
+                if other == col:
+                    continue
+
+                if self.calculate_equality(col, other):
+                    print "equl"
+                    results[group_id[j]].append(col["obj"])
+                    group_id.append(j)
+
+            else:
+                results.append([col["obj"]])
+                group_id.append(len(results) - 1)
+
+        return results
+
+    def calculate_equality(self, a, b):
+
+        tol = self.config.get("equality_tolerance")
+        center = abs(a["center"] - b["center"]) / self.aspect_ratio_normalizer
+        min = float(abs(a["min"] - b["min"])) / self.aspect_ratio_normalizer
+        max = float(abs(a["max"] - b["max"])) / self.aspect_ratio_normalizer
+
+        if tol < center or tol < min or tol < max:
+            return False
+
+        return True
+
     def solve_vertical_collision(self, content, ctrl_cols=[], direction="down"):
         # type: (Dict[str, Any], List[shape.Shape], string) -> Dict[str, Any]
 
@@ -180,8 +241,7 @@ class ArrangeByClusterByAxis(Pipeline):
         }
 
         for col in ctrl_cols:
-            for ctrl in col:
-                config["arrangement"].append([ctrl])
+            config["arrangement"].append(col)
 
         sub_module = rearrange_by_config.create(config, self.environ)
         content = sub_module.execute(content)

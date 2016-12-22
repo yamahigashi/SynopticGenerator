@@ -47,6 +47,9 @@ class ClusterInformation(object):
         # self.top = cluster.data.min(axis=0)[1]
         # self.bottom = cluster.data.max(axis=0)[1]
 
+        print "hoge", self.targets
+        print "mage", [x.top_left[0] for x in self.targets]
+
         self.left = min([x.top_left[0] for x in self.targets])
         self.right = max([x.top_right[0] for x in self.targets])
         self.top = min([x.top_left[1] for x in self.targets])

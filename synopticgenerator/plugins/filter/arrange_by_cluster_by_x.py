@@ -1,14 +1,21 @@
 ﻿""" coding: utf-8 """
 
+# import copy
+# import bisect
+# import logging
+
 import synopticgenerator.plugins.filter.arrange_by_cluster_by_axis as arrange_by_cluster_by_axis
 from synopticgenerator.plugins import Pipeline
 
 
-class ArrangeByClusterY(Pipeline):
+class ArrangeByClusterX(Pipeline):
     ''' clustering given ctrl as cog points by k-means. '''
 
     def set_default_config(self):
         # type: () -> None
+
+        self.environ.setdefault("width", 320)
+        self.environ.setdefault("height", 550)
 
         self.region = self.config.setdefault("region_name", "regions")
         self.controls = self.config.setdefault("controls", None)
@@ -19,7 +26,7 @@ class ArrangeByClusterY(Pipeline):
         self.config.setdefault('draw_debug', False)
 
     def execute(self, content):
-        self.config["axis"] = "y"
+        self.config["axis"] = "x"
 
         mod = arrange_by_cluster_by_axis.create(self.config, self.environ)
         content = mod.execute(content)
@@ -28,4 +35,4 @@ class ArrangeByClusterY(Pipeline):
 
 
 def create(config, environ):
-    return ArrangeByClusterY(config, environ)
+    return ArrangeByClusterX(config, environ)

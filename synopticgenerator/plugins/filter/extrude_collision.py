@@ -10,8 +10,12 @@ import numpy as np
 import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 import synopticgenerator.mathutil as mathutil
+# import synopticgenerator.cluster as clusterutil
+
 import synopticgenerator.plugins.filter.rearrange_by_config as rearrange_by_config
 import synopticgenerator.plugins.filter.align_symmetry as align_symmetry
+import synopticgenerator.plugins.filter.arrange_by_cluster_by_axis as arrange_by_cluster_by_axis
+
 from synopticgenerator.plugins import Pipeline
 
 
@@ -92,6 +96,9 @@ class ExtrudeCollision(Pipeline):
             self.draw_debug(pointcloud_list, x_means.labels)
 
         return content
+
+    def arrange_with_clustering_by_x(self, content, targets):
+        pass
 
     def arrange_cluster(self, content, info):
         sorted_by_y = sorted(info.targets, key=lambda x: x.center[1])
@@ -275,75 +282,11 @@ class ExtrudeCollision(Pipeline):
         if len(cluster.targets) < 3:
             return content
 
-        x_array = np.array([x.center[0] for x in cluster.targets], np.float)
-        y_array = np.array([x.center[1] for x in cluster.targets], np.float)
+        config = self.config
+        config.update({"axis": "x,y", "controls": cluster.targets})
 
-        zero_array = np.array([0. for i in range(len(x_array))])
-        x_array = np.c_[x_array, zero_array]
-        y_array = np.c_[y_array, zero_array]
-
-        x_array /= self.aspect_ratio_normalizer
-        y_array /= self.aspect_ratio_normalizer
-
-        x_x_means = mathutil.XMeans(random_state=1).fit(x_array)
-        y_x_means = mathutil.XMeans(random_state=1).fit(y_array)
-
-        print "xmeans"
-
-        vertical_targets = {}  # type: Dict[int, shape.Shape]
-        for i, sub_cluster in enumerate(x_x_means.clusters):
-            sub_cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
-            sub_cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
-
-            sub_targets = np.array(cluster.targets)[sub_cluster.index].tolist()
-            if sub_cluster.cov[0][0] < 1e-5:
-                # align x by sub_cluster's center.x
-                try:
-                    vertical_targets[len(sub_targets)].append(sub_targets)
-                except KeyError:
-                    vertical_targets[len(sub_targets)] = [sub_targets]
-
-                for ctrl in sub_targets:
-                    move = int(sub_cluster.center[0] - ctrl.center.x)
-                    ctrl.translate((move, 0))
-
-            print "sub", len(sub_targets), [x.name for x in sub_targets]
-
-        horizontal_targets = {}  # type: Dict[int, shape.Shape]
-        for i, sub_cluster in enumerate(y_x_means.clusters):
-            sub_cluster.data *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
-            sub_cluster.center *= [self.aspect_ratio_normalizer, self.aspect_ratio_normalizer]
-
-            sub_targets = np.array(cluster.targets)[sub_cluster.index].tolist()
-            if sub_cluster.cov[0][0] < 1e-5:
-                # align y by sub_cluster's center.y
-                try:
-                    horizontal_targets[len(sub_targets)].append(sub_targets)
-                except KeyError:
-                    horizontal_targets[len(sub_targets)] = [sub_targets]
-
-                for ctrl in sub_targets:
-                    move = int(sub_cluster.center[0] - ctrl.center.y)
-                    print ctrl.name, move, sub_cluster.center[0], ctrl.center.y
-                    ctrl.translate((0, move))
-
-            print "bub", len(sub_targets), [x.name for x in sub_targets]
-
-        for k, sub_targets in vertical_targets.iteritems():
-            tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), sub_targets))
-            transposed = list(map(list, zip(*tmp)))
-            content = self.solve_vertical_collision(content, transposed)
-
-        print "horizontal_targets"
-        print horizontal_targets
-        for k, sub_targets in horizontal_targets.iteritems():
-            tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[1]), sub_targets))
-            tmp = list(map(lambda x: sorted(x, key=lambda x: x.center[0]), tmp))
-            transposed = list(map(list, zip(*tmp)))
-            content = self.solve_horizontal_collision(content, transposed)
-
-        cluster.calculate_boundingbox()
-        content = self.arrange_cluster_neighbor(content, cluster)
+        mod = arrange_by_cluster_by_axis.create(config, self.environ)
+        content = mod.execute(content)
 
         return content
 
