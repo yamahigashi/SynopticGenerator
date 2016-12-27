@@ -25,9 +25,6 @@ class ExtrudeCollision(Pipeline):
     def set_default_config(self):
         # type: () -> None
 
-        self.environ.setdefault("width", 320)
-        self.environ.setdefault("height", 550)
-
         self.region = self.config.setdefault("region_name", "regions")
         self.controls = self.config.setdefault("controls", None)
         self.margin = self.config.setdefault("margin", 8)

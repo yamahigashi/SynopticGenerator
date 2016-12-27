@@ -9,12 +9,12 @@ import yaml
 
 import synopticgenerator.util as util
 from synopticgenerator.plugins import Pipeline
+from synopticgenerator.environment import Environment
+from synopticgenerator.environment import Config
 from synopticgenerator.yamlordereddict import OrderedDictYAMLLoader
 import synopticgenerator.log as log
 import logging
 
-CURRENT_PATH = os.path.dirname(__file__)
-DEFAULT_PLUGIN_PATH = os.path.join(CURRENT_PATH, "plugins")
 ##############################################################################
 __author__ = "MATSUMOTO Takayoshi"
 __credits__ = ["MATSUMOTO Takayoshi", ]
@@ -29,12 +29,13 @@ __status__ = "Prototype"
 class SynopticGenerator(object):
 
     def __init__(self):
+        # type () -> None
         self.environ = None
         self.pipelines = None
 
     def load(self, yaml_stream):
-        config = yaml.load(yaml_stream, OrderedDictYAMLLoader)
-        self.environ = config.setdefault("global", {})
+        config = Config(yaml.load(yaml_stream, OrderedDictYAMLLoader))
+        self.environ = Environment(config.setdefault("global", {}))
         self.pipelines = config.setdefault("pipeline", [])
         self.environ["recipe_name"] = os.path.splitext(yaml_stream.name)[0]
 
@@ -42,43 +43,21 @@ class SynopticGenerator(object):
         self.load_after(config)
 
     def load_after(self, config):
-        # type: (Dict[str, object]) -> None
-        ''' set plugin path
-
-        plugin loading path sequence order is
-         1. current directory
-         2. plugin path in config file.
-         3. this module directory path for the standard plugins.
-        '''
-
-        self.initialize_environ()
-        self.environ.setdefault("plugin_path", ["."])
-        if "." not in self.environ["plugin_path"]:
-            self.environ["plugin_path"].insert(0, ".")
-        if DEFAULT_PLUGIN_PATH not in self.environ["plugin_path"]:
-            self.environ["plugin_path"].append(DEFAULT_PLUGIN_PATH)
-
-    def initialize_environ(self):
-        self.environ.setdefault("location_expression", "_(L|R|C)\\d+_")
-        self.environ.setdefault("location_label", {"left": "L", "right": "R", "center": "C"})
+        # type: (Config) -> None
+        pass
 
     def start_logging(self, environ):
-        # type: (Dict[str, object]) -> None
+        # type: (Environment) -> None
         level = environ.setdefault("log_level", "INFO")
         filename = environ.setdefault("log_file", None)
         formatter = environ.setdefault("log_format", log.DEFAULT_FORMATTER)
 
         log.start(filename=filename, level=level, formatter=formatter)
 
-    def add_plugin_path(self, path):
-        # type: (Dict[str, object]) -> None
-        p = path + self.environ["plugin_path"]
-        self.environ["plugin_path"] = list(set(p))
-
     def run_all(self):
-        # type: () -> Dict[str, object]
+        # type: () -> Dict
 
-        res = {}  # type: Dict[str, object]
+        res = {}  # type: Dict
         for k in self.pipelines.keys():
             res = self.run_line(k, res)
         return res
@@ -96,7 +75,7 @@ class SynopticGenerator(object):
         return res
 
     def instantiate(self, line):
-        # type: (Dict[str, Any]) -> Pipeline
+        # type: (Dict) -> Pipeline
         """ return SynopticGenerator plugin module instance. """
 
         logging.info("start instantiate %s" % line["module"])
