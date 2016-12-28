@@ -5,7 +5,7 @@ import logging
 DEFAULT_FORMATTER = '%(asctime)s %(levelname)s %(message)s at %(pathname)s %(funcName)s'
 
 _initialized = False
-_logger = None
+_logger = None  # type: logging.Logger
 
 '''
 debug

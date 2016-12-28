@@ -5,6 +5,8 @@
 ##############################################################################
 import abc
 
+from synopticgenerator.environment import Environment, Config
+
 
 class Pipeline(object):
     """ SynopticGenerator's pipeline base class """
@@ -12,7 +14,7 @@ class Pipeline(object):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, config, environ, *args, **kwargs):
-        # type: (Dict[str, object], Dict[str, object]) -> None
+        # type: (Config, Environment, *str, **str) -> None
 
         self.config = config
         self.environ = environ

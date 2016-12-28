@@ -6,7 +6,7 @@ import logging
 
 
 ##############################################################################
-_moduleFactories = {}
+_moduleFactories = {}  # type: Dict[str, module]
 
 
 def reload_module():
@@ -91,7 +91,7 @@ def color(string, color_table=None):
     import argparse
     s = string.split(',')
     if len(s) is not 3 and len(s) is not 4:
-        mes = "%r is not valid color, 'r, g, b, (a optional)'" % string
+        mes = "%r is not valid color or not in color table, 'r, g, b, (a optional)'" % string
         raise argparse.ArgumentTypeError(mes)
 
     def check_range(v):
@@ -117,6 +117,8 @@ def is_opencv_version_below_2():
 
 
 def get_x_center(env):
+    # type: (Dict) -> float
+
     width = env.get("width")
     if not width:
         # TODO
@@ -130,7 +132,7 @@ def get_x_center(env):
 
 
 def get_distance_from_cog(env, point):
-    # type: (Dict[str, object], List[int]) -> float
+    # type: (Dict, shape.Vec2) -> float
     """ get distance from center of background """
 
     x = get_x_center(env)
@@ -140,6 +142,8 @@ def get_distance_from_cog(env, point):
 
 
 def is_point_inside_central_region(env, point):
+    # type: (Dict, shape.Vec2) -> bool
+
     width = env.get('width')
     if not width:
         return False
@@ -160,6 +164,8 @@ def is_point_inside_central_region(env, point):
 
 
 def is_point_inside_lower_region(env, point, margin_rate=0.25):
+    # type: (Dict, shape.Vec2, float) -> bool
+
     height = env.get('height')
     if not height:
         return False
@@ -176,12 +182,14 @@ def is_point_inside_lower_region(env, point, margin_rate=0.25):
 
 
 def is_point_inside_upper_region(env, point, margin_rate=0.25):
+    # type: (Dict, shape.Vec2, float) -> bool
+
     height = env.get('height')
     if not height:
         return False
 
     min = 0
-    max = height *  margin_rate
+    max = height * margin_rate
 
     if point.y < min:
         return False

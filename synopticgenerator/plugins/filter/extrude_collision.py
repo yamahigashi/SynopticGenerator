@@ -208,8 +208,8 @@ class ExtrudeCollision(Pipeline):
 
         return points, indice
 
-    def solve_collision(self, content, cluster):
-        # type: (Dict[str, object], ClusterInformation) -> None
+    def set_config_arrange_direction_top_or_bottom_end(self, config, cluster):
+        # type: (Config, ClusterInformation) -> None
 
         config = {"margin": self.config.get("margin")}
         if not cluster.lower_free and not cluster.upper_free:
