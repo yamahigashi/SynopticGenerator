@@ -30,7 +30,7 @@ class Environment(OrderedDict):
         self.setdefault("location_expression", "_(L|R|C)\\d+_")
         self.setdefault("location_label", {"left": "L", "right": "R", "center": "C"})
         self.setdefault("height", 550)
-        self.setdefault("width", 300)
+        self.setdefault("width", 330)
 
     def set_default_plugin_path(self):
         # type: () -> None
