@@ -4,7 +4,7 @@ import cv2
 import numpy
 from PIL import Image
 
-from synopticgenerator.drawer import ObjectDrawer
+from synopticgenerator.plugins.drawer import ObjectDrawer
 import synopticgenerator.util as util
 from synopticgenerator.plugins import Pipeline
 from synopticgenerator.error import InvalidColorConfig

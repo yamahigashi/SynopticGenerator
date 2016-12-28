@@ -7,7 +7,7 @@ import synopticgenerator.util as util
 import synopticgenerator.shape as shape
 from synopticgenerator.plugins import Pipeline
 
-from synopticgenerator.drawer import ObjectDrawer
+from synopticgenerator.plugins.drawer import ObjectDrawer
 import synopticgenerator.plugins.drawer.rectangle as rectangle
 import synopticgenerator.plugins.drawer.polygon as polygon
 import synopticgenerator.plugins.drawer.circle as circle
