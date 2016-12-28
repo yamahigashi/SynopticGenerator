@@ -39,8 +39,8 @@ class Drawer(ObjectDrawer):
             raise Pipeline.ConfigInvalid("canvas")
 
     def drawrect(self, canvas, bound, color, thickness, linetype=4, shift=0):
-        b1 = bound.top_left
-        b2 = bound.bottom_right
+        b1 = tuple(bound.top_left)
+        b2 = tuple(bound.bottom_right)
 
         # cv2.rectangel not support alpha blend, then draw on empty image
         # next blend tmp image on canvas with alpha

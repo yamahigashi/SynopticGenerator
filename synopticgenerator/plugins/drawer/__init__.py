@@ -6,5 +6,5 @@ class ObjectDrawer(Pipeline):
 
     # def __init__(self, config, image):
     def __init__(self, config, env):
-        super(ObjectDrawer, self).__init__(config, {})
+        super(ObjectDrawer, self).__init__(config, env)
         # self.canvas = image

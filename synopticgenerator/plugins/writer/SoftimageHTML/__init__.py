@@ -23,7 +23,7 @@ __all__ = ["SoftimageHTMLWriter"]
 ##############################################################################
 
 
-class Writer(object):
+class Writer(Pipeline):
     output_filename = ""
     has_lxml = False
     bounding_boxies = None
@@ -39,6 +39,7 @@ class Writer(object):
     def after_set_config(self):
         # type: () -> None
 
+        self.regions = []
         if self.config.get("template"):
             self.template = yaml.load(open(self.config["template"]))
         else:
@@ -57,7 +58,7 @@ class Writer(object):
             return content
 
         for r in content[self.region]:
-            self.regions.append(r)
+            self.ctrls.append(r)
         self.write(self.config["output"])
 
         return content
