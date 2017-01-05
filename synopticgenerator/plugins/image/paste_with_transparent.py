@@ -40,6 +40,7 @@ class Paster(Pipeline):
 
         self.config.setdefault("base", None)
         self.config.setdefault("paste", None)
+        self.config.setdefault("output", None)
 
     def check_config(self):
         # type: () -> None
@@ -49,6 +50,9 @@ class Paster(Pipeline):
 
         if not self.config.get("paste"):
             raise Pipeline.ConfigInvalid("paste")
+
+        if not self.config.get("output"):
+            raise Pipeline.ConfigInvalid("output")
 
     def execute(self, content):
         image1 = self.config.get("base")
